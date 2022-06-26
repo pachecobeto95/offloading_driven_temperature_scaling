@@ -30,7 +30,7 @@ class LoadDataset():
 			])
 
 
-	def caltech256(dataset_path, idx_path):
+	def caltech256(self, dataset_path, idx_path):
 
 		# This method loads the Caltech-256 dataset.
 
@@ -87,3 +87,7 @@ class LoadDataset():
 		func_name = getattr(self, dataset_name, func_not_found)
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
+
+
+
+
