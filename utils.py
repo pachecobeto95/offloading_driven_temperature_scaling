@@ -1,6 +1,8 @@
 from torchvision import datasets, transforms
+import torch, os
+import numpy as np
 import config
-import torch
+
 
 class LoadDataset():
 	def __init__(self, args, model_id):
