@@ -8,6 +8,11 @@ def offloading_TS(args):
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
+	dataset_path = config.dataset_path_dict[args.dataset_name]
+	idx_path = config.idx_path_dict[args.dataset_name]
+
+	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
+
 
 	print("Success.")
 

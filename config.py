@@ -1,3 +1,7 @@
+import os
+
+DIR_NAME = os.path.dirname(__file__)
+
 models_id_dict = {"mobilenet": 1, "resnet18": 2, "vgg16": 1, "resnet152": 4}
 
 dataset_name = "caltech256"
@@ -17,3 +21,9 @@ std =  [0.26753769276329037, 0.2638145880487105, 0.2776826934044154]
 h_flip_prob = 0.25
 rotation_angle = 25
 brightness = (0.80, 1.20)
+
+
+root_dataset_path = os.path.join(DIR_NAME, "dataset")
+root_indices_path = os.path.join(DIR_NAME, "indices")
+dataset_path_dict = {"caltech256": os.path.join(root_dataset_path, "caltech256")}
+idx_path_dict = {"caltech256": os.path.join(root_indices_path, "caltech256")}
