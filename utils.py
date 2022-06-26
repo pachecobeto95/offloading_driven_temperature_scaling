@@ -47,7 +47,7 @@ class LoadDataset():
 		test_set = datasets.ImageFolder(dataset_path, transform=self.transformations_test)
 
 		train_idx_path = os.path.join(idx_path, "training_idx_caltech256_id_%s.npy"%(self.model_id))
-		val_idx_path = os.path.join(idx_path, "val_idx_caltech256_id_%s.npy"%(self.model_id))
+		val_idx_path = os.path.join(idx_path, "validation_idx_caltech256_id_%s.npy"%(self.model_id))
 		test_idx_path = os.path.join(idx_path, "test_idx_caltech256_id_%s.npy"%(self.model_id))
 
 
