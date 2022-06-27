@@ -181,7 +181,7 @@ class Early_Exit_DNN(nn.Module):
     This method answers the following question. Is the position to place an early exit?
     """
     intermediate_model = nn.Sequential(*(list(self.stages)+list(self.layers)))
-    x = torch.rand(1, 3, 224, 224)#.to(self.device)
+    x = torch.rand(1, 3, self.input_dim, self.input_dim).to(self.device)
     current_flop, _ = count_ops(intermediate_model, x, verbose=False, print_readable=False)
     return self.stage_id < self.n_branches and current_flop >= self.threshold_flop_list[self.stage_id]
 
