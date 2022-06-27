@@ -1,6 +1,6 @@
 import os, time, sys, json, os, argparse
 import config, utils
-from early_exit_dnn mport EE
+from early_exit_dnn import Early_Exit_DNN
 
 
 def main(args):
