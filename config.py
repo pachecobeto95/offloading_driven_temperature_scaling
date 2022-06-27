@@ -15,7 +15,7 @@ distribution = "linear"
 exit_type = "bnpool"
 batch_size_train = 256
 batch_size_test = 1
-
+pretrained = True
 
 # Parameters of Data Augmentation
 
