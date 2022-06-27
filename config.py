@@ -6,12 +6,16 @@ models_id_dict = {"mobilenet": 1, "resnet18": 2, "vgg16": 1, "resnet152": 4}
 
 dataset_name = "caltech256"
 
+# Standard Configuration of the Arguments 
 split_ratio = 0.2
 input_dim = 224
 seed = 42 # the answer to life the universe and everything
-
+cuda = True
+distribution = "linear" 
+exit_type = "bnpool"
 batch_size_train = 256
 batch_size_test = 1
+
 
 # Parameters of Data Augmentation
 
@@ -25,5 +29,8 @@ brightness = (0.80, 1.20)
 
 root_dataset_path = os.path.join(DIR_NAME, "dataset")
 root_indices_path = os.path.join(DIR_NAME, "indices")
+
 dataset_path_dict = {"caltech256": os.path.join(root_dataset_path, "caltech256")}
 idx_path_dict = {"caltech256": os.path.join(root_indices_path, "caltech256")}
+nr_class_dict = {"caltech256": 258}
+

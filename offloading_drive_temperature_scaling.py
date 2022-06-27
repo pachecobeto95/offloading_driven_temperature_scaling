@@ -1,9 +1,15 @@
 import os, time, sys, json, os, argparse
 import config, utils
+from early_exit_dnn mport EE
 
-def offloading_TS(args):
+
+def main(args):
 
 	model_id = config.models_id_dict[args.model_name]
+
+	n_classes = config.nr_class_dict[args.dataset_name]
+
+	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
@@ -13,8 +19,13 @@ def offloading_TS(args):
 
 	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
 
+	#Instantiate the Early-exit DNN model.
+	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
+		args.exit_type, device, args.distribution)
 
-	print("Success.")
+	#Load the train early-exit DNN model.
+	print("Success")
+
 
 if (__name__ == "__main__"):
 	# Input Arguments to configure the early-exit model .
@@ -31,7 +42,6 @@ if (__name__ == "__main__"):
 	#MobileNet, ResNet18, ResNet152, VGG16
 	parser.add_argument('--model_name', type=str, choices=["mobilenet", "resnet18", "resnet152", "vgg16"], 
 		help='DNN model name (default: mobilenet)')
-
 
 	#This argument defines the ratio to split the Traning Set, Val Set, and Test Set.
 	parser.add_argument('--split_ratio', type=float, default=config.split_ratio, help='Split Ratio')
@@ -50,6 +60,27 @@ if (__name__ == "__main__"):
 	parser.add_argument('--seed', type=int, default=config.seed, 
 		help='Seed. Default: %s'%(config.seed))
 
+	# This argument defines the backbone DNN is pretrained.
+	parser.add_argument('--pretrained', type=bool, default=config.pretrained, 
+		help='Is backbone DNN pretrained? Default: %s'%(config.pretrained))
+
+	# This argument defines Offloading-drive TS uses GPU board.
+	parser.add_argument('--cuda', type=bool, default=config.cuda, 
+		help='Cuda? Default: %s'%(config.cuda))
+
+	parser.add_argument('--exit_type', type=str, default=config.exit_type, 
+		help='Exit Type. Default: %s'%(config.exit_type))
+
+	parser.add_argument('--distribution', type=str, default=config.distribution, 
+		help='Distribution. Default: %s'%(config.distribution))
+
+
 	args = parser.parse_args()
 
-	offloading_TS(args)
+	main(args)
+
+
+
+
+
+
