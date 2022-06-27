@@ -1,4 +1,4 @@
-import os
+import os, torch
 
 DIR_NAME = os.path.dirname(__file__)
 
