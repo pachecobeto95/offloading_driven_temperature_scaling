@@ -20,7 +20,7 @@ def main(args):
 	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
 
 	#Instantiate the Early-exit DNN model.
-	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
+	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, 5, args.input_dim, 
 		args.exit_type, device, args.distribution)
 
 	#Load the train early-exit DNN model.
