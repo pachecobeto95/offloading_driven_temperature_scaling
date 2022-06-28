@@ -11,6 +11,9 @@ def main(args):
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
+	model_path = os.path.join(config.DIR_NAME, args.model_name, "models", 
+		"ee_mobilenet_branches_5_id_1.pth"%(args.n_branches, model_id))
+
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
@@ -22,6 +25,8 @@ def main(args):
 	#Instantiate the Early-exit DNN model.
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
 		args.exit_type, device, args.distribution)
+	ee_model = ee_model.to(device)
+	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
 
 	inference_time_dict = utils.measuring_inference_time(test_loader, ee_model, device)
