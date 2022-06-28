@@ -619,6 +619,7 @@ class Early_Exit_DNN(nn.Module):
     inf_time_dict["block_%s"%(cont_block)] = inf_time
 
     print("Success")
+    print(inf_time_dict)
     sys.exit()
     return inf_time_dict
 
