@@ -27,7 +27,7 @@ def main(args):
 		for i, (data, target) in enumerate(test_loader, 1):
 
 			data, target = data.to(device), target.to(device)
-			ee_model.measuring_inference_time()
+			ee_model.measuring_inference_time_block_wise()
 
 	#Load the train early-exit DNN model.
 	print("Success")
