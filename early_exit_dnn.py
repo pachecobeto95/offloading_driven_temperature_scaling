@@ -588,7 +588,7 @@ class Early_Exit_DNN(nn.Module):
 
     for i, exitBlock in enumerate(self.exits):
 
-      for block in self.stages[i][j]: 
+      for block in self.stages[i]: 
         x = block(x)
       sys.exit()
 
