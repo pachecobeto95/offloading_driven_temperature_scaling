@@ -582,7 +582,7 @@ class Early_Exit_DNN(nn.Module):
 
 
   def get_processing_time(self, x, block):
-    start = 0
+    start = time.time()
     x = block(x)
     processing_time = time.time() - start
     return x, processing_time
