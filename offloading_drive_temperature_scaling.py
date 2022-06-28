@@ -23,6 +23,8 @@ def main(args):
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, 5, args.input_dim, 
 		args.exit_type, device, args.distribution)
 
+	ee_model.measuring_inference_time()
+
 	#Load the train early-exit DNN model.
 	print("Success")
 
