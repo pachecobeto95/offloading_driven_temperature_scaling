@@ -119,6 +119,7 @@ def measuring_inference_time(test_loader, model, device):
 			inference_time_dict = model.measuring_inference_time_block_wise(data)
 
 			inf_time_list.append(list(inference_time_dict.values()))
+			break
 
 	inf_time_list = np.array(inf_time_list)
 	# Compute the average of the inference time of each block layer.
