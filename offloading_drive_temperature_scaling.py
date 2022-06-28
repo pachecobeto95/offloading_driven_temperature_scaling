@@ -12,7 +12,7 @@ def main(args):
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 	model_path = os.path.join(config.DIR_NAME, args.model_name, "models", 
-		"ee_mobilenet_branches_5_id_1.pth"%(args.n_branches, model_id))
+		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
