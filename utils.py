@@ -72,9 +72,9 @@ class LoadDataset():
 		val_data = torch.utils.data.Subset(val_set, indices=val_idx)
 		test_data = torch.utils.data.Subset(test_set, indices=test_idx)
 
-		train_loader = torch.utils.data.DataLoader(train_data, batch_size=self.batch_size_train, shuffle=True, num_workers=4)
-		val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=4)
-		test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=4)
+		train_loader = torch.utils.data.DataLoader(train_data, batch_size=self.batch_size_train, shuffle=True, num_workers=0)
+		val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=0)
+		test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=0)
 
 		return train_loader, val_loader, val_loader
 
