@@ -619,12 +619,19 @@ class Early_Exit_DNN(nn.Module):
 
     
     #Obtains the processing time of the last stage of DNN backbone.
-    print(self.stages[-1])
-    sys.exit()
-    x, processing_time = self.get_processing_time(x, self.stages[-1])
-    inf_time += processing_time
-    inf_time_dict["block_%s"%(cont_block)] = inf_time
-    cont_block += 1
+    for block in self.stages[-1]:
+      #Obtains the processing time of DNN backbone's block layers
+      x, processing_time = self.get_processing_time(x, block)
+      inf_time += processing_time
+      inf_time_dict["block_%s"%(cont_block)] = inf_time
+      cont_block += 1
+
+    #print(self.stages[-1])
+    #sys.exit()
+    #x, processing_time = self.get_processing_time(x, self.stages[-1])
+    #inf_time += processing_time
+    #inf_time_dict["block_%s"%(cont_block)] = inf_time
+    #cont_block += 1
 
     if((self.model_name == "mobilenet") and (not self.pretrained)):
       pass
