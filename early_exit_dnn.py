@@ -582,12 +582,23 @@ class Early_Exit_DNN(nn.Module):
 
 
   def get_processing_time(self, x, block):
+    """
+    This method gets the processing time of a provided block layer
+    """
     start = time.time()
     x = block(x)
     processing_time = time.time() - start
     return x, processing_time
   
   def measuring_inference_time_block_wise(self, x):
+    """
+    This method measures the processing time to run up to each block layer.
+    
+    x: an input image.
+    Output:
+
+    inf_time_dict: dictionary that contains the required processing time to run up to each block layer. 
+    """
 
     inf_time_dict = {}
     inf_time, cont_block = 0, 0
@@ -595,15 +606,21 @@ class Early_Exit_DNN(nn.Module):
     for i, exitBlock in enumerate(self.exits):
 
       for block in self.stages[i]:         
+        #Obtains the processing time of DNN backbone's block layers
         x, processing_time = self.get_processing_time(x, block)
         inf_time += processing_time
         inf_time_dict["block_%s"%(cont_block)] = inf_time
         cont_block += 1
 
+      #Obtains the processing time of each exits.
       output_branch, processing_time_branch = self.get_processing_time(x, exitBlock)
       inf_time += processing_time_branch
       inf_time_dict["exit_%s"%(i)] = inf_time
 
+    
+    #Obtains the processing time of the last stage of DNN backbone.
+    print(self.stages[-1])
+    sys.exit()
     x, processing_time = self.get_processing_time(x, self.stages[-1])
     inf_time += processing_time
     inf_time_dict["block_%s"%(cont_block)] = inf_time
@@ -618,9 +635,6 @@ class Early_Exit_DNN(nn.Module):
     inf_time += processing_time
     inf_time_dict["block_%s"%(cont_block)] = inf_time
 
-    print("Success")
-    print(inf_time_dict)
-    sys.exit()
     return inf_time_dict
 
 
