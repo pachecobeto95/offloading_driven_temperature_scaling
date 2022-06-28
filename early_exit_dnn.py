@@ -580,3 +580,19 @@ class Early_Exit_DNN(nn.Module):
     self.set_device()
     self.softmax = nn.Softmax(dim=1)
 
+
+
+  def measuring_inference_time(self):
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+      print(self.stages[i])
+      sys.exit()
+
+
+
+
+
+
+
+
