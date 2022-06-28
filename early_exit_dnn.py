@@ -585,7 +585,7 @@ class Early_Exit_DNN(nn.Module):
   def measuring_inference_time(self):
 
     for i, exitBlock in enumerate(self.exits):
-      x = self.stages[i](x)
+      #x = self.stages[i](x)
       print(self.stages[i])
       sys.exit()
 
