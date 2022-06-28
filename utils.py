@@ -90,3 +90,13 @@ class LoadDataset():
 		func_name = getattr(self, dataset_name, func_not_found)
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
+
+def measuring_inference_time(test_loader, model, device):
+
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+			print(i)
+			data, target = data.to(device), target.to(device)
+			model.measuring_inference_time_block_wise(data)
+

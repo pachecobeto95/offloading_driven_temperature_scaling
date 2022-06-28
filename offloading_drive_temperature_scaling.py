@@ -23,11 +23,8 @@ def main(args):
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, 5, args.input_dim, 
 		args.exit_type, device, args.distribution)
 
-	with torch.no_grad():
-		for i, (data, target) in enumerate(test_loader, 1):
 
-			data, target = data.to(device), target.to(device)
-			ee_model.measuring_inference_time_block_wise(data)
+	inference_time_dict = utils.measuring_inference_time(test_loader, ee_model)
 
 	#Load the train early-exit DNN model.
 	print("Success")

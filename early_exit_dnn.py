@@ -626,13 +626,6 @@ class Early_Exit_DNN(nn.Module):
       inf_time_dict["block_%s"%(cont_block)] = inf_time
       cont_block += 1
 
-    #print(self.stages[-1])
-    #sys.exit()
-    #x, processing_time = self.get_processing_time(x, self.stages[-1])
-    #inf_time += processing_time
-    #inf_time_dict["block_%s"%(cont_block)] = inf_time
-    #cont_block += 1
-
     if((self.model_name == "mobilenet") and (not self.pretrained)):
       pass
     else:
@@ -642,6 +635,7 @@ class Early_Exit_DNN(nn.Module):
     inf_time += processing_time
     inf_time_dict["block_%s"%(cont_block)] = inf_time
 
+    print(inf_time_dict)
     sys.exit()
 
     return inf_time_dict
