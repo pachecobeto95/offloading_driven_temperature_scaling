@@ -16,6 +16,7 @@ exit_type = "bnpool"
 batch_size_train = 256
 batch_size_test = 1
 pretrained = True
+n_branches = 5
 
 # Parameters of Data Augmentation
 

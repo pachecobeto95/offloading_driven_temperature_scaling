@@ -92,11 +92,42 @@ class LoadDataset():
 		return train_loader, val_loader, test_loader
 
 def measuring_inference_time(test_loader, model, device):
+	"""
+	This function gathers the processing time to run up to each block layer.
+	Then, this function repeats this procedure for other inputs on test sets.
+	Finally, we compute the average processing time.
 
+	Inputs:
+	test_loader -> contains the DataLoader of the test set.
+	model -> early-exit DNN model.
+	device -> device CPU or GPU that will run the EE-DNN model.
+
+	Outputs:
+	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
+	"""
+
+	inf_time_list = []
+	
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
-			print(i)
+
+			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
-			model.measuring_inference_time_block_wise(data)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			inference_time_dict = model.measuring_inference_time_block_wise(data)
+
+			inf_time_list.append(list(inference_time_dict.values()))
+
+	inf_time_list = np.array(inf_time_list)
+	# Compute the average of the inference time of each block layer.
+	avg_inference_time = np.mean(inf_time_list, axis=0)
+	key_list = list(inference_time_dict.keys())
+
+	avg_inference_time_dict = dict(zip(key_list, avg_inference_time))
+	sys.exit()
+
+	return avg_inference_time_dict	
+
 
