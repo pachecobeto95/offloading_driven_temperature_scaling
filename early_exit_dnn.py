@@ -581,7 +581,12 @@ class Early_Exit_DNN(nn.Module):
     self.softmax = nn.Softmax(dim=1)
 
 
-
+  def get_processing_time(self, x, block):
+    start = 0
+    x = block(x)
+    processing_time = time.time() - start
+    return x, processing_time
+  
   def measuring_inference_time_block_wise(self, x):
 
     inf_time_dict = {}
@@ -590,17 +595,30 @@ class Early_Exit_DNN(nn.Module):
     for i, exitBlock in enumerate(self.exits):
 
       for block in self.stages[i]:         
-        start = time.time()
-        x = block(x)
-        processing_time = time.time() - start
+        x, processing_time = self.get_processing_time(x, block)
         inf_time += processing_time
         inf_time_dict["block_%s"%(cont_block)] = inf_time
         cont_block += 1
-        print("block_%s: %s"%(cont_block, inf_time))  
-      sys.exit()
 
+      output_branch, processing_time_branch = self.get_processing_time(x, exitBlock)
+      inf_time += processing_time_branch
+      inf_time_dict["exit_%s"%(i)] = inf_time
 
+    x, processing_time = self.get_processing_time(x, self.stages[-1])
+    inf_time += processing_time
+    inf_time_dict["block_%s"%(cont_block)] = inf_time
+    cont_block += 1
 
+    if((self.model_name == "mobilenet") and (not self.pretrained)):
+      pass
+    else:
+      x = torch.flatten(x, 1)
+
+    output, processing_time = self.get_processing_time(x, self.classifier) 
+    inf_time += processing_time
+    inf_time_dict["block_%s"%(cont_block)] = inf_time
+
+    return inf_time_dict
 
 
 
