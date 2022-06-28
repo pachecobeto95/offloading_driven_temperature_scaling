@@ -80,9 +80,6 @@ if (__name__ == "__main__"):
 	parser.add_argument('--n_branches', type=int, default=config.n_branches, 
 		help='Number of side branches. Default: %s'%(config.n_branches))
 
-
-
-n_branches
 	args = parser.parse_args()
 
 	main(args)
