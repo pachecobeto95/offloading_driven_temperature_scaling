@@ -24,7 +24,7 @@ def main(args):
 		args.exit_type, device, args.distribution)
 
 	with torch.no_grad():
-		for i, (data, target) in tqdm(enumerate(test_loader, 1)):
+		for i, (data, target) in enumerate(test_loader, 1):
 
 			data, target = data.to(device), target.to(device)
 			ee_model.measuring_inference_time()
