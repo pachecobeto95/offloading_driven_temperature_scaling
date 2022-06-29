@@ -91,7 +91,8 @@ class LoadDataset():
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
 
-def measuring_inference_time(test_loader, model, device):
+
+def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
 	"""
 	This function gathers the processing time to run up to each block layer.
 	Then, this function repeats this procedure for other inputs on test sets.
@@ -106,8 +107,9 @@ def measuring_inference_time(test_loader, model, device):
 	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
 	"""
 
-	inf_time_list = []
-	
+	inf_time_list, conf_list, prediction_list = [], [], []
+	exit_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
+
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
@@ -118,40 +120,25 @@ def measuring_inference_time(test_loader, model, device):
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			inference_time_dict = model.measuring_inference_time_block_wise(data)
 
-			inf_time_list.append(list(inference_time_dict.values()))
-			
-
-	inf_time_list = np.array(inf_time_list)
-	# Compute the average of the inference time of each block layer.
-	avg_inference_time = np.mean(inf_time_list, axis=0)
-	key_list = list(inference_time_dict.keys())
-
-	avg_inference_time_dict = dict(zip(key_list, avg_inference_time))
-
-	return avg_inference_time_dict	
-
-
-def experiment_early_exit_inference(test_loader, model, n_branches, device):
-
-	conf_list, prediction_list = [], []
-	key_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
-
-	model.eval()
-	with torch.no_grad():
-		for i, (data, target) in enumerate(test_loader, 1):
-
-			# Convert data and target into the current device.
-			data, target = data.to(device), target.to(device)
-
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			confs, predictions = model.evaluating_prediction(data)
-			conf_list.append(confs), prediction_list.append(predictions)
+
+			inf_time_list.append(list(inference_time_dict.values()))
+			conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
 			break
 
-
+	inf_time_list = np.array(inf_time_list)
 	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
 
-	conf_dict = dict(zip(key_list, conf_list))
-	prediction_dict = dict(zip(key_list, prediction_list))
+	# Compute the average of the inference time of each block layer.
+	avg_inference_time = np.mean(inf_time_list, axis=0)
 
-	return conf_dict, prediction_dict
+
+	block_layer_list = list(inference_time_dict.keys())
+
+	avg_inference_time_dict = dict(zip(block_layer_list, avg_inference_time))
+
+	conf_dict = dict(zip(exit_list, conf_list))
+	prediction_dict = dict(zip(exit_list, prediction_list))
+
+	return avg_inference_time_dict, conf_dict, prediction_dict	
