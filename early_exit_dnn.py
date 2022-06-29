@@ -590,6 +590,33 @@ class Early_Exit_DNN(nn.Module):
     processing_time = time.time() - start
     return x, processing_time
   
+  def evaluating_prediction(self, x):
+
+    conf_list, prediction_list = [], []
+
+    for i, exitBlock in enumerate(self.exits):
+      #
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
+      conf_list.append(conf_branch.item()), prediction_list.append(prediction.item())
+
+    x = self.stages[-1](x)
+    
+    if((self.model_name == "mobilenet") and (not self.pretrained)):
+      pass
+    else:
+      x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    conf_list.append(conf_branch.item()), prediction_list.append(prediction.item())
+    
+    return conf_list, prediction_list
+
+
   def measuring_inference_time_block_wise(self, x):
     """
     This method measures the processing time to run up to each block layer.
