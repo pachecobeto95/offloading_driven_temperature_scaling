@@ -146,7 +146,8 @@ def experiment_early_exit_inference(test_loader, model, n_branches, device):
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			confs, predictions = model.evaluating_prediction(data)
 			conf_list.append(confs), prediction_list.append(predictions)
-			#break
+			break
+
 
 	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
 
