@@ -119,7 +119,7 @@ def measuring_inference_time(test_loader, model, device):
 			inference_time_dict = model.measuring_inference_time_block_wise(data)
 
 			inf_time_list.append(list(inference_time_dict.values()))
-			break
+			
 
 	inf_time_list = np.array(inf_time_list)
 	# Compute the average of the inference time of each block layer.
@@ -127,8 +127,30 @@ def measuring_inference_time(test_loader, model, device):
 	key_list = list(inference_time_dict.keys())
 
 	avg_inference_time_dict = dict(zip(key_list, avg_inference_time))
-	sys.exit()
 
 	return avg_inference_time_dict	
 
 
+def experiment_early_exit_inference(test_loader, ee_model, device):
+
+	conf_list, prediction_list = [], []
+	key_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
+
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			confs, predictions = model.evaluating_prediction(data)
+			conf_list.append(confs), prediction_list.append(predictions)
+			#break
+
+	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
+
+	conf_dict = dict(zip(key_list, conf_list))
+	prediction_dict = dict(zip(key_list, prediction_list))
+
+	return conf_dict, prediction_dict
