@@ -31,7 +31,7 @@ def main(args):
 
 
 	#inference_time_dict = utils.measuring_inference_time(test_loader, ee_model, device)
-	utils.experiment_early_exit_inference(test_loader, ee_model, device)
+	utils.experiment_early_exit_inference(test_loader, ee_model, args.n_branches, device)
 	#Load the train early-exit DNN model.
 	print("Success")
 
