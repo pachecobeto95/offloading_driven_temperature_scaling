@@ -131,7 +131,7 @@ def measuring_inference_time(test_loader, model, device):
 	return avg_inference_time_dict	
 
 
-def experiment_early_exit_inference(test_loader, ee_model, n_branches, device):
+def experiment_early_exit_inference(test_loader, model, n_branches, device):
 
 	conf_list, prediction_list = [], []
 	key_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
