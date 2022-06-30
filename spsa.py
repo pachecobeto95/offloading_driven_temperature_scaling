@@ -60,11 +60,11 @@ def standard_ak(a, A, alpha):
 	Create a generator for values of a_k in the standard form.
 	'''
 	# count() is an infinite iterator as 0, 1, 2, ... 
-	return ( a / (k + 1 + A) ** alpha for k in range(100))
+	return ( a / (k + 1 + A) ** alpha for k in range(1000))
 
 def standard_ck(c, gamma):
 	'''Create a generator for values of c_k in the standard form.'''
-	return ( c / (k + 1) ** gamma for k in range(100) )
+	return ( c / (k + 1) ** gamma for k in range(1000) )
 
 class Bernoulli:
 	'''
