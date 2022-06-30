@@ -121,12 +121,14 @@ def run_spsa(n=1000, replications=40):
 	losses = []
   
 	for i, (a, c) in enumerate(islice(ac, replications)):
+		print(i)
 		theta_iter = SPSA(a=a, c=c, y=loss.y, t0=theta0, delta=delta)
 		#print(list(theta_iter))
 		terminal_theta = list(theta_iter)[i] # Get 1000th theta
 		print(terminal_theta)
 		terminal_loss = loss.L(terminal_theta)
 		losses += [terminal_loss]
+	
 	return losses # You can calculate means/variances from this data.
 
 
