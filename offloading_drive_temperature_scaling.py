@@ -1,5 +1,5 @@
 import os, time, sys, json, os, argparse, torch
-import config, utils
+import config, utils, spsa
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 
@@ -39,6 +39,7 @@ def main(args):
 		inference_times, confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, n_branches, temp_list, device)
 
 		#Run the Stochastic Optimization Method to seach the Offloading-drive Temperature Scaling.
+		#Simultaneous perturbation stochastic approximation (SPSA)
 		#temp_list = utils.
 
 	print("Success")
