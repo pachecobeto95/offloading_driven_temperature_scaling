@@ -111,7 +111,7 @@ def run_spsa(n=1000, replications=40):
 	p = 2
 	loss = SkewedQuarticLoss(p, sigma=1)
 	theta0 = [1 for _ in range(p)]
-	c = standard_ck(,c=1, n=n, gamma=.101)
+	c = standard_ck(c=1, n=n, gamma=.101)
 	a = standard_ak(a=1, n=n, A=100, alpha=.602)
 	delta = Bernoulli(p=p)
   
