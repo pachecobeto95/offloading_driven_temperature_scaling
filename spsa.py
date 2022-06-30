@@ -131,7 +131,7 @@ def run_spsa(n=1000, replications=40):
 	return losses # You can calculate means/variances from this data.
 
 
-
+run_spsa()
 
 
 
