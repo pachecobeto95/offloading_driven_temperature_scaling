@@ -1,5 +1,5 @@
 import numpy as np
-from itertools import islice, izip, tee
+from itertools import islice, tee
 import random, sys
 
 
@@ -19,13 +19,13 @@ def SPSA(f_loss, init_theta, a, c, delta, constraint=identity):
 
 	theta = init_theta
 
-	for ak, ck in izip(a, c):
+	for ak, ck in zip(a, c):
 
 		# Estimate gradient
 		gk = estimate_gk(y, theta, delta, ck)
 
 		# Adjust theta using SA
-		theta = [t - ak * gkk for t, gkk in izip(theta, gk)]
+		theta = [t - ak * gkk for t, gkk in zip(theta, gk)]
 
 		# Constrain
 		theta = constraint(theta)
@@ -45,8 +45,8 @@ def estimate_gk(f_loss, theta, delta, ck):
 	delta_k = delta()
 
 	# Get the two perturbed values of theta. list comprehensions like this are quite nice
-	ta = [t + ck * dk for t, dk in izip(theta, delta_k)]
-	tb = [t - ck * dk for t, dk in izip(theta, delta_k)]
+	ta = [t + ck * dk for t, dk in zip(theta, delta_k)]
+	tb = [t - ck * dk for t, dk in zip(theta, delta_k)]
 
 	# Calculate g_k(theta_k)
 	ya, yb = f_loss(ta), f_loss(tb)
@@ -116,7 +116,7 @@ def run_spsa(n=1000, replications=40):
 	delta = Bernoulli(p=p)
   
 	# tee is a useful function to split an iterator into n independent runs of that iterator
-	ac = izip(tee(a,n),tee(c,n))
+	ac = zip(tee(a,n),tee(c,n))
   
 	losses = []
   
