@@ -5,7 +5,7 @@ import random, sys
 
 identity = lambda x: x
 
-def SPSA(y, init_theta, a, c, delta, constraint=identity):
+def SPSA(y, t0, a, c, delta, constraint=identity):
 
 	'''
 	Creates an Simultaneous Perturbation Stochastic Approximation (SPSA) iterator.
@@ -17,7 +17,7 @@ def SPSA(y, init_theta, a, c, delta, constraint=identity):
 	constraint - a function of theta that returns theta
 	'''
 
-	theta = init_theta
+	theta = t0
 
 	for ak, ck in zip(a, c):
 
