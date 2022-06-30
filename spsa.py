@@ -90,7 +90,7 @@ def nth(iterable, n, default=None):
     return next(islice(iterable, n, None), default)
 
 class SkewedQuarticLoss(LossFunction):
-        '''
+	'''
 	Skewed Quartic Loss function.
 	Initialize with vector length p.
 	Functions, L, y, and epsilon available
@@ -106,30 +106,29 @@ class SkewedQuarticLoss(LossFunction):
 
 	def epsilon(self, theta):
 		return random.gauss(0, self.sigmasq) # multiply by stdev
-    
+
 def run_spsa(n=1000, replications=40):
-  p = 20
-  loss = SkewedQuarticLoss(p, sigma=1)
-  theta0 = [1 for _ in xrange(p)]
-  c = standard_ck(c=1, gamma=.101)
-  a = standard_ak(a=1, A=100, alpha=.602)
-  delta = Bernoulli(p=p)
+	p = 20
+	loss = SkewedQuarticLoss(p, sigma=1)
+	theta0 = [1 for _ in xrange(p)]
+	c = standard_ck(c=1, gamma=.101)
+	a = standard_ak(a=1, A=100, alpha=.602)
+	delta = Bernoulli(p=p)
   
-  # tee is a useful function to split an iterator into n independent runs of that iterator
-  ac = izip(tee(a,n),tee(c,n))
+	# tee is a useful function to split an iterator into n independent runs of that iterator
+	ac = izip(tee(a,n),tee(c,n))
   
-  losses = []
+	losses = []
   
-  for a, c in islice(ac, replications):
-    theta_iter = SPSA(a=a, c=c, y=loss.y, t0=theta0, delta=delta)
-    print(list(theta_iter))
-    terminal_theta = nth(theta_iter, n) # Get 1000th theta
-    print(terminal_theta)
-    sys.exit()
-    terminal_loss = loss.L(terminal_theta)
-    losses += [terminal_loss]
-    
-  return losses # You can calculate means/variances from this data.
+	for a, c in islice(ac, replications):
+		theta_iter = SPSA(a=a, c=c, y=loss.y, t0=theta0, delta=delta)
+		print(list(theta_iter))
+		terminal_theta = nth(theta_iter, n) # Get 1000th theta
+		print(terminal_theta)
+		sys.exit()
+		terminal_loss = loss.L(terminal_theta)
+		losses += [terminal_loss]
+	return losses # You can calculate means/variances from this data.
 
 
 
