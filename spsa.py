@@ -55,16 +55,16 @@ def estimate_gk(f_loss, theta, delta, ck):
 	return gk
 
 
-def standard_ak(a, A, alpha):
+def standard_ak(a, A, n, alpha):
 	'''
 	Create a generator for values of a_k in the standard form.
 	'''
 	# count() is an infinite iterator as 0, 1, 2, ... 
-	return ( a / (k + 1 + A) ** alpha for k in range(1000))
+	return ( a / (k + 1 + A) ** alpha for k in range(n))
 
-def standard_ck(c, gamma):
+def standard_ck(c, n, gamma):
 	'''Create a generator for values of c_k in the standard form.'''
-	return ( c / (k + 1) ** gamma for k in range(1000) )
+	return ( c / (k + 1) ** gamma for k in range(n) )
 
 class Bernoulli:
 	'''
@@ -108,11 +108,11 @@ class SkewedQuarticLoss(LossFunction):
 		return random.gauss(0, self.sigmasq) # multiply by stdev
 
 def run_spsa(n=1000, replications=40):
-	p = 20
+	p = 2
 	loss = SkewedQuarticLoss(p, sigma=1)
 	theta0 = [1 for _ in range(p)]
-	c = standard_ck(c=1, gamma=.101)
-	a = standard_ak(a=1, A=100, alpha=.602)
+	c = standard_ck(,c=1, n=n, gamma=.101)
+	a = standard_ak(a=1, n=n, A=100, alpha=.602)
 	delta = Bernoulli(p=p)
   
 	# tee is a useful function to split an iterator into n independent runs of that iterator
@@ -125,7 +125,6 @@ def run_spsa(n=1000, replications=40):
 		#print(list(theta_iter))
 		terminal_theta = list(theta_iter)[i] # Get 1000th theta
 		print(terminal_theta)
-		sys.exit()
 		terminal_loss = loss.L(terminal_theta)
 		losses += [terminal_loss]
 	return losses # You can calculate means/variances from this data.
