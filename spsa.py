@@ -101,8 +101,8 @@ class SkewedQuarticLoss(LossFunction):
 		self.sigmasq = sigma ** 2
 
 	def L(self, theta):
-		bt = [dot(Br, theta) for Br in self.B]
-		return dot(bt,bt) + sum((.1 * b**3 + .01 * b**4 for b in bt))
+		bt = [np.dot(Br, theta) for Br in self.B]
+		return np.dot(bt,bt) + sum((.1 * b**3 + .01 * b**4 for b in bt))
 
 	def epsilon(self, theta):
 		return random.gauss(0, self.sigmasq) # multiply by stdev
