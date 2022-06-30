@@ -97,7 +97,7 @@ class SkewedQuarticLoss(LossFunction):
 	'''
 	def __init__(self, p, sigma):
 		x = 1./p
-		self.B = [[x if i >= j else 0 for i in xrange(p)] for j in xrange(p)]
+		self.B = [[x if i >= j else 0 for i in range(p)] for j in range(p)]
 		self.sigmasq = sigma ** 2
 
 	def L(self, theta):
@@ -110,7 +110,7 @@ class SkewedQuarticLoss(LossFunction):
 def run_spsa(n=1000, replications=40):
 	p = 20
 	loss = SkewedQuarticLoss(p, sigma=1)
-	theta0 = [1 for _ in xrange(p)]
+	theta0 = [1 for _ in range(p)]
 	c = standard_ck(c=1, gamma=.101)
 	a = standard_ak(a=1, A=100, alpha=.602)
 	delta = Bernoulli(p=p)
