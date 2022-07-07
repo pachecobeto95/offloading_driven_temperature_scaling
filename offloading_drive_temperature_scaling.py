@@ -7,6 +7,8 @@ import numpy as np
 
 def main(args):
 
+	print("oi")
+
 	model_id = config.models_id_dict[args.model_name]
 
 	n_classes = config.nr_class_dict[args.dataset_name]
