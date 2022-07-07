@@ -1,150 +1,272 @@
-import numpy as np
-from itertools import islice, tee, count
+from itertools import tee, islice
 import random, sys
+import numpy as np
 
 
-identity = lambda x: x
-
-def SPSA(y, t0, a, c, delta, constraint=identity):
-
-	'''
-	Creates an Simultaneous Perturbation Stochastic Approximation (SPSA) iterator.
-	f_loss - a function of theta that evaluates the parameter theta and returns a scalar
-	t0 - initial value of the parameter theta
-	a - an iterable of a_k values. This is an hyperparameter of the optimization method.
-	c - an iterable of c_k values. This is an hyperparameter of the optimization method.
-	delta - a function of no parameters which creates the delta vector
-	constraint - a function of theta that returns theta
-	'''
-
-	theta = t0
-
-	for ak, ck in zip(a, c):
-
-		# Estimate gradient
-		gk = estimate_gk(y, theta, delta, ck)
-
-		# Adjust theta using SA
-		theta = [t - ak * gkk for t, gkk in zip(theta, gk)]
-
-		# Constrain
-		theta = constraint(theta)
-
-	yield theta # This makes this function become an iterator
-
-def estimate_gk(f_loss, theta, delta, ck):
-	'''
-	This function estimates gradient for SPSA method based on two evaluations on loss functions.
-	f_loss - a function of theta that evaluates the parameter theta and returns a scalar
-	theta - this input contains the current parameter theta, i.e., theta(t).
-	delta - a function of no parameters which creates the delta vector 
-	ck - current parameter c. This is an hyperparameter of the optimization method.
-	'''
-
-	# Generate Delta vector
-	delta_k = delta()
-
-	# Get the two perturbed values of theta. list comprehensions like this are quite nice
-	ta = [t + ck * dk for t, dk in zip(theta, delta_k)]
-	tb = [t - ck * dk for t, dk in zip(theta, delta_k)]
-
-	# Calculate g_k(theta_k)
-	ya, yb = f_loss(ta), f_loss(tb)
-	gk = [(ya-yb) / (2*ck*dk) for dk in delta_k]
-
-	return gk
-
-
-def standard_ak(a, A, n, alpha):
-	'''
-	Create a generator for values of a_k in the standard form.
-	'''
-	# count() is an infinite iterator as 0, 1, 2, ... 
-	return ( a / (k + 1 + A) ** alpha for k in range(n))
-
-def standard_ck(c, n, gamma):
-	'''Create a generator for values of c_k in the standard form.'''
-	return ( c / (k + 1) ** gamma for k in range(n) )
-
-class Bernoulli:
+class Bernoulli(object):
 	'''
 	Bernoulli Perturbation distributions.
-	p is the dimension
-	+/- r are the alternate values
 	'''
-	def __init__(self, r=1, p=2):
-		self.p = p
+	# This class generates a bernoulli vector
+
+	def __init__(self, dim, r=1):
+		#dim - provides the dimension of the bernoulli vector
+		#r - he values thar the bernoulli vector may assume. 
+
+		self.dim = dim
 		self.r = r
 
 	def __call__(self):
-		return [random.choice((-self.r, self.r)) for _ in range(self.p)]
-
-class LossFunction:
-	''' A base class for loss functions which defines y as L+epsilon '''
-	def y(self, theta):
-		return self.L(theta) + self.epsilon(theta)
+		# When this method is called, it returns the Bernoulli vector that works as delta vector to estimate
+		# the gradient.
+		return np.array([random.choice((-self.r, self.r)) for _ in range(self.dim)])
 
 
-def nth(iterable, n, default=None):
-    "Returns the nth item or a default value"
-    return next(islice(iterable, n, None), default)
+class SPSA (object):
 
-class SkewedQuarticLoss(LossFunction):
-	'''
-	Skewed Quartic Loss function.
-	Initialize with vector length p.
-	Functions, L, y, and epsilon available
-	'''
-	def __init__(self, p, sigma):
-		x = 1./p
-		self.B = [[x if i >= j else 0 for i in range(p)] for j in range(p)]
-		self.sigmasq = sigma ** 2
+	def __init__(self, function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, max_bounds, 
+		max_patience=20, function_tol=None, param_tol=None, ens_size=2, epsilon=1e-4):
+		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
 
-	def L(self, theta):
-		bt = [np.dot(Br, theta) for Br in self.B]
-		return np.dot(bt,bt) + sum((.1 * b**3 + .01 * b**4 for b in bt))
+		#function - a objective function of theta that returns a scalar
+		#a0 - a parameter to create ak
+		#A - other parameter to create ak
+		#c - a parameter to create ck
+		#delta - a function of no parameters which creates the delta vector
+		#min_bounds -  A vector with minimum bounds for parameters theta
+		#max_bounds -  A vector with maximum bounds for parameters theta
+		#ens_size - Number of computations to approximate the gradient
 
-	def epsilon(self, theta):
-		return random.gauss(0, self.sigmasq) # multiply by stdev
+		self.function = function
+		self.max_iter = max_iter
+		self.dim = dim
+		self.a = a0
+		self.A = max_iter/10
+		self.alpha = alpha
+		self.gamma = gamma
+		self.c = c
+		self.min_bounds = min_bounds
+		self.max_bounds = max_bounds
+		self.ens_size = ens_size
+		self.function_tol = function_tol
+		self.param_tol = param_tol
+		self.epsilon = epsilon
+		self.max_patience = max_patience
 
-def run_spsa(n=1000, replications=40):
-	p = 2
-	loss = SkewedQuarticLoss(p, sigma=1)
-	theta0 = [1 for _ in range(p)]
-	c = standard_ck(c=1, n=n, gamma=.101)
-	a = standard_ak(a=1, n=n, A=100, alpha=.602)
-	delta = Bernoulli(p=p)
-  
-	# tee is a useful function to split an iterator into n independent runs of that iterator
-	ac = zip(tee(a,n),tee(c,n))
-  
-	losses = []
-  
-	for i, (a, c) in enumerate(islice(ac, replications)):
-		print(i)
-		theta_iter = SPSA(a=a, c=c, y=loss.y, t0=theta0, delta=delta)
-		#print(list(theta_iter))
-		terminal_theta = list(theta_iter)[i] # Get 1000th theta
-		print(terminal_theta)
-		terminal_loss = loss.L(terminal_theta)
-		losses += [terminal_loss]
+
+	def compute_ak(self, k):
+		# This method returns the parameter ak for each iteration
+		# k - is the current number of iterations
+		return self.a/(k+1+self.A)**self.alpha
+
+	def compute_ck(self, k):
+		# This method computes the parameter ck for each iteration
+		# k - is the current number of iterations
+		return self.c/(k+1)**self.gamma
+
+	def estimate_gradient(self, theta, ck, delta):
+
+		# This method estimates the gradient based on two measuments of the objective function self.function.
+
+		ghat = 0
+
+		for i in range(self.ens_size):
+			
+			# Compute the Delta vector
+			delta_k = delta()
+
+			#Stochastic perturbantions
+			theta_plus = theta + ck * delta_k
+			theta_minus = theta - ck * delta_k
+			
+			#This block forces the theta parameters after stochastic perturbations to be inside the limits 
+			#defined by max_bounds and min_bounds.
+			theta_plus = np.minimum(theta_plus, self.max_bounds)
+			theta_minus = np.maximum(theta_minus, self.min_bounds)
+
+			y_plus = self.function(theta_plus)
+			y_minus = self.function(theta_minus)
+
+			ghat += (y_plus-y_minus)/(2*ck*delta_k)
+		
+		ghat = ghat/float(self.ens_size)
+
+		return ghat
+
+	def check_boundaries(self, theta):
+		theta = np.minimum(theta, self.max_bounds)
+		theta = np.maximum(theta, self.min_bounds)
+		return theta
+
+	def adjusting_to_bounds(self, theta, ghat, ak):
+
+		not_all_pass = True
+		this_ak = ( theta*0 + 1 )*ak
+		theta_new = theta
+		while (not_all_pass):
+			out_of_bounds = np.where ( np.logical_or (theta_new - this_ak*ghat > self.max_bounds, 
+				theta_new - this_ak*ghat < self.min_bounds ) )[0]
+			theta_new = theta - this_ak*ghat
+			if len ( out_of_bounds ) == 0:
+				theta = theta - this_ak*ghat
+				not_all_pass = False
+			else:
+				this_ak[out_of_bounds] = this_ak[out_of_bounds]/2.
+
+		return theta
+
+	def compute_distance_theta(self, theta_old, theta):
+		return np.linalg.norm(theta_old-theta)/np.linalg.norm(theta_old)
 	
-	return losses # You can calculate means/variances from this data.
+	
+	def check_function_tolerance(self, loss_new, loss_old, theta, theta_saved):
+
+		reject_iter = False
+
+		if (self.function_tol is not None):
+
+			if (np.abs(loss_new-loss_old) > self.function_tol):
+				theta = theta_saved
+				reject_iter = True
+
+			else:
+				loss_old = loss_new
+
+		return theta, loss_old, reject_iter
 
 
-run_spsa()
+	def check_param_tolerance(self, loss_new, loss_old, theta, theta_saved):
+
+		reject_iter = False
+
+		if (self.param_tol is not None):
+			delta_theta = theta_dif = np.abs ( theta - theta_saved )
+
+			if (not np.all ( delta_theta < self.param_tol )):
+				theta = theta_saved
+				reject_iter = True
+
+		return theta, loss_old, reject_iter
+
+	def min(self, theta_0, report_interval=100):
+
+		n_iter, patience = 0, 0
+		losses = []
+		theta = theta_0
+		delta = Bernoulli(dim=self.dim)
+
+		loss_old = self.function(theta)
+
+		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
+		#Convergence means that the theta is not significantly changes until max_patience times in a row.
+
+		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+
+			# Store theta at the start of the interation. We update theta later.
+			theta_saved = theta
+
+			#Obtains the ak, ck for the current iteration
+			ak = self.compute_ak(n_iter)
+			ck = self.compute_ck(n_iter)
+
+			# Get estimated gradient
+			ghat = self.estimate_gradient(theta, ck, delta)
+
+			theta = self.adjusting_to_bounds(theta, ghat, ak)
+
+			# The new loss value evaluating the objective function.
+			loss = self.function(theta)
+			# Saves the loss in a list to create a loss history
+			losses += [loss]
+
+            # Function tolerance: 
+            # You can ignore theta values that result in large shifts in the function value.
+            # This procedure aims to decrease slowly to avoid deconvergence.
+
+			theta, loss_old, reject_iter = self.check_function_tolerance(loss, loss_old, theta, theta_saved)
+			
+			theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
+
+			patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
+
+			if (not reject_iter): 
+				n_iter += 1
+
+			# Be friendly to the user, tell him/her how it's going on...
+			if(n_iter%report_interval == 0):
+				print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
+
+
+		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
+
+		return theta, loss, losses, n_iter
+
+	def minimize(self, theta_0, report_interval=100):
+
+		# Initializes counter n_iter
+		n_iter = 0
+		theta = theta_0
+		losses = []
+
+		delta = Bernoulli(dim=self.dim)
+		
+		for n_iter in range(self.max_iter):
+
+			#Obtains the ak, ck for the current iteration
+			ak = self.compute_ak(n_iter)
+			ck = self.compute_ck(n_iter)
+
+			# Get estimated gradient
+			ghat = self.estimate_gradient(theta, ck, delta)
+			
+			# Adjust theta using SA
+			theta = theta - ak*ghat
+			theta = self.check_boundaries(theta)
+
+			#Computes the new loss using the current theta parameter.
+			loss = self.function(theta)
+
+			#Saves the history of losses values in a list.
+			losses += [loss]
+			
+			#Report to user the current loss. 
+			if(n_iter%report_interval == 0):
+				print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
 
 
+		return theta, loss, losses
+
+
+def objective_function(x):
+	return x[0]**2 + x[1]**2
 
 
 
+def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamma):
+	
+	theta_initial = np.ones(dim)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, max_bounds)
+	# Run SPSA to minimize the objective function
+	theta, loss, losses, n_iter = optim.min(theta_initial)
+
+	#return theta_opt, loss_opt
 
 
+if (__name__ == "__main__"):
+    
+	r_min, r_max = -5, 5
+	dim = 2
+	max_iter = 500000
+	a0 = 1
+	alpha = 0.602
+	c = 1
+	gamma = 0.101
+	f = objective_function
 
-
-
-
+	run_spsa(objective_function, max_iter, dim, r_min, r_max, a0, c, alpha, gamma)
 
 
 
