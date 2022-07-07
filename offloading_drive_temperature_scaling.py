@@ -3,6 +3,8 @@ import config, utils, spsa
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 
+
+
 def main(args):
 
 	model_id = config.models_id_dict[args.model_name]
