@@ -106,7 +106,7 @@ def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path=""):
 
 def get_confs_predictions(data_path):
 	print("hello, world.")
-	
+
 def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	"""
 	This function gathers the processing time to run up to each block layer.
@@ -128,6 +128,7 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
+			print(i)
 
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
