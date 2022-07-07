@@ -19,6 +19,7 @@ def main(args):
 		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
 	# Instantiate LoadDataset class
+	print("2")
 	dataset = utils.LoadDataset(args, model_id)
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
@@ -26,13 +27,15 @@ def main(args):
 
 	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
 
+	print("3")
 	#Instantiate the Early-exit DNN model.
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
 		args.exit_type, device, args.distribution)
 	#Load the trained early-exit DNN model.
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-
+	print("4")
+	sys.exit()
 	# Sets the initial temperature.
 	temp_initial = np.ones(args.n_branches + 1)
 
