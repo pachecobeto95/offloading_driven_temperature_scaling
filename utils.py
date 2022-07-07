@@ -91,9 +91,14 @@ class LoadDataset():
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
 
+def eval_ee_dnn_inference(test_loader, ee_model, n_branches, temp_initial, device, data_path=""):
 
+	if ():
+	else:
+
+"""
 def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
-	"""
+	
 	This function gathers the processing time to run up to each block layer.
 	Then, this function repeats this procedure for other inputs on test sets.
 	Finally, we compute the average processing time.
@@ -105,8 +110,7 @@ def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
 
 	Outputs:
 	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
-	"""
-
+	
 	inf_time_list, conf_list, prediction_list = [], [], []
 	exit_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
 
@@ -142,3 +146,4 @@ def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
 	prediction_dict = dict(zip(exit_list, prediction_list))
 
 	return avg_inference_time_dict, conf_dict, prediction_dict	
+"""	
