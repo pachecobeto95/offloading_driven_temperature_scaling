@@ -31,19 +31,12 @@ def main(args):
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
-	#Sets the initial temperature.
-	temp_list = np.ones(args.n_branches + 1)
+	# Sets the initial temperature.
+	temp_initial = np.ones(args.n_branches + 1)
 
-	#The next block runs the offloading-drive Temperature Scaling for n_epochs.
-	for epoch in range(args.n_epochs):
-
-		#The next line evaluates the early-exit DNN.
-		inference_times, confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, n_branches, temp_list, device)
-
-		#Run the Stochastic Optimization Method to seach the Offloading-drive Temperature Scaling.
-		#Simultaneous perturbation stochastic approximation (SPSA)
-		#temp_list = utils.
-
+	# Obtain the confidences and predictions running an early-exit DNN inference.
+	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, n_branches, device)
+	sys.exit()
 	print("Success")
 
 

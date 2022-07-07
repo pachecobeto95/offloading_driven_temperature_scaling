@@ -91,10 +91,59 @@ class LoadDataset():
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
 
-def eval_ee_dnn_inference(test_loader, ee_model, n_branches, temp_initial, device, data_path=""):
+def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path=""):
 
-	if ():
+	# Checks if data_path exists
+	if (os.path.exists(data_path)):
+		#If so, read the confidences and predictions in the file given by the data_path.
+		confs, predictions = get_confs_predictions(data_path)
+
 	else:
+		#Otherwise, we run an early-exit dnn to gather confidences and predictions.
+		confs, predictions = run_ee_dnn_inference(test_loader, model, n_branches, device)
+
+	return confs, predictions
+
+def get_confs_predictions(data_path):
+	print("hello, world.")
+	
+def run_ee_dnn_inference(test_loader, model, n_branches, device):
+	"""
+	This function gathers the processing time to run up to each block layer.
+	Then, this function repeats this procedure for other inputs on test sets.
+	Finally, we compute the average processing time.
+
+	Inputs:
+	test_loader -> contains the DataLoader of the test set.
+	model -> early-exit DNN model.
+	device -> device CPU or GPU that will run the EE-DNN model.
+
+	Outputs:
+	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
+	"""
+
+	conf_list, prediction_list = [], []
+	exit_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
+
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			confs, predictions = model.evaluating_prediction(data)
+			conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
+
+	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
+
+	conf_dict = dict(zip(exit_list, conf_list))
+	prediction_dict = dict(zip(exit_list, prediction_list))
+
+	return conf_dict, prediction_dict
+
+
 
 """
 def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
