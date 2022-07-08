@@ -40,7 +40,7 @@ def main(args):
 	temp_initial = np.ones(args.n_branches + 1)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference.
-	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, n_branches, device)
+	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
 	sys.exit()
 	print("Success")
 
