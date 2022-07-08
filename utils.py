@@ -96,13 +96,13 @@ def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path, rea
 	# Checks if data_path exists
 	if (os.path.exists(data_path) and read_inf_data):
 		#If so, read the confidences and predictions in the file given by the data_path.
-		confs, predictions = get_confs_predictions(data_path, n_branches)
+		predictions = get_confs_predictions(data_path, n_branches)
 
 	else:
 		#Otherwise, we run an early-exit dnn to gather confidences and predictions.
-		confs, predictions = run_ee_dnn_inference(test_loader, model, n_branches, device)
+		predictions = run_ee_dnn_inference(test_loader, model, n_branches, device)
 
-	return confs, predictions
+	return predictions
 
 def get_confs_predictions(data_path, n_branches):
 	
