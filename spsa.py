@@ -167,6 +167,8 @@ class SPSA (object):
 		theta = theta_0
 		delta = Bernoulli(dim=self.dim)
 
+		print("Here")
+
 		loss_old = self.function(theta, *(args) )
 
 
