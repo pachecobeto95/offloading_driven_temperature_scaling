@@ -18,6 +18,7 @@ batch_size_test = 1
 pretrained = True
 n_branches = 5
 n_epochs = 1000
+read_inf_data = True
 
 # Parameters of Data Augmentation
 

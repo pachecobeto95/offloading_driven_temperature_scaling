@@ -91,12 +91,12 @@ class LoadDataset():
 		train_loader, val_loader, test_loader = func_name(dataset_path, idx_path)
 		return train_loader, val_loader, test_loader
 
-def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path=""):
+def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path, read_inf_data):
 
 	# Checks if data_path exists
-	if (os.path.exists(data_path)):
+	if (os.path.exists(data_path) and read_inf_data):
 		#If so, read the confidences and predictions in the file given by the data_path.
-		confs, predictions = get_confs_predictions(data_path)
+		confs, predictions = get_confs_predictions(data_path, n_branches)
 
 	else:
 		#Otherwise, we run an early-exit dnn to gather confidences and predictions.
@@ -104,8 +104,25 @@ def eval_ee_dnn_inference(test_loader, model, n_branches, device, data_path=""):
 
 	return confs, predictions
 
-def get_confs_predictions(data_path):
-	print("hello, world.")
+def get_confs_predictions(data_path, n_branches):
+	
+	# Reads .csv file and returns a DataFrame. 
+	df = pd.read_csv(data_path)
+
+	# Create a list containing the columns of the dataframe. 
+	inf_metric_list = [["conf_branch_%s"%(i), "correct_branch_%s"%(i)] for i in range(n_branches+1)]
+	confs_list, corrects_list = zip(*inf_metric_list)
+	confs_list, corrects_list = list(confs_list), list(corrects_list)
+
+	# Extract the required column
+	confs_dict = df[confs_list]
+	corrects_dict = df[corrects_list]
+
+	confs_dict = dict(zip(confs_list, confs_dict.values.T.tolist()))
+	corrects_dict = dict(zip(corrects_list, corrects_dict.values.T.tolist()))
+
+	# Returns confidences and predictions into a dict.
+	return confs_dict, corrects_dict
 
 def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	"""
@@ -128,7 +145,6 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
-			print(i)
 
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
