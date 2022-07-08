@@ -35,10 +35,12 @@ def main(args):
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
-	# Obtain the confidences and predictions running an early-exit DNN inference.
-	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
+	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
+	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 	
-	print("Success")
+	theta_opt_acc, loss_opt_acc, losses_acc, n_iter_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, 
+		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+
 	sys.exit()
 
 
@@ -92,13 +94,26 @@ if (__name__ == "__main__"):
 	parser.add_argument('--n_branches', type=int, default=config.n_branches, 
 		help='Number of side branches. Default: %s'%(config.n_branches))
 
-	parser.add_argument('--n_epochs', type=int, default=config.n_epochs, 
-		help='Number of epochs. Default: %s'%(config.n_epochs))
+	parser.add_argument('--max_iter', type=int, default=config.max_iter, 
+		help='Number of epochs. Default: %s'%(config.max_iter))
 
 	parser.add_argument('--read_inf_data', type=bool, default=config.read_inf_data, 
 		help='Do you read inference data. Default: %s'%(config.read_inf_data))
 
+	parser.add_argument('--a0', type=int, default=config.a0, 
+		help='a0. Default: %s'%(config.a0))
 
+	parser.add_argument('--c', type=int, default=config.c, 
+		help='c. Default: %s'%(config.c))
+
+	parser.add_argument('--alpha', type=int, default=config.alpha, 
+		help='alpha. Default: %s'%(config.alpha))
+
+	parser.add_argument('--gamma', type=int, default=config.gamma, 
+		help='gamma. Default: %s'%(config.gamma))
+
+	parser.add_argument('--threshold', type=float, default=config.threshold, 
+		help="Threshold that decides if the prediction if confidence enough. Default: %s"%(config.threshold))	
 
 	args = parser.parse_args()
 

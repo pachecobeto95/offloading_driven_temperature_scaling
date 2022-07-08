@@ -1,7 +1,7 @@
 from itertools import tee, islice
 import random, sys
 import numpy as np
-
+from utils import accuracy
 
 class Bernoulli(object):
 	'''
@@ -24,19 +24,23 @@ class Bernoulli(object):
 
 class SPSA (object):
 
-	def __init__(self, function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, max_bounds, 
+	def __init__(self, model, function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, 
 		max_patience=20, function_tol=None, param_tol=None, ens_size=2, epsilon=1e-4):
+
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
 
-		#function - a objective function of theta that returns a scalar
-		#a0 - a parameter to create ak
-		#A - other parameter to create ak
-		#c - a parameter to create ck
-		#delta - a function of no parameters which creates the delta vector
-		#min_bounds -  A vector with minimum bounds for parameters theta
-		#max_bounds -  A vector with maximum bounds for parameters theta
-		#ens_size - Number of computations to approximate the gradient
+		# function - a objective function of theta that returns a scalar
+		# a0 - a parameter to create ak
+		# A - other parameter to create ak
+		# c - a parameter to create ck
+		# delta - a function of no parameters which creates the delta vector
+		# min_bounds -  A vector with minimum bounds for parameters theta
+		# ens_size - Number of computations to approximate the gradient
+		# function_tol - this parameter specifies a threshold the function can shifts after theta modifications.
+		# param_tol - this parameter specifies a threshold the parameters can shifts after an update.
+		# epsilon - threshold to detect convergence
 
+		self.model = model
 		self.function = function
 		self.max_iter = max_iter
 		self.dim = dim
@@ -46,7 +50,6 @@ class SPSA (object):
 		self.gamma = gamma
 		self.c = c
 		self.min_bounds = min_bounds
-		self.max_bounds = max_bounds
 		self.ens_size = ens_size
 		self.function_tol = function_tol
 		self.param_tol = param_tol
@@ -81,7 +84,7 @@ class SPSA (object):
 			
 			#This block forces the theta parameters after stochastic perturbations to be inside the limits 
 			#defined by max_bounds and min_bounds.
-			theta_plus = np.minimum(theta_plus, self.max_bounds)
+			#theta_plus = np.minimum(theta_plus, self.max_bounds)
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
 
 			y_plus = self.function(theta_plus)
@@ -94,7 +97,9 @@ class SPSA (object):
 		return ghat
 
 	def check_boundaries(self, theta):
-		theta = np.minimum(theta, self.max_bounds)
+		""" This method checks whether the current theta is inside the boundaries
+			In this case, we check only the min_bounds"""
+
 		theta = np.maximum(theta, self.min_bounds)
 		return theta
 
@@ -136,6 +141,14 @@ class SPSA (object):
 
 
 	def check_param_tolerance(self, loss_new, loss_old, theta, theta_saved):
+		"""
+		This method rejects an iteration if a theta update results in a shifts too much the objective function.
+		This procedure aims to decrease slowly to avoid deconvergence.
+
+		Outputs:
+			theta: this is the current parameter
+			reject_iter: this output is a bool that denotes if we must reject the iteration
+		"""
 
 		reject_iter = False
 
@@ -148,14 +161,15 @@ class SPSA (object):
 
 		return theta, loss_old, reject_iter
 
-	def min(self, theta_0, report_interval=100):
+	def min(self, theta_0, args=(), report_interval=100):
 
 		n_iter, patience = 0, 0
 		losses = []
 		theta = theta_0
 		delta = Bernoulli(dim=self.dim)
 
-		loss_old = self.function(theta)
+		loss_old = self.function(theta, *(args) )
+
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -175,22 +189,27 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
-			loss = self.function(theta)
+			loss = self.function(theta, *(args) )
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
 
-            # Function tolerance: 
-            # You can ignore theta values that result in large shifts in the function value.
-            # This procedure aims to decrease slowly to avoid deconvergence.
-
+			# Function tolerance: 
+			# You can ignore theta values that result in large shifts in the function value.
+			# This procedure aims to decrease slowly to avoid deconvergence.
 			theta, loss_old, reject_iter = self.check_function_tolerance(loss, loss_old, theta, theta_saved)
-			
+
+			# Parameter tolerance: 
+			# You can ignore iteration if a theta update results in a shifts too much the objective function.
+			# This procedure aims to decrease slowly to avoid deconvergence.			
 			theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
 
 			patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
 			if (not reject_iter): 
 				n_iter += 1
+
+			print("Success!!!")
+			sys.exit()
 
 			# Be friendly to the user, tell him/her how it's going on...
 			if(n_iter%report_interval == 0):
@@ -241,6 +260,44 @@ class SPSA (object):
 def objective_function(x):
 	return x[0]**2 + x[1]**2
 
+def accuracy_edge(temp_list, df, threshold, n_branches):
+
+	"""
+	This function computes the accuracy on the edge
+
+	Inputs:
+		temp_list:  temperature vector
+		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
+		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
+					side branches at the edge device.
+		n_branches: number of side branches that is placed at the edge device.
+
+	Outputs:
+		acc_edge: is the accuracy obtained by the side branches at the edge device.
+	"""
+	
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	n_samples = len(df)
+	remaining_data = df
+
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
+
+		if (i == config.max_exits):
+			early_exit_samples = np.ones(current_n_samples, dtype=bool)
+		else:
+			confs = remaining_data["conf_branch_%s"%(i+1)]
+			calib_confs = confs/temp_list[i]
+			early_exit_samples = calib_confs >= threshold
+
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	acc_edge = sum(correct_list)/sum(numexits)
+
+	return - acc_edge
 
 
 def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamma):
@@ -250,23 +307,21 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, max_bounds)
 	# Run SPSA to minimize the objective function
-	theta, loss, losses, n_iter = optim.min(theta_initial)
+	theta_opt, loss_opt, losses, n_iter = optim.min(theta_initial)
 
-	#return theta_opt, loss_opt
+	return theta_opt, loss_opt
 
+def run_SPSA_accuracy(model, df_preds, threshold, max_iter, dim, a0, c, alpha, gamma):
 
-if (__name__ == "__main__"):
-    
-	r_min, r_max = -5, 5
-	dim = 2
-	max_iter = 500000
-	a0 = 1
-	alpha = 0.602
-	c = 1
-	gamma = 0.101
-	f = objective_function
+	theta_initial = np.ones(dim)
 
-	run_spsa(objective_function, max_iter, dim, r_min, r_max, a0, c, alpha, gamma)
+	min_bounds = np.zeros(dim)
 
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(model, accuracy_edge, max_iter, dim, a0, c, alpha, gamma, min_bounds)
 
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt, losses, n_iter = optim.min(theta_initial, args=(df_preds, threshold, dim))
+
+	return theta_opt, loss_opt
 

@@ -17,11 +17,15 @@ batch_size_train = 256
 batch_size_test = 1
 pretrained = True
 n_branches = 5
-n_epochs = 1000
-read_inf_data = True
+max_iter = 500000
+read_inf_data = False
+a0 = 1
+c = 1
+alpha = 0.602
+gamma = 0.101
+threshold = 0.8
 
 # Parameters of Data Augmentation
-
 #To normalize the input images data, according to ImageNet dataset.
 mean = [0.457342265910642, 0.4387686270106377, 0.4073427106250871]
 std =  [0.26753769276329037, 0.2638145880487105, 0.2776826934044154]

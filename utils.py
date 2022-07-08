@@ -110,19 +110,16 @@ def get_confs_predictions(data_path, n_branches):
 	df = pd.read_csv(data_path)
 
 	# Create a list containing the columns of the dataframe. 
-	inf_metric_list = [["conf_branch_%s"%(i), "correct_branch_%s"%(i)] for i in range(1, n_branches+1+1)]
-	confs_list, corrects_list = zip(*inf_metric_list)
-	confs_list, corrects_list = list(confs_list), list(corrects_list)
-
+	conf_columns_list = ["conf_branch_%s"%(i) for i in range(1, n_branches+1+1)]
+	correct_columns_list = ["correct_branch_%s"%(i)  for i in range(1, n_branches+1+1)]
+	
+	data_column_list = conf_columns_list + correct_columns_list
+	
 	# Extract the required column
-	confs_dict = df[confs_list]
-	corrects_dict = df[corrects_list]
+	df_data = df[data_column_list]
 
-	confs_dict = dict(zip(confs_list, confs_dict.values.T.tolist()))
-	corrects_dict = dict(zip(corrects_list, corrects_dict.values.T.tolist()))
-
-	# Returns confidences and predictions into a dict.
-	return confs_dict, corrects_dict
+	# Returns confidences and predictions into a DataFrame.
+	return df_data
 
 def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	"""
@@ -139,9 +136,11 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
 	"""
 
-	conf_list, prediction_list = [], []
-	exit_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
-
+	n_exits = n_branches + 1
+	conf_list, correct_list = [], []
+	conf_columns_list = ["conf_branch_%s"%(i) for i in range(1, n_exits+1)]
+	correct_columns_list = ["correct_branch_%s"%(i)  for i in range(1, n_branches+1+1)]
+	
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
@@ -151,16 +150,23 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			confs, predictions = model.evaluating_prediction(data)
-			conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
+			
+			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
-	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
-
-	conf_dict = dict(zip(exit_list, conf_list))
-	prediction_dict = dict(zip(exit_list, prediction_list))
-
-	return conf_dict, prediction_dict
+			conf_list.append(confs)
 
 
+	conf_list, correct_list = np.array(conf_list).T, np.array(correct_list).T
+
+	conf_dict = dict(zip(conf_columns_list, conf_list))
+	prediction_dict = dict(zip(correct_columns_list, prediction_list))
+
+	df_confs, df_corrects = pd.DataFrame(conf_dict), pd.DataFrame(prediction_dict)
+
+	df_data = pd.concat([a, b], axis=1)
+
+	# Returns confidences and predictions into a DataFrame.
+	return df_data
 
 """
 def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
