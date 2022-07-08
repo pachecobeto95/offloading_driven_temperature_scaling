@@ -14,14 +14,12 @@ def main(args):
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
-	print("1")
 	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
 		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
 	inference_data_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
 		"no_calib_exp_data_%s.csv"%(model_id))
 
-	print("2")
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
@@ -30,7 +28,6 @@ def main(args):
 
 	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
 
-	print("3")
 	#Instantiate the Early-exit DNN model.
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
 		args.exit_type, device, args.distribution)
@@ -38,8 +35,6 @@ def main(args):
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
-	print("4")
-	sys.exit()
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 	
