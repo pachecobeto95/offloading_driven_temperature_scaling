@@ -37,8 +37,9 @@ def main(args):
 
 	# Obtain the confidences and predictions running an early-exit DNN inference.
 	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
-	sys.exit()
+	
 	print("Success")
+	sys.exit()
 
 
 if (__name__ == "__main__"):
