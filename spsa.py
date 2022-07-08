@@ -1,6 +1,7 @@
 from itertools import tee, islice
 import random, sys
 import numpy as np
+import config
 
 class Bernoulli(object):
 	'''
