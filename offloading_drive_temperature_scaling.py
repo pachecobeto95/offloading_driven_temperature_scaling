@@ -35,7 +35,7 @@ def main(args):
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 	print("4")
-	sys.exit()
+
 	# Sets the initial temperature.
 	temp_initial = np.ones(args.n_branches + 1)
 
