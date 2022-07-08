@@ -20,10 +20,6 @@ def main(args):
 	inference_data_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
 		"no_calib_exp_data_%s.csv"%(model_id))
 
-	df = pd.read_csv(inference_data_path)
-	print(df.columns)
-	sys.exit()
-
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
