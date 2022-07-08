@@ -24,7 +24,7 @@ class Bernoulli(object):
 
 class SPSA (object):
 
-	def __init__(self, model, function, max_iter, dim, a0, c, alpha, gamma,  min_bounds, 
+	def __init__(self, function, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma,  min_bounds, args=(), 
 		max_patience=20, function_tol=None, param_tol=None, ens_size=2, epsilon=1e-4):
 
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
@@ -40,8 +40,9 @@ class SPSA (object):
 		# param_tol - this parameter specifies a threshold the parameters can shifts after an update.
 		# epsilon - threshold to detect convergence
 
-		self.model = model
 		self.function = function
+		self.theta_initial = theta_initial
+		self.threshold = threshold
 		self.max_iter = max_iter
 		self.dim = dim
 		self.a = a0
@@ -50,6 +51,7 @@ class SPSA (object):
 		self.gamma = gamma
 		self.c = c
 		self.min_bounds = min_bounds
+		self.args = args
 		self.ens_size = ens_size
 		self.function_tol = function_tol
 		self.param_tol = param_tol
@@ -87,8 +89,8 @@ class SPSA (object):
 			#theta_plus = np.minimum(theta_plus, self.max_bounds)
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
 
-			y_plus = self.function(theta_plus)
-			y_minus = self.function(theta_minus)
+			y_plus = self.compute_loss(theta_plus)
+			y_minus = self.compute_loss(theta_minus)
 
 			ghat += (y_plus-y_minus)/(2*ck*delta_k)
 		
@@ -161,7 +163,10 @@ class SPSA (object):
 
 		return theta, loss_old, reject_iter
 
-	def min(self, theta_0, args=(), report_interval=100):
+	def compute_loss(self, theta):
+		return self.loss(theta, self.threshold, self.dim, *(self.args) )
+
+	def min(self, report_interval=100):
 
 		n_iter, patience = 0, 0
 		losses = []
@@ -170,7 +175,7 @@ class SPSA (object):
 
 		print("Here")
 
-		loss_old = self.function(theta, *(args) )
+		loss_old = self.compute_loss(theta)
 
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
@@ -191,7 +196,7 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
-			loss = self.function(theta, *(args) )
+			loss = self.compute_loss(theta)
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
 
@@ -262,7 +267,8 @@ class SPSA (object):
 def objective_function(x):
 	return x[0]**2 + x[1]**2
 
-def accuracy_edge(temp_list, df, threshold, n_branches):
+
+def accuracy_edge(temp_list, threshold, n_branches, df):
 
 	"""
 	This function computes the accuracy on the edge
@@ -320,10 +326,10 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, dim, a0, c, alpha, g
 	min_bounds = np.zeros(dim)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(model, accuracy_edge, max_iter, dim, a0, c, alpha, gamma, min_bounds)
+	optim = SPSA(accuracy_edge, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma, min_bounds, theta_initial, args=(df_preds))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses, n_iter = optim.min(theta_initial, args=(df_preds, threshold, dim))
+	theta_opt, loss_opt, losses, n_iter = optim.min()
 
 	return theta_opt, loss_opt
 
