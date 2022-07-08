@@ -24,6 +24,7 @@ c = 1
 alpha = 0.602
 gamma = 0.101
 threshold = 0.8
+max_exits = 6
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.
