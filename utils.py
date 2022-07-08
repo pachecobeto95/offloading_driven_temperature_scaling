@@ -110,7 +110,7 @@ def get_confs_predictions(data_path, n_branches):
 	df = pd.read_csv(data_path)
 
 	# Create a list containing the columns of the dataframe. 
-	inf_metric_list = [["conf_branch_%s"%(i), "correct_branch_%s"%(i)] for i in range(n_branches+1)]
+	inf_metric_list = [["conf_branch_%s"%(i), "correct_branch_%s"%(i)] for i in range(1, n_branches+1+1)]
 	confs_list, corrects_list = zip(*inf_metric_list)
 	confs_list, corrects_list = list(confs_list), list(corrects_list)
 
