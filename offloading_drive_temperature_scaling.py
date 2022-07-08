@@ -39,11 +39,8 @@ def main(args):
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
-	# Sets the initial temperature.
-	temp_initial = np.ones(args.n_branches + 1)
-
 	# Obtain the confidences and predictions running an early-exit DNN inference.
-	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path)
+	confs, predictions = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 	sys.exit()
 	print("Success")
 
@@ -100,6 +97,10 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--n_epochs', type=int, default=config.n_epochs, 
 		help='Number of epochs. Default: %s'%(config.n_epochs))
+
+	parser.add_argument('--read_inf_data', type=bool, default=config.read_inf_data, 
+		help='Do you read inference data. Default: %s'%(config.read_inf_data))
+
 
 
 	args = parser.parse_args()
