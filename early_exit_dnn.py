@@ -600,7 +600,7 @@ class Early_Exit_DNN(nn.Module):
 
       output_branch = exitBlock(x)
       conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
-      conf_list.append(conf_branch.item()), prediction_list.append(prediction.item())
+      conf_list.append(conf_branch.item()), prediction_list.append(prediction)
 
     x = self.stages[-1](x)
     
@@ -612,7 +612,7 @@ class Early_Exit_DNN(nn.Module):
     output = self.classifier(x)
 
     conf, infered_class = torch.max(self.softmax(output), 1)
-    conf_list.append(conf_branch.item()), prediction_list.append(prediction.item())
+    conf_list.append(conf_branch.item()), prediction_list.append(prediction)
     
     return conf_list, prediction_list
 
