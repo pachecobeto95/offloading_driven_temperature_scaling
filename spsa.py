@@ -326,7 +326,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, dim, a0, c, alpha, g
 	min_bounds = np.zeros(dim)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma, min_bounds, theta_initial, args=(df_preds))
+	optim = SPSA(accuracy_edge, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma, min_bounds, args=(df_preds))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
