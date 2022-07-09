@@ -164,8 +164,8 @@ class SPSA (object):
 		return theta, loss_old, reject_iter
 
 	def compute_loss(self, theta):
-		print(self.args)
-		return self.function(theta, self.threshold, self.dim, *(self.args) )
+		print(list(self.args.columns))
+		return self.function(theta, self.threshold, self.dim, self.args )
 
 	def min(self, report_interval=100):
 
