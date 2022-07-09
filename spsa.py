@@ -170,7 +170,7 @@ class SPSA (object):
 
 		n_iter, patience = 0, 0
 		losses = []
-		theta = theta_0
+		theta = self.theta_initial
 		delta = Bernoulli(dim=self.dim)
 
 		print("Here")
