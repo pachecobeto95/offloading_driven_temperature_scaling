@@ -111,8 +111,9 @@ class SPSA (object):
 		this_ak = ( theta*0 + 1 )*ak
 		theta_new = theta
 		while (not_all_pass):
-			out_of_bounds = np.where ( np.logical_or (theta_new - this_ak*ghat > self.max_bounds, 
-				theta_new - this_ak*ghat < self.min_bounds ) )[0]
+			#out_of_bounds = np.where ( np.logical_or (theta_new - this_ak*ghat > self.max_bounds, 
+			#	theta_new - this_ak*ghat < self.min_bounds ) )[0]
+			out_of_bounds = np.where (theta_new - this_ak*ghat < self.min_bounds)[0]
 			theta_new = theta - this_ak*ghat
 			if len ( out_of_bounds ) == 0:
 				theta = theta - this_ak*ghat
