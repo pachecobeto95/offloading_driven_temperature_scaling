@@ -164,8 +164,7 @@ class SPSA (object):
 		return theta, loss_old, reject_iter
 
 	def compute_loss(self, theta):
-		print(len(self.args.columns))
-		return self.function(theta, self.threshold, self.dim, *self.args )
+		return self.function(theta, self.dim, self.threshold, *(self.args) )
 
 	def min(self, report_interval=100):
 
@@ -269,7 +268,7 @@ def objective_function(x):
 	return x[0]**2 + x[1]**2
 
 
-def accuracy_edge(temp_list, threshold, n_branches, df):
+def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	"""
 	This function computes the accuracy on the edge
