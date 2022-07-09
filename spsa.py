@@ -24,7 +24,7 @@ class Bernoulli(object):
 
 class SPSA (object):
 
-	def __init__(self, function, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma,  min_bounds, args=(), 
+	def __init__(self, function, theta_initial, max_iter, dim, a0, c, alpha, gamma,  min_bounds, args=(), 
 		max_patience=20, function_tol=None, param_tol=None, ens_size=2, epsilon=1e-4):
 
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
@@ -42,7 +42,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.threshold = threshold
+		#self.threshold = threshold
 		self.max_iter = max_iter
 		self.dim = dim
 		self.a = a0
@@ -164,7 +164,7 @@ class SPSA (object):
 		return theta, loss_old, reject_iter
 
 	def compute_loss(self, theta):
-		return self.function(theta, self.dim, self.threshold, *(self.args) )
+		return self.function(theta, self.dim, *(self.args) )
 
 	def min(self, report_interval=100):
 
@@ -326,7 +326,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, dim, a0, c, alpha, g
 	min_bounds = np.zeros(dim)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, threshold, max_iter, dim, a0, c, alpha, gamma, min_bounds, args=(df_preds))
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, dim, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
