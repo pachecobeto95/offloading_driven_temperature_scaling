@@ -144,7 +144,7 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
-
+			print(i)
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
 
