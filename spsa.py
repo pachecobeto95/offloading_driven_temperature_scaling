@@ -291,7 +291,7 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, device
 	return avg_inf_time
 """
 
-def measure_inference_time(temp_list, n_branches, threshold, test_loader, device):
+def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
 
 	n_exits = n_branches + 1
 
@@ -386,7 +386,7 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, test_loader, device))
+		args=(threshold, test_loader, model, device))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
