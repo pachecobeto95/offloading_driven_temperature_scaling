@@ -176,7 +176,6 @@ class SPSA (object):
 
 		loss_old = self.compute_loss(theta)
 		print("Here")
-		sys.exit()
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
