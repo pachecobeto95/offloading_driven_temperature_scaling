@@ -32,9 +32,10 @@ def main(args):
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
 		args.exit_type, device, args.distribution)
 	#Load the trained early-exit DNN model.
+	print("1")
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-
+	print("2")
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	#df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 	
