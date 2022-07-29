@@ -1,5 +1,5 @@
 from itertools import tee, islice
-import random, sys
+import random, sys, torch
 import numpy as np
 import config
 
