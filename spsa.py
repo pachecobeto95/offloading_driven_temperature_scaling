@@ -385,7 +385,8 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 	min_bounds = np.zeros(n_branches)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, test_loader, device))
+	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, test_loader, device))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
