@@ -577,16 +577,6 @@ class Early_Exit_DNN(nn.Module):
     self.set_device()
     self.softmax = nn.Softmax(dim=1)
 
-
-  def get_processing_time(self, x, block):
-    """
-    This method gets the processing time of a provided block layer
-    """
-    start = time.time()
-    x = block(x)
-    processing_time = time.time() - start
-    return x, processing_time
-  
   def evaluating_prediction(self, x):
 
     conf_list, prediction_list = [], []
@@ -614,7 +604,7 @@ class Early_Exit_DNN(nn.Module):
     return conf_list, prediction_list
 
 
-  def update_logits(logits, temp_list, branch):
+  def update_logits(self, logits, temp_list, branch):
     return torch.div(logits, temp_list[branch])
 
   def run_measuring_inference_time_branch(self, x, temp_list):
