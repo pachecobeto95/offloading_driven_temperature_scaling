@@ -381,6 +381,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 	return theta_opt, loss_opt
 
 def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
+	print("START")
 	theta_initial = np.ones(n_branches)
 	min_bounds = np.zeros(n_branches)
 
