@@ -176,6 +176,7 @@ class SPSA (object):
 
 		loss_old = self.compute_loss(theta)
 		print("Here")
+		sys.exit()
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -388,6 +389,8 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
 		args=(threshold, test_loader, model, device))
+
+	print("3")
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
