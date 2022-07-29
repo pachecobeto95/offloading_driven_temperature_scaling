@@ -75,7 +75,7 @@ class SPSA (object):
 
 		ghat = 0
 
-		for i in range(self.ens_size):
+		for i in range(1):
 			
 			# Compute the Delta vector
 			delta_k = delta()
@@ -88,10 +88,11 @@ class SPSA (object):
 			#defined by max_bounds and min_bounds.
 			#theta_plus = np.minimum(theta_plus, self.max_bounds)
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
-
+			print("kkkkkkkkkkkkkkkkkkkkkkkkk")
 			y_plus = self.compute_loss(theta_plus)
+			print("bbbbbbbbbbbbbbbbbbbbbbbbbbbb")
 			y_minus = self.compute_loss(theta_minus)
-
+			print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 			ghat += (y_plus-y_minus)/(2*ck*delta_k)
 		
 		ghat = ghat/float(self.ens_size)
@@ -195,7 +196,9 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
+			print("UHAUHAHUAUHAHUUHAHU")
 			loss = self.compute_loss(theta)
+			print("HEEHEHEEH")
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
 
