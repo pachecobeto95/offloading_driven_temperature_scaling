@@ -34,13 +34,15 @@ def main(args):
 	#Load the trained early-exit DNN model.
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-	print("success")
-	sys.exit()
+
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
+	#df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 	
-	theta_opt_acc, loss_opt_acc, losses_acc, n_iter_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, 
-		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
+	#	args.c, args.alpha, args.gamma)
+
+	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(ee_model, test_loader, args.threshold, args.max_iter, args.n_branches, 
+		args.a0, args.c, args.alpha, args.gamma, device)
 
 	sys.exit()
 

@@ -174,10 +174,8 @@ class SPSA (object):
 		theta = self.theta_initial
 		delta = Bernoulli(dim=self.dim)
 
-		print("Here")
-
 		loss_old = self.compute_loss(theta)
-
+		print("Here")
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -268,6 +266,54 @@ class SPSA (object):
 def objective_function(x):
 	return x[0]**2 + x[1]**2
 
+"""
+def measure_inference_time(temp_list, n_branches, threshold, test_loader, device):
+
+	n_exits = n_branches + 1
+
+	inf_time_list = []
+	
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			inf_time = model.run_measuring_inference_time(data, temp_list)
+			inf_time_list.append(inf_time)
+
+	# The next line computes the average inference time
+	avg_inf_time = np.mean(inf_time_list, axis=0)
+
+	# Returns the average inference time
+	return avg_inf_time
+"""
+
+def measure_inference_time(temp_list, n_branches, threshold, test_loader, device):
+
+	n_exits = n_branches + 1
+
+	inf_time_list = []
+	
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			inf_time = model.measuring_inference_time(data, temp_list, threshold)
+			inf_time_list.append(inf_time)
+
+	# The next line computes the average inference time
+	avg_inf_time = np.mean(inf_time_list)
+
+	# Returns the average inference time
+	return avg_inf_time
+
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 
@@ -320,17 +366,29 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 
 	return theta_opt, loss_opt
 
-def run_SPSA_accuracy(model, df_preds, threshold, max_iter, dim, a0, c, alpha, gamma):
+def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
-	theta_initial = np.ones(dim)
+	theta_initial = np.ones(n_branches)
 
-	min_bounds = np.zeros(dim)
+	min_bounds = np.zeros(n_branches)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, max_iter, dim, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
 
 	return theta_opt, loss_opt
 
+def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
+	theta_initial = np.ones(n_branches)
+	min_bounds = np.zeros(n_branches)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, test_loader, device))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt, losses, n_iter = optim.min()
+
+	return theta_opt, loss_opt
+	

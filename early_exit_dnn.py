@@ -89,9 +89,6 @@ class Early_Exit_DNN(nn.Module):
     self.exit_type = exit_type
     self.distribution = distribution
     self.device = device
-    self.temperature_overall = None
-    self.temperature_branches = None
-    self.temperature_all_samples = None
 
 
     build_early_exit_dnn = self.select_dnn_architecture_model()
@@ -617,7 +614,10 @@ class Early_Exit_DNN(nn.Module):
     return conf_list, prediction_list
 
 
-  def measuring_inference_time_block_wise(self, x):
+  def update_logits(logits, temp_list, branch):
+    return torch.div(logits, temp_list[branch])
+
+  def run_measuring_inference_time_branch(self, x, temp_list):
     """
     This method measures the processing time to run up to each block layer.
     
@@ -627,44 +627,67 @@ class Early_Exit_DNN(nn.Module):
     inf_time_dict: dictionary that contains the required processing time to run up to each block layer. 
     """
 
-    inf_time_dict = {}
-    inf_time, cont_block = 0, 0
+    inf_time_list = []
 
     for i, exitBlock in enumerate(self.exits):
+      #
+      start_time = time.time()
+      x = self.stages[i](x)
 
-      for block in self.stages[i]:         
-        #Obtains the processing time of DNN backbone's block layers
-        x, processing_time = self.get_processing_time(x, block)
-        inf_time += processing_time
-        inf_time_dict["block_%s"%(cont_block)] = inf_time
-        cont_block += 1
+      output_branch = exitBlock(x)
+      output_branch = self.update_logits(output_branch, temp_list, i)
 
-      #Obtains the processing time of each exits.
-      output_branch, processing_time_branch = self.get_processing_time(x, exitBlock)
-      inf_time += processing_time_branch
-      inf_time_dict["exit_%s"%(i)] = inf_time
+      conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
 
+      inf_time_branch = time.time() - start_time
+
+      inf_time_list.append(inf_time_branch)
+
+    start_time = time.time()
+    x = self.stages[-1](x)
     
-    #Obtains the processing time of the last stage of DNN backbone.
-    for block in self.stages[-1]:
-      #Obtains the processing time of DNN backbone's block layers
-      x, processing_time = self.get_processing_time(x, block)
-      inf_time += processing_time
-      inf_time_dict["block_%s"%(cont_block)] = inf_time
-      cont_block += 1
-
     if((self.model_name == "mobilenet") and (not self.pretrained)):
       pass
     else:
       x = torch.flatten(x, 1)
 
-    output, processing_time = self.get_processing_time(x, self.classifier) 
-    inf_time += processing_time
-    inf_time_dict["block_%s"%(cont_block)] = inf_time
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    inf_time_main = time.time() - start_time
+    inf_time_list.append(inf_time_main)
+    
+    inf_time_list = np.cumsum(inf_time_list)
+    return inf_time_list
 
-    return inf_time_dict
+  def measuring_inference_time(self, x, temp_list, threshold):
 
+    inf_time = 0
+    start_time = time.time()
 
+    for i, exitBlock in enumerate(self.exits):
+      #
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      output_branch = self.update_logits(output_branch, temp_list, i)
+
+      conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
+
+      if (conf_branch >= threshold):
+        inf_time_branch = time.time() - start_time
+        return inf_time_branch
+
+    x = self.stages[-1](x)
+    
+    if((self.model_name == "mobilenet") and (not self.pretrained)):
+      pass
+    else:
+      x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    inf_time_main = time.time() - start_time
+    return inf_time_main
 
 
 
