@@ -39,7 +39,7 @@ def main(args):
 	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 
 	# Obtain the average inference time to process up to each side branch.
-	inference_time_branch = utils.collect_avg_inference_time_branch(test_loader, args.n_branches, args.threshold, device)
+	inference_time_branch = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, args.threshold, device)
 
 	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
 	#	args.c, args.alpha, args.gamma)
