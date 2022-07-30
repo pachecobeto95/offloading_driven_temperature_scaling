@@ -294,6 +294,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 	n_samples = len(df)
 	remaining_data = df
 
+	print(n_branches, temp_list)
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 
@@ -315,7 +316,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		avg_inference_time +=  prob*inf_time_branch[i]
 
 		remaining_data = remaining_data[~early_exit_samples]
-
+	sys.exit()
 	return avg_inference_time
 
 
