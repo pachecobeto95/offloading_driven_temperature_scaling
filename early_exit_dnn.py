@@ -607,7 +607,7 @@ class Early_Exit_DNN(nn.Module):
   def update_logits(self, logits, temp_list, branch):
     return torch.div(logits, temp_list[branch])
 
-  def run_measuring_inference_time_branch(self, x, temp_list):
+  def run_measuring_inference_time_branch(self, x):
     """
     This method measures the processing time to run up to each block layer.
     
@@ -625,7 +625,7 @@ class Early_Exit_DNN(nn.Module):
       x = self.stages[i](x)
 
       output_branch = exitBlock(x)
-      output_branch = self.update_logits(output_branch, temp_list, i)
+      #output_branch = self.update_logits(output_branch, temp_list, i)
 
       conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
 
