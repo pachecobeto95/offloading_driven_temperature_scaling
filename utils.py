@@ -168,7 +168,7 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	# Returns confidences and predictions into a DataFrame.
 	return df_data
 
-def collect_avg_inference_time_branch(test_loader, n_branches, threshold, device):
+def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device):
 
 	n_exits = n_branches + 1
 
