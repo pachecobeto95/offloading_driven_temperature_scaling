@@ -32,18 +32,23 @@ def main(args):
 	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
 		args.exit_type, device, args.distribution)
 	#Load the trained early-exit DNN model.
-	print("1")
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-	print("2")
+
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	#df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
-	
+	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
+
+	# Obtain the average inference time to process up to each side branch.
+	inference_time_branch = utils.collect_avg_inference_time_branch(test_loader, n_branches, threshold, device)
+
 	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
 	#	args.c, args.alpha, args.gamma)
 
-	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(ee_model, test_loader, args.threshold, args.max_iter, args.n_branches, 
-		args.a0, args.c, args.alpha, args.gamma, device)
+	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(ee_model, test_loader, args.threshold, args.max_iter, args.n_branches, 
+	#	args.a0, args.c, args.alpha, args.gamma, device)
+
+	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time2(df_preds, inference_time_branch, args.threshold, args.max_iter, 
+		args.n_branches, args.a0, args.c, args.alpha, args.gamma, device)
 
 	sys.exit()
 

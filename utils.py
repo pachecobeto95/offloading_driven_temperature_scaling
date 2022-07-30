@@ -168,6 +168,30 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	# Returns confidences and predictions into a DataFrame.
 	return df_data
 
+def collect_avg_inference_time_branch(test_loader, n_branches, threshold, device):
+
+	n_exits = n_branches + 1
+
+	inf_time_list = []
+	
+	model.eval()
+	with torch.no_grad():
+		for i, (data, target) in enumerate(test_loader, 1):
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+
+			# The next line gathers the dictionary of the inference time for running the current input data.
+			inf_time = model.run_measuring_inference_time_branch(data, temp_list)
+			inf_time_list.append(inf_time)
+
+	# The next line computes the average inference time
+	avg_inf_time = np.mean(inf_time_list, axis=0)
+
+	# Returns the average inference time
+	return avg_inf_time
+
+
 """
 def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
 	

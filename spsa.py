@@ -88,12 +88,12 @@ class SPSA (object):
 			#defined by max_bounds and min_bounds.
 			#theta_plus = np.minimum(theta_plus, self.max_bounds)
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
-			print("kkkkkkkkkkkkkkkkkkkkkkkkk")
+
 			y_plus = self.compute_loss(theta_plus)
-			print("bbbbbbbbbbbbbbbbbbbbbbbbbbbb")
 			y_minus = self.compute_loss(theta_minus)
-			print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+
 			ghat += (y_plus-y_minus)/(2*ck*delta_k)
+
 		
 		ghat = ghat/float(self.ens_size)
 
@@ -176,7 +176,6 @@ class SPSA (object):
 		delta = Bernoulli(dim=self.dim)
 
 		loss_old = self.compute_loss(theta)
-		print("Here")
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -196,9 +195,8 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
-			print("UHAUHAHUAUHAHUUHAHU")
 			loss = self.compute_loss(theta)
-			print("HEEHEHEEH")
+
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
 
@@ -217,13 +215,9 @@ class SPSA (object):
 			if (not reject_iter): 
 				n_iter += 1
 
-			print("Success!!!")
-			sys.exit()
-
 			# Be friendly to the user, tell him/her how it's going on...
 			if(n_iter%report_interval == 0):
 				print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
-
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
@@ -269,30 +263,7 @@ class SPSA (object):
 def objective_function(x):
 	return x[0]**2 + x[1]**2
 
-"""
-def measure_inference_time(temp_list, n_branches, threshold, test_loader, device):
 
-	n_exits = n_branches + 1
-
-	inf_time_list = []
-	
-	model.eval()
-	with torch.no_grad():
-		for i, (data, target) in enumerate(test_loader, 1):
-
-			# Convert data and target into the current device.
-			data, target = data.to(device), target.to(device)
-
-			# The next line gathers the dictionary of the inference time for running the current input data.
-			inf_time = model.run_measuring_inference_time(data, temp_list)
-			inf_time_list.append(inf_time)
-
-	# The next line computes the average inference time
-	avg_inf_time = np.mean(inf_time_list, axis=0)
-
-	# Returns the average inference time
-	return avg_inf_time
-"""
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
 
@@ -316,6 +287,34 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 
 	# Returns the average inference time
 	return avg_inf_time
+
+def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
+
+	avg_inference_time = 0
+	n_samples = len(df)
+	remaining_data = df
+
+	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
+
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
+
+		if (i == config.max_exits):
+			early_exit_samples = np.ones(current_n_samples, dtype=bool)
+		else:
+			confs = remaining_data["conf_branch_%s"%(i+1)]
+			calib_confs = confs/temp_list[i]
+			early_exit_samples = calib_confs >= threshold
+
+		numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+
+		prob = numexits/current_n_samples
+
+		avg_inference_time +=  prob*inf_time_branch[i]
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	return avg_inference_time
 
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
@@ -384,7 +383,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 	return theta_opt, loss_opt
 
 def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
-	print("START")
+
 	theta_initial = np.ones(n_branches)
 	min_bounds = np.zeros(n_branches)
 
@@ -392,10 +391,41 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
 		args=(threshold, test_loader, model, device))
 
-	print("3")
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt, losses, n_iter = optim.min()
+
+	return theta_opt, loss_opt
+
+
+def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+
+	theta_initial = np.ones(n_branches)
+	min_bounds = np.zeros(n_branches)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(compute_avg_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, df_preds, avg_inf_time))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()
 
 	return theta_opt, loss_opt
-	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
