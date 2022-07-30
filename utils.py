@@ -182,7 +182,7 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 			data, target = data.to(device), target.to(device)
 
 			# The next line gathers the dictionary of the inference time for running the current input data.
-			inf_time = model.run_measuring_inference_time_branch(data, temp_list)
+			inf_time = model.run_measuring_inference_time_branch(data)
 			inf_time_list.append(inf_time)
 
 	# The next line computes the average inference time
