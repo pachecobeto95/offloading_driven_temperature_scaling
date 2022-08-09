@@ -310,7 +310,6 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		numexits = float(sum(calib_confs >= threshold))
 
-
 		prob = numexits/current_n_samples if(current_n_samples > 0) else 0
 
 		avg_inference_time +=  prob*inf_time_branch[i]
@@ -414,22 +413,3 @@ def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, 
 	theta_opt, loss_opt, losses, n_iter = optim.min()
 
 	return theta_opt, loss_opt
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
