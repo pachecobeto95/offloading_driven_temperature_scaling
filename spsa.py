@@ -358,6 +358,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+	print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits)
 
 	return - acc_edge
