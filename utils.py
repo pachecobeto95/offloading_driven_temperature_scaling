@@ -177,7 +177,6 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
-			print(i)
 
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
