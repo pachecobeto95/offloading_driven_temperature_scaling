@@ -75,7 +75,7 @@ class SPSA (object):
 
 		ghat = 0
 
-		for i in range(1):
+		for i in range(2):
 			
 			# Compute the Delta vector
 			delta_k = delta()
@@ -173,7 +173,7 @@ class SPSA (object):
 		n_iter, patience = 0, 0
 		losses = []
 		theta = self.theta_initial
-		delta = Bernoulli(dim=self.dim)
+		delta = Bernoulli(dim=self.dim+1)
 
 		loss_old = self.compute_loss(theta)
 
