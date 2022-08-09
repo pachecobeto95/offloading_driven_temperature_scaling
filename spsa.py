@@ -294,12 +294,10 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 	n_samples = len(df)
 	remaining_data = df
 
-	print(n_branches, temp_list)
-
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 
 	for i in range(n_branches+1):
-		print(i)
+
 		current_n_samples = len(remaining_data)
 
 		if (i == config.max_exits):
@@ -309,17 +307,16 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 			calib_confs = confs/temp_list[i]
 			early_exit_samples = calib_confs >= threshold
 
-		print(sum(calib_confs >= threshold), current_n_samples)
+		#print(sum(calib_confs >= threshold), current_n_samples)
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		numexits = float(sum(calib_confs >= threshold))
 
 		prob = numexits/current_n_samples
-		print(prob)
 
 		avg_inference_time +=  prob*inf_time_branch[i]
 
 		remaining_data = remaining_data[~early_exit_samples]
-	sys.exit()
+
 	return avg_inference_time
 
 
