@@ -299,6 +299,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 
 	for i in range(n_branches+1):
+		print(i)
 		current_n_samples = len(remaining_data)
 
 		if (i == config.max_exits):
