@@ -200,7 +200,6 @@ class SPSA (object):
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
 			print(loss)
-			sys.exit()
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
