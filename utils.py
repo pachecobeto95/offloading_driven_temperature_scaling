@@ -76,7 +76,7 @@ class LoadDataset():
 		val_loader = torch.utils.data.DataLoader(val_data, batch_size=1)
 		test_loader = torch.utils.data.DataLoader(test_data, batch_size=1)
 
-		return train_loader, val_loader, val_loader
+		return train_loader, val_loader, test_loader
 
 
 
