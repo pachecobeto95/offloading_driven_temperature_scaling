@@ -81,6 +81,7 @@ class SPSA (object):
 			delta_k = delta()
 
 			#Stochastic perturbantions
+			print(theta.shape, delta_k.shape)
 			theta_plus = theta + ck * delta_k
 			theta_minus = theta - ck * delta_k
 			
