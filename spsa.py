@@ -274,7 +274,6 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
-			print(i)
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
 
