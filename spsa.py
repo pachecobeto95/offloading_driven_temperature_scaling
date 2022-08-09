@@ -221,8 +221,8 @@ class SPSA (object):
 				n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
-			if(n_iter%report_interval == 0):
-				print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
+			#if(n_iter%report_interval == 0):
+			print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
