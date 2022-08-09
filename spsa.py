@@ -310,8 +310,8 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		numexits = float(sum(calib_confs >= threshold))
 
-		print(current_n_samples)
-		prob = numexits/current_n_samples
+
+		prob = numexits/current_n_samples if(current_n_samples > 0) else 0
 
 		avg_inference_time +=  prob*inf_time_branch[i]
 
