@@ -43,6 +43,8 @@ def main(args):
 	print(inference_time_branch)
 	inf_time_measure = spsa.measure_inference_time([0.0001, 1, 1, 1, 1, 1], args.n_branches, args.threshold, test_loader, ee_model, device)
 	print(inf_time_measure)
+	y = spsa.compute_avg_inference_time([0.0001, 1, 1, 1, 1, 1], args.n_branches, args.threshold, df_preds, inference_time_branch)
+	print(y)
 	sys.exit()
 	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
 	#	args.c, args.alpha, args.gamma)
