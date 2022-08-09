@@ -173,11 +173,11 @@ class SPSA (object):
 		n_iter, patience = 0, 0
 		losses = []
 		theta = self.theta_initial
-		print(theta)
+
 		delta = Bernoulli(dim=self.dim+1)
 
 		loss_old = self.compute_loss(theta)
-		sys.exit()
+
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
@@ -186,7 +186,6 @@ class SPSA (object):
 			# Store theta at the start of the interation. We update theta later.
 			
 			theta_saved = theta
-			print(theta_saved)
 
 			#Obtains the ak, ck for the current iteration
 			ak = self.compute_ak(n_iter)
@@ -196,7 +195,7 @@ class SPSA (object):
 			ghat = self.estimate_gradient(theta, ck, delta)
 
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
-			print(theta)
+
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
 			print(loss)
@@ -306,6 +305,8 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
 	remaining_data = df
+
+	print(temp_list)
 
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
