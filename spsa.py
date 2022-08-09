@@ -325,7 +325,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits)
-	sys.exit()
+	#sys.exit()
 	return - acc_edge
 
 
