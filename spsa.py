@@ -81,7 +81,6 @@ class SPSA (object):
 			delta_k = delta()
 
 			#Stochastic perturbantions
-			print(theta.shape, delta_k.shape)
 			theta_plus = theta + ck * delta_k
 			theta_minus = theta - ck * delta_k
 			
@@ -373,9 +372,10 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 
 def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
-	theta_initial = np.ones(n_branches)
+	n_exits = n_branches + 1
+	theta_initial = np.ones(n_exits)
 
-	min_bounds = np.zeros(n_branches)
+	min_bounds = np.zeros(n_exits)
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
