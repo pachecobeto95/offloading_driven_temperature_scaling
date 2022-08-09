@@ -117,11 +117,11 @@ class SPSA (object):
 			out_of_bounds = np.where (theta_new - this_ak*ghat < self.min_bounds)[0]
 			theta_new = theta - this_ak*ghat
 			if len ( out_of_bounds ) == 0:
-				print("1")
-				print(theta)
+				#print("1")
+				#print(theta)
 				theta = theta - this_ak*ghat
-				print("2")
-				print(theta)
+				#print("2")
+				#print(theta)
 				not_all_pass = False
 			else:
 				this_ak[out_of_bounds] = this_ak[out_of_bounds]/2.
@@ -202,7 +202,6 @@ class SPSA (object):
 
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
-			print(loss)
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
@@ -310,6 +309,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 	remaining_data = df
 
+	print("Temp")
 	print(temp_list)
 
 	for i in range(n_branches):
