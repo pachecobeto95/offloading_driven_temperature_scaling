@@ -173,6 +173,7 @@ class SPSA (object):
 		n_iter, patience = 0, 0
 		losses = []
 		theta = self.theta_initial
+		print(theta)
 		delta = Bernoulli(dim=self.dim+1)
 
 		loss_old = self.compute_loss(theta)
@@ -183,7 +184,9 @@ class SPSA (object):
 		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
 
 			# Store theta at the start of the interation. We update theta later.
+			
 			theta_saved = theta
+			print(theta_saved)
 
 			#Obtains the ak, ck for the current iteration
 			ak = self.compute_ak(n_iter)
@@ -193,9 +196,11 @@ class SPSA (object):
 			ghat = self.estimate_gradient(theta, ck, delta)
 
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
-
+			print(theta)
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
+			print(loss)
+			sys.exit()
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
