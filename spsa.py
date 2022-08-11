@@ -261,6 +261,7 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
 	avg_inference_time = 0
+	s_prob = 0
 	n_samples = len(df)
 	remaining_data = df
 
@@ -284,9 +285,10 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		numexits = float(sum(calib_confs >= threshold))
 
 		prob = numexits/current_n_samples if(current_n_samples > 0) else 0
+		s_prob+=prob
 
 		avg_inference_time +=  prob*inf_time_branch[i]
-		print("Branch: %s, Prob: %s, Inf_time: %s"%(i+1, prob, prob*inf_time_branch[i]))
+		print("Branch: %s, Prob: %s, Inf_time: %s, S_prob: %s"%(i+1, prob, prob*inf_time_branch[i], s_prob))
 
 		remaining_data = remaining_data[~early_exit_samples]
 
