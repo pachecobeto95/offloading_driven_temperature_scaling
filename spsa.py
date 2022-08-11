@@ -185,7 +185,8 @@ class SPSA (object):
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
-		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		while (n_iter < self.max_iter):
 
 			# Store theta at the start of the interation. We update theta later.
 			
