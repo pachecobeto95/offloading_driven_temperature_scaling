@@ -264,6 +264,8 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 	remaining_data = df
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
+	print("Avg Time")
+	print(inf_time_branch)
 
 	for i in range(n_branches+1):
 
@@ -281,6 +283,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		numexits = float(sum(calib_confs >= threshold))
 
 		prob = numexits/current_n_samples if(current_n_samples > 0) else 0
+		print("Branch: %s, Prob: %s"%(i, prob))
 
 		avg_inference_time +=  prob*inf_time_branch[i]
 
@@ -378,7 +381,7 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
 	n_exits = n_branches + 1
-	theta_initial = [0, 0, 0, 0, 0, 1]
+	theta_initial = np.zeros(n_exits)
 	min_bounds = np.zeros(n_exits)
 
 	# Instantiate SPSA class to initializes the parameters
