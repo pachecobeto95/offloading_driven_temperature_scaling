@@ -381,7 +381,7 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
 	n_exits = n_branches + 1
-	theta_initial = np.zeros(n_exits)
+	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
 
 	# Instantiate SPSA class to initializes the parameters
