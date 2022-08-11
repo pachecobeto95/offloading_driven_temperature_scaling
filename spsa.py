@@ -75,7 +75,7 @@ class SPSA (object):
 
 		ghat = 0
 
-		for i in range(2):
+		for i in range(self.ens_size):
 			
 			# Compute the Delta vector
 			delta_k = delta()
@@ -309,8 +309,8 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 	remaining_data = df
 
-	print("Temp")
-	print(temp_list)
+	#print("Temp")
+	#print(temp_list)
 
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
@@ -327,9 +327,9 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	print(correct_list, numexits)
+	#print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	print("Neg Accuracy: %s" %( - acc_edge))
+	#print("Neg Accuracy: %s" %( - acc_edge))
 
 	return - acc_edge
 
