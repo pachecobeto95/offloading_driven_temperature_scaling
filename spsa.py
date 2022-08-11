@@ -366,8 +366,8 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 
 def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
 
-	theta_initial = np.ones(n_branches)
-	min_bounds = np.zeros(n_branches)
+	theta_initial = np.ones(n_branches+1)
+	min_bounds = np.zeros(n_branches+1)
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
