@@ -281,6 +281,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 			calib_confs = confs/temp_list[i]
 			early_exit_samples = calib_confs >= threshold
 
+		print(temp_list[i])
 		#print(sum(calib_confs >= threshold), current_n_samples)
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		#numexits = float(sum(calib_confs >= threshold))
