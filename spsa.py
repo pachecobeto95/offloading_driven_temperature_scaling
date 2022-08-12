@@ -75,7 +75,7 @@ class SPSA (object):
 
 		ghat = 0
 
-		for i in range(self.ens_size):
+		for i in range(1):
 			
 			# Compute the Delta vector
 			delta_k = delta()
