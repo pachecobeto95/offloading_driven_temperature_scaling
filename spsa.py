@@ -275,6 +275,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		current_n_samples = len(remaining_data)
 
 		if (i == config.max_exits-1):
+			print("")
 			early_exit_samples = np.ones(current_n_samples, dtype=bool)
 		else:
 			confs = remaining_data["conf_branch_%s"%(i+1)]
@@ -284,7 +285,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		#print(temp_list[i])
 		#print(sum(calib_confs >= threshold), current_n_samples)
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		numexits = float(sum(calib_confs >= threshold))
+		numexits = float(sum(early_exit_samples))
 		#numexits = float(remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count())
 		total_samples += numexits
 		print("Calib Confs: %s, Number of Exits: %s, Total Samples: %s"%(calib_confs.mean(), numexits, total_samples))
