@@ -45,11 +45,11 @@ class SPSA (object):
 		#self.threshold = threshold
 		self.max_iter = max_iter
 		self.dim = dim
-		self.a = 10000
-		self.A = max_iter/100
+		self.a = a
+		self.A = max_iter/10
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 10000
+		self.c = c
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
@@ -198,6 +198,7 @@ class SPSA (object):
 
 			# Get estimated gradient
 			ghat = self.estimate_gradient(theta, ck, delta)
+			print(ghat)
 
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
