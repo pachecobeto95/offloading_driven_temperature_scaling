@@ -300,7 +300,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		remaining_data = remaining_data[~early_exit_samples]
 
 	#print("Total TIMe: %s"%(avg_inference_time))
-	avg_inference_time = avg_inference_time/float(n_samples)
+	#avg_inference_time = avg_inference_time/float(n_samples)
 	#print("Avg TIMe: %s"%(avg_inference_time))
 
 	return avg_inference_time
