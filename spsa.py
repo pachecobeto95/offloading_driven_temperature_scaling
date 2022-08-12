@@ -49,7 +49,7 @@ class SPSA (object):
 		self.A = max_iter/10
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 2
+		self.c = 10
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
