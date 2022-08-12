@@ -45,11 +45,11 @@ class SPSA (object):
 		#self.threshold = threshold
 		self.max_iter = max_iter
 		self.dim = dim
-		self.a = 100
+		self.a = 10000
 		self.A = max_iter/100
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 1000
+		self.c = 10000
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
