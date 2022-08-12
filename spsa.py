@@ -274,8 +274,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 
 		current_n_samples = len(remaining_data)
 
-		print(i, config.max_exits)
-		if (i == config.max_exits):
+		if (i == config.max_exits-1):
 			early_exit_samples = np.ones(current_n_samples, dtype=bool)
 		else:
 			confs = remaining_data["conf_branch_%s"%(i+1)]
