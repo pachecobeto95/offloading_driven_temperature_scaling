@@ -261,13 +261,13 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
 	avg_inference_time = 0
-	s_prob = 0
+	total_samples = 0
 	n_samples = len(df)
 	remaining_data = df
 
+	print("Total Samples: %s"%(n_samples))
+
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
-	print("Avg Time")
-	print(inf_time_branch)
 
 	for i in range(n_branches+1):
 
@@ -282,15 +282,23 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 
 		#print(sum(calib_confs >= threshold), current_n_samples)
 		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		numexits = float(sum(calib_confs >= threshold))
+		#numexits = float(sum(calib_confs >= threshold))
+		numexits = float(remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count())
+		total_samples += numexits
+		print("Number of Exits: %s, Total Samples: %s"%(numexits, total_samples))
 
-		prob = numexits/current_n_samples if(current_n_samples > 0) else 0
-		s_prob+=prob
+		avg_inference_time += numexits*inf_time_branch[i]
 
-		avg_inference_time +=  prob*inf_time_branch[i]
-		print("Branch: %s, Prob: %s, Inf_time: %s, S_prob: %s"%(i+1, prob, prob*inf_time_branch[i], s_prob))
+		#prob = numexits/current_n_samples if(current_n_samples > 0) else 0
+
+		#avg_inference_time +=  prob*inf_time_branch[i]
+		#print("Branch: %s, Prob: %s, Inf_time: %s, S_prob: %s"%(i+1, prob, prob*inf_time_branch[i], s_prob))
 
 		remaining_data = remaining_data[~early_exit_samples]
+
+	print("Total TIMe: %s"%(avg_inference_time))
+	avg_inference_time = avg_inference_time/float(n_samples)
+	print("Avg TIMe: %s"%(avg_inference_time))
 
 	return avg_inference_time
 
