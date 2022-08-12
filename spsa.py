@@ -203,6 +203,7 @@ class SPSA (object):
 
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
+			print("Loss: %s"%(loss))
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
@@ -285,7 +286,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		#numexits = float(sum(calib_confs >= threshold))
 		numexits = float(remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count())
 		total_samples += numexits
-		print("Number of Exits: %s, Total Samples: %s"%(numexits, total_samples))
+		#print("Number of Exits: %s, Total Samples: %s"%(numexits, total_samples))
 
 		avg_inference_time += numexits*inf_time_branch[i]
 
