@@ -198,13 +198,12 @@ class SPSA (object):
 
 			# Get estimated gradient
 			ghat = self.estimate_gradient(theta, ck, delta)
-			print("grad: %s"%(ghat))
+			#print("grad: %s"%(ghat))
 
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
 			loss = self.compute_loss(theta)
-			print("Loss: %s"%(loss))
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
@@ -301,7 +300,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 
 	#print("Total TIMe: %s"%(avg_inference_time))
 	#avg_inference_time = avg_inference_time/float(n_samples)
-	#print("Avg TIMe: %s"%(avg_inference_time))
+	print("Avg TIMe: %s"%(avg_inference_time))
 
 	return avg_inference_time
 
