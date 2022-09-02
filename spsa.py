@@ -181,8 +181,8 @@ class SPSA (object):
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
-		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		#while (n_iter < self.max_iter):
+		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		while (n_iter < self.max_iter):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
@@ -215,9 +215,7 @@ class SPSA (object):
 			if(loss < best_loss):
 				best_loss = loss
 				best_theta = theta
-				patience = 0
-			else:
-				patience += 1
+
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
