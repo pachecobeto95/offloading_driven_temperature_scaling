@@ -137,7 +137,6 @@ class SPSA (object):
 			if (np.abs(loss_new-loss_old) > self.function_tol):
 				theta = theta_saved
 				reject_iter = True
-
 			else:
 				loss_old = loss_new
 
@@ -171,6 +170,7 @@ class SPSA (object):
 	def min(self, report_interval=100):
 
 		n_iter, patience = 0, 0
+		best_loss = np.inf
 		losses = []
 		theta = self.theta_initial
 
@@ -214,6 +214,9 @@ class SPSA (object):
 			# This procedure aims to decrease slowly to avoid deconvergence.			
 			theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
 
+			if(loss < best_loss):
+				best_loss = loss
+
 			patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
 			if (not reject_iter): 
@@ -221,7 +224,7 @@ class SPSA (object):
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
+			print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, theta))
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
