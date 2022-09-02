@@ -47,8 +47,8 @@ def main(args):
 	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(ee_model, test_loader, args.threshold, args.max_iter, args.n_branches, 
 	#	args.a0, args.c, args.alpha, args.gamma, device)
 
-	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time2(df_preds, inference_time_branch, args.threshold, args.max_iter, 
-		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time2(df_preds, inference_time_branch, args.threshold, args.max_iter, 
+	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
 
 	print("Success")
 	sys.exit()
