@@ -181,8 +181,8 @@ class SPSA (object):
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
-		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		while (n_iter < self.max_iter):
+		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		#while (n_iter < self.max_iter):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
@@ -258,6 +258,17 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 	# Returns the average inference time
 	return avg_inf_time
 
+
+def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time):
+
+	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current = compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+
+	f1 = (acc_current - loss_acc)/loss_acc
+	f2 = (inf_time_current - loss_time)/loss_time	
+
+	return f1 + f2
+
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
 	avg_inference_time = 0
@@ -294,7 +305,6 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 
 		#avg_inference_time +=  prob*inf_time_branch[i]
 		#print("Branch: %s, Prob: %s, Inf_time: %s, S_prob: %s"%(i+1, prob, prob*inf_time_branch[i], s_prob))
-
 		remaining_data = remaining_data[~early_exit_samples]
 
 	#print("Total TIMe: %s"%(avg_inference_time))
@@ -399,6 +409,21 @@ def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(compute_avg_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
 		args=(threshold, df_preds, avg_inf_time))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt, losses, n_iter = optim.min()
+
+	return theta_opt, loss_opt
+
+def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+
+	n_exits = n_branches + 1
+	theta_initial = np.ones(n_exits)
+	min_bounds = np.zeros(n_exits)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses, n_iter = optim.min()

@@ -50,6 +50,11 @@ def main(args):
 	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time2(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
 
+	print("Start Joint Optimization")
+	theta_opt_joint, loss_opt_joint = spsa.run_multi_obj(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
+		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+
+
 	print("Success")
 	sys.exit()
 
