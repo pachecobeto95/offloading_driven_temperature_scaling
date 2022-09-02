@@ -140,7 +140,7 @@ class SPSA (object):
 			else:
 				loss_old = loss_new
 
-		return theta, loss_old, reject_iter
+		return theta, loss_old
 
 
 	def check_param_tolerance(self, loss_new, loss_old, theta, theta_saved):
@@ -162,7 +162,7 @@ class SPSA (object):
 				theta = theta_saved
 				reject_iter = True
 
-		return theta, loss_old, reject_iter
+		return theta, loss_old
 
 	def compute_loss(self, theta):
 		return self.function(theta, self.dim, *(self.args) )
@@ -177,15 +177,16 @@ class SPSA (object):
 		delta = Bernoulli(dim=self.dim+1)
 
 		loss_old = self.compute_loss(theta)
+		theta_saved = 100*self.theta_initial
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
 		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		while (n_iter < self.max_iter):
+		#while (n_iter < self.max_iter):
+		while ((n_iter < self.max_iter) and (np.linalg.norm(theta_saved-theta)/np.linalg.norm(theta_saved)))
 
 			# Store theta at the start of the interation. We update theta later.
-			
 			theta_saved = theta
 
 			#Obtains the ak, ck for the current iteration
@@ -194,7 +195,6 @@ class SPSA (object):
 
 			# Get estimated gradient
 			ghat = self.estimate_gradient(theta, ck, delta)
-			#print("grad: %s"%(ghat))
 
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
@@ -207,24 +207,21 @@ class SPSA (object):
 			# Function tolerance: 
 			# You can ignore theta values that result in large shifts in the function value.
 			# This procedure aims to decrease slowly to avoid deconvergence.
-			theta, loss_old, reject_iter = self.check_function_tolerance(loss, loss_old, theta, theta_saved)
+			#theta, loss_old = self.check_function_tolerance(loss, loss_old, theta, theta_saved)
 
 			# Parameter tolerance: 
 			# You can ignore iteration if a theta update results in a shifts too much the objective function.
 			# This procedure aims to decrease slowly to avoid deconvergence.			
-			theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
+			#theta, loss_old = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
+
 
 			if(loss < best_loss):
 				best_loss = loss
-
-			patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
-
-			if (not reject_iter): 
-				n_iter += 1
+				best_theta = theta
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, theta))
+			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
