@@ -215,6 +215,9 @@ class SPSA (object):
 			if(loss < best_loss):
 				best_loss = loss
 				best_theta = theta
+				patience = 0
+			else:
+				patience += 1
 
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
@@ -224,7 +227,7 @@ class SPSA (object):
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, theta))
+			print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
