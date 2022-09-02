@@ -25,7 +25,7 @@ class Bernoulli(object):
 class SPSA (object):
 
 	def __init__(self, function, theta_initial, max_iter, dim, a0, c, alpha, gamma,  min_bounds, args=(), 
-		max_patience=20, function_tol=None, param_tol=None, ens_size=2, epsilon=1e-4):
+		max_patience=20, function_tol=None, param_tol=None, ens_size=5, epsilon=1e-4):
 
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
 
@@ -117,11 +117,7 @@ class SPSA (object):
 			out_of_bounds = np.where (theta_new - this_ak*ghat < self.min_bounds)[0]
 			theta_new = theta - this_ak*ghat
 			if len ( out_of_bounds ) == 0:
-				#print("1")
-				#print(theta)
 				theta = theta - this_ak*ghat
-				#print("2")
-				#print(theta)
 				not_all_pass = False
 			else:
 				this_ak[out_of_bounds] = this_ak[out_of_bounds]/2.
