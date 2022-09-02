@@ -181,8 +181,8 @@ class SPSA (object):
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
-		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		while (n_iter < self.max_iter):
+		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		#while (n_iter < self.max_iter):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
@@ -212,8 +212,12 @@ class SPSA (object):
 			# This procedure aims to decrease slowly to avoid deconvergence.			
 			#theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
 
-			#if(loss < best_loss):
-			#	best_loss = loss
+			if(loss < best_loss):
+				best_loss = loss
+				best_theta = theta
+				patience = 0
+			else:
+				patience += 1
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
@@ -284,7 +288,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 		numexits = float(sum(early_exit_samples))
 		#numexits = float(remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count())
 		total_samples += numexits
-		print("Calib Confs: %s, Number of Exits: %s, Total Samples: %s"%(calib_confs.mean(), numexits, total_samples))
+		#print("Calib Confs: %s, Number of Exits: %s, Total Samples: %s"%(calib_confs.mean(), numexits, total_samples))
 
 		avg_inference_time += numexits*inf_time_branch[i]
 
@@ -297,7 +301,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 
 	#print("Total TIMe: %s"%(avg_inference_time))
 	#avg_inference_time = avg_inference_time/float(n_samples)
-	print("Avg Time: %s"%(avg_inference_time))
+	#print("Avg Time: %s"%(avg_inference_time))
 
 	return avg_inference_time
 
