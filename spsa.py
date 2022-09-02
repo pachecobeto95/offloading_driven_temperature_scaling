@@ -183,8 +183,8 @@ class SPSA (object):
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
 		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		#while (n_iter < self.max_iter):
-		while ((n_iter < self.max_iter) and (np.linalg.norm(theta_saved-theta)/np.linalg.norm(theta_saved))>1e-8):
+		while (n_iter < self.max_iter):
+		#while ((n_iter < self.max_iter) and (np.linalg.norm(theta_saved-theta)/np.linalg.norm(theta_saved))>1e-8):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
@@ -215,13 +215,13 @@ class SPSA (object):
 			#theta, loss_old = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
 			n_iter =+ 1
 
-			if(loss < best_loss):
-				best_loss = loss
-				best_theta = theta
+			#if(loss < best_loss):
+			#	best_loss = loss
+			#	best_theta = theta
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_theta))
+			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
