@@ -214,14 +214,14 @@ class SPSA (object):
 			# This procedure aims to decrease slowly to avoid deconvergence.			
 			#theta, loss_old = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
 
-
 			if(loss < best_loss):
 				best_loss = loss
 				best_theta = theta
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, best_loss, best_theta))
+			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_theta))
+			n_iter =+ 1
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
