@@ -184,7 +184,7 @@ class SPSA (object):
 
 		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
 		#while (n_iter < self.max_iter):
-		while ((n_iter < self.max_iter) and (np.linalg.norm(theta_saved-theta)/np.linalg.norm(theta_saved))>1e-8)
+		while ((n_iter < self.max_iter) and (np.linalg.norm(theta_saved-theta)/np.linalg.norm(theta_saved))>1e-8):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
