@@ -217,6 +217,7 @@ class SPSA (object):
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
+			#if (not reject_iter): 
 			n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
