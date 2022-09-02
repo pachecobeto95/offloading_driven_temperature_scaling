@@ -419,7 +419,8 @@ def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, 
 	return theta_opt, loss_opt
 
 def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
-
+	print("oi")
+	sys.exit()
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
