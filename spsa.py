@@ -213,6 +213,7 @@ class SPSA (object):
 			# You can ignore iteration if a theta update results in a shifts too much the objective function.
 			# This procedure aims to decrease slowly to avoid deconvergence.			
 			#theta, loss_old = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
+			n_iter =+ 1
 
 			if(loss < best_loss):
 				best_loss = loss
@@ -221,7 +222,6 @@ class SPSA (object):
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
 			print("Iter: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_theta))
-			n_iter =+ 1
 
 		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
