@@ -181,8 +181,8 @@ class SPSA (object):
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
 
-		while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		#while (n_iter < self.max_iter):
+		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
+		while (n_iter < self.max_iter):
 
 			# Store theta at the start of the interation. We update theta later.
 			theta_saved = theta
@@ -215,9 +215,9 @@ class SPSA (object):
 			if(loss < best_loss):
 				best_loss = loss
 				best_theta = theta
-				patience = 0
-			else:
-				patience += 1
+			#	patience = 0
+			#else:
+			#	patience += 1
 
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
@@ -399,7 +399,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 
 	return theta_opt, loss_opt
 
-def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
+def run_SPSA_inf_time_old_version(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
 
 	theta_initial = np.ones(n_branches+1)
 	min_bounds = np.zeros(n_branches+1)
@@ -416,7 +416,7 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 	return theta_opt, loss_opt
 
 
-def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+def run_SPSA_inf_time(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
