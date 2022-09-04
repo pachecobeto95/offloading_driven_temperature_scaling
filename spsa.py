@@ -222,21 +222,30 @@ class SPSA (object):
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
-			#if (not reject_iter): 
 			n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
+			#print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
 
-		print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
+		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
-		return theta, loss, losses, n_iter
+		return theta, loss, losses
+
+
+	def save_temperature(self, filepath, loss, theta, n_exits):
+		results = {"loss": loss}
+
+		for i in range(n_exits):
+			results["temp_branch_%s"%(i+1)] = theta[i]
+
+		df = pd.DataFrame([results])
+		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
+
 
 
 def objective_function(x):
 	return x[0]**2 + x[1]**2
-
 
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
@@ -279,7 +288,7 @@ def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_br
 	n_samples = len(df)
 	remaining_data = df
 
-	print("Total Samples: %s"%(n_samples))
+	#print("Total Samples: %s"%(n_samples))
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 
@@ -384,7 +393,9 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses, n_iter = optim.min()
+	theta_opt, loss_opt, losses = optim.min()
+
+	optim.save_temperature(config.filePath_acc, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
@@ -398,7 +409,9 @@ def run_SPSA_inf_time(model, test_loader, threshold, max_iter, n_branches, a0, c
 		args=(threshold, test_loader, model, device))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses, n_iter = optim.min()
+	theta_opt, loss_opt, losses = optim.min()
+
+	optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
@@ -414,13 +427,14 @@ def run_SPSA_inf_time2(df_preds, avg_inf_time, threshold, max_iter, n_branches, 
 		args=(threshold, df_preds, avg_inf_time))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses, n_iter = optim.min()
+	theta_opt, loss_opt, losses = optim.min()
+
+	optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
 def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
-	print("oi")
-	#sys.exit()
+
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
@@ -430,6 +444,8 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses, n_iter = optim.min()
+	theta_opt, loss_opt, losses = optim.min()
+
+	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt

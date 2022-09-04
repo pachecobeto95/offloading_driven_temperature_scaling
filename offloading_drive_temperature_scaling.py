@@ -8,6 +8,7 @@ import pandas as pd
 
 def main(args):
 
+
 	model_id = config.models_id_dict[args.model_name]
 
 	n_classes = config.nr_class_dict[args.dataset_name]
@@ -43,9 +44,6 @@ def main(args):
 
 	theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
 		args.c, args.alpha, args.gamma)
-
-	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(ee_model, test_loader, args.threshold, args.max_iter, args.n_branches, 
-	#	args.a0, args.c, args.alpha, args.gamma, device)
 
 	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time2(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
