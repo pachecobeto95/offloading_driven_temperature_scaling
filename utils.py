@@ -196,7 +196,7 @@ def sendData(url, data):
 	try:
 		r = requests.post(url, json=data, timeout=config.timeout)
 		r.raise_for_status()
-	except HTTPError as http_err:
+	except requests.HTTPError as http_err:
 		logging.warning("HTTPError")
 		pass
 	except requests.Timeout:
