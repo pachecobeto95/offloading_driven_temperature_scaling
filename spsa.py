@@ -2,6 +2,7 @@ from itertools import tee, islice
 import random, sys, torch
 import numpy as np
 import config
+import pandas as pd
 
 class Bernoulli(object):
 	'''
