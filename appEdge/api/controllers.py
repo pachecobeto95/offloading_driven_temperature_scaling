@@ -1,7 +1,7 @@
 from flask import Blueprint, g, render_template, request, jsonify, session, redirect, url_for, current_app as app
 import json, os, time, sys, config, requests
 from .services import edgeProcessing
-from .services.edgeProcessing import model, exp
+#from .services.edgeProcessing import model, exp
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
