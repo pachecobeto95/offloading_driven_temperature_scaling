@@ -25,6 +25,7 @@ alpha = 0.602
 gamma = 0.101
 threshold = 0.8
 max_exits = 6
+timeout = 3
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.
@@ -46,4 +47,26 @@ nr_class_dict = {"caltech256": 258}
 filePath_acc = os.path.join(resultsPath, "temp_scaling_accuracy.csv")
 filePath_inf_time = os.path.join(resultsPath, "temp_scaling_inference_time.csv")
 filePath_joint_opt = os.path.join(resultsPath, "temp_scaling_joint_optimization.csv")
+
+
+DEBUG = True
+
+#URLs
+#Edge Device's URL
+HOST_EDGE = "146.164.69.165"
+#HOST_EDGE = "192.168.0.20"
+PORT_EDGE = 5001
+URL_EDGE = "http://%s:%s"%(HOST_EDGE, PORT_EDGE)
+urlConfModelEdge = "%s/api/edge/modelConfiguration"%(URL_EDGE)
+
+
+
+#Cloud server's URL
+#HOST_CLOUD = "146.164.69.144"
+HOST_CLOUD = "54.233.184.166"
+#HOST_CLOUD = "192.168.0.20"
+PORT_CLOUD = 3001
+URL_CLOUD = "http://%s:%s"%(HOST_CLOUD, PORT_CLOUD)
+urlConfModelCloud = "%s/api/cloud/modelConfiguration"%(URL_CLOUD)
+
 

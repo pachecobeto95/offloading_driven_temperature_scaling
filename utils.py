@@ -192,54 +192,44 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 	return avg_inf_time
 
 
-"""
-def evaluating_early_exit_dnn_inference(test_loader, model, n_branches, device):
+def sendData(url, data):
+	try:
+		r = requests.post(url, json=data, timeout=config.timeout)
+		r.raise_for_status()
+	except HTTPError as http_err:
+		logging.warning("HTTPError")
+		pass
+	except requests.Timeout:
+		logging.warning("Timeout")
+		pass
+	#except ConnectTimeout as timeout_err:
+	#	print("Timeout error: ", timeout_err)
+
+
+
+def sendImage(img_path, idx, url, target, p_tar, nr_branch_edge):
+
+	data_dict = {"p_tar": p_tar, "nr_branch": int(nr_branch_edge), "target": target.item(), "id": idx}
+
+	files = [
+	('img', (img_path, open(img_path, 'rb'), 'application/octet')),
+	('data', ('data', json.dumps(data_dict), 'application/json')),]
+
+	try:
+		r = requests.post(url, files=files, timeout=config.timeout)
+		r.raise_for_status()
 	
-	This function gathers the processing time to run up to each block layer.
-	Then, this function repeats this procedure for other inputs on test sets.
-	Finally, we compute the average processing time.
+	except HTTPError as http_err:
+		logging.warning("HTTPError")
+		pass
 
-	Inputs:
-	test_loader -> contains the DataLoader of the test set.
-	model -> early-exit DNN model.
-	device -> device CPU or GPU that will run the EE-DNN model.
-
-	Outputs:
-	avg_inference_time_dict -> dictionary that contains the average inference time computed previously
-	
-	inf_time_list, conf_list, prediction_list = [], [], []
-	exit_list = ["exit_%s"%(i) for i in range(1, n_branches+1)]
-
-	model.eval()
-	with torch.no_grad():
-		for i, (data, target) in enumerate(test_loader, 1):
-
-			# Convert data and target into the current device.
-			data, target = data.to(device), target.to(device)
-
-			# The next line gathers the dictionary of the inference time for running the current input data.
-			inference_time_dict = model.measuring_inference_time_block_wise(data)
-
-			# The next line gathers the dictionary of the inference time for running the current input data.
-			confs, predictions = model.evaluating_prediction(data)
-
-			inf_time_list.append(list(inference_time_dict.values()))
-			conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
-			break
-
-	inf_time_list = np.array(inf_time_list)
-	conf_list, prediction_list = np.array(conf_list).T, np.array(prediction_list).T
-
-	# Compute the average of the inference time of each block layer.
-	avg_inference_time = np.mean(inf_time_list, axis=0)
+	except ConnectTimeout as timeout_err:
+		logging.warning("Timeout")
+		pass
 
 
-	block_layer_list = list(inference_time_dict.keys())
-
-	avg_inference_time_dict = dict(zip(block_layer_list, avg_inference_time))
-
-	conf_dict = dict(zip(exit_list, conf_list))
-	prediction_dict = dict(zip(exit_list, prediction_list))
-
-	return avg_inference_time_dict, conf_dict, prediction_dict	
-"""	
+def sendModelConf(url, n_branches, dataset_name, model_name, location):
+		
+	#The next row mounts a dictionary to configure the model's parameters. 
+	data_dict = {"n_branches": n_branches, "model_name": model_name, "location": location}
+	sendData(url, data_dict)
