@@ -8,6 +8,7 @@ dataset_name = "caltech256"
 
 # Standard Configuration of the Arguments 
 split_ratio = 0.2
+model_name = "mobilenet"
 input_dim = 224
 seed = 42 # the answer to life the universe and everything
 cuda = True
