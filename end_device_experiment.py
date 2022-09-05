@@ -22,7 +22,7 @@ def main(args):
 	p_tar_list = [0.8, 0.81, 0.82, 0.83, 0.84, 0.85]
 	dataset_path = config.dataset_path_dict["caltech256"]
 
-	logPath = os.path.join(config.DIR_NAME, "logTest_%s.log"%(args.model_name, args.dataset_name))
+	logPath = os.path.join(config.DIR_NAME, "logTest_%s.log"%(args.model_name))
 
 	logging.basicConfig(level=logging.DEBUG, filename=logPath, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 	
@@ -32,7 +32,7 @@ def main(args):
 	logging.debug("Sending Configuration")
 
 	utils.sendModelConf(config.urlConfModelEdge, config.nr_branch_model, args.dataset_name, args.model_name, args.location)
-	utils.sendModelConf(config.urlConfModelCloud, config.nr_branch_model, args.dataset_name, args.model_name, args.location)
+	#utils.sendModelConf(config.urlConfModelCloud, config.nr_branch_model, args.dataset_name, args.model_name, args.location)
 	
 	logging.debug("Finish Configuration")
 
