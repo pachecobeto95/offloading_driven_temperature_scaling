@@ -31,8 +31,8 @@ def main(args):
 
 	logging.debug("Sending Configuration")
 
-	utils.sendModelConf(config.urlConfModelEdge, config.nr_branch_model, args.dataset_name, args.model_name, args.location)
-	#utils.sendModelConf(config.urlConfModelCloud, config.nr_branch_model, args.dataset_name, args.model_name, args.location)
+	utils.sendModelConf(config.urlConfModelEdge, config.n_branches, args.dataset_name, args.model_name, args.location)
+	#utils.sendModelConf(config.urlConfModelCloud, config.n_branches, args.dataset_name, args.model_name, args.location)
 	
 	logging.debug("Finish Configuration")
 
