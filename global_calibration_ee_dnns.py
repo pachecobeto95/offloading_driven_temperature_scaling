@@ -102,3 +102,8 @@ if (__name__ == "__main__"):
 
 	#This argument defines the ratio to split the Traning Set, Val Set, and Test Set.
 	parser.add_argument('--id', type=int)
+
+	args = parser.parse_args()
+
+	main(args)
+	
