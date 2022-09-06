@@ -17,9 +17,9 @@ class ECE(nn.Module):
 	"""This method computes ECE metric to measure model's miscalibration"""
 
 	def __init__(self, n_bins=15):
-	"""
-	n_bins (int): number of confidence interval bins
-	"""
+		"""
+		n_bins (int): number of confidence interval bins
+		"""
 		super(ECE, self).__init__()
 		bin_boundaries = torch.linspace(0, 1, n_bins + 1)
 		self.bin_lowers = bin_boundaries[:-1]
