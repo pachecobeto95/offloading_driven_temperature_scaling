@@ -18,6 +18,7 @@ batch_size_train = 256
 batch_size_test = 1
 pretrained = True
 n_branches = 5
+n_exits = n_branches + 1
 max_iter = 200000
 read_inf_data = True
 a0 = 1
@@ -27,6 +28,7 @@ gamma = 0.101
 threshold = 0.8
 max_exits = 6
 timeout = 3
+temp_init = 1.5
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.

@@ -679,5 +679,77 @@ class Early_Exit_DNN(nn.Module):
     inf_time_main = time.time() - start_time
     return inf_time_main
 
+  def forwardGlobalTS(self, x, p_tar):
+    """
+    This method is used to train the early-exit DNN model
+    """
+    output_list, conf_list, class_list  = [], [], []
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+
+      # Note that if confidence value is greater than a p_tar value, we terminate the dnn inference and returns the output
+      if (conf.item() >= p_tar):
+        return output_branch, conf, infered_class, i+1
+
+      else:
+        output_list.append(output_branch), conf_list.append(conf), class_list.append(infered_class)
+
+    x = self.stages[-1](x)
+    
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    
+    # Note that if confidence value is greater than a p_tar value, we terminate the dnn inference and returns the output
+    # This also happens in the last exit
+    if (conf.item() >= p_tar):
+      return output, conf, infered_class, self.n_branches+1 
+    else:
+
+      # If any exit can reach the p_tar value, the output is give by the more confidence output.
+      # If evaluation, it returns max(output), max(conf) and the number of the early exit.
+
+      conf_list.append(conf)
+      class_list.append(infered_class)
+      output_list.append(output)
+      max_conf = np.argmax(conf_list)
+      return output_list[max_conf], conf_list[max_conf], class_list[max_conf], self.n_branches+1
+
+  def temperature_scale_overall(self, logits, temp):
+    return torch.div(logits, temp)
+
+
+  def forwardGlobalCalibration(self, x, temperature):
+    output_list, conf_list, class_list = [], [], []
+    n_exits = self.n_branches + 1
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+      
+      output_branch = self.temperature_scale_overall(output_branch, temperature)
+
+      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+
+      output_list.append(output_branch)
+      conf_list.append(conf_branch.item()), class_list.append(infered_class_branch)
+      
+    x = self.stages[-1](x)
+    
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    output = self.temperature_scale_overall(output, temperature)
+    output_list.append(output)
+
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    conf_list.append(conf.item()), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
 
 

@@ -62,8 +62,8 @@ class GlobalTemperatureScaling(nn.Module):
 		temperature = self.temperature_overall.unsqueeze(1).expand(logits.size(0), logits.size(1))
 		return logits / temperature
 
-	def forwardOverall(self, x):
-		return self.model.forwardOverallCalibration(x, self.temperature_overall)
+	def forwardGlobalTS(self, x):
+		return self.model.forwardGlobalCalibration(x, self.temperature_overall)
 
 
 	def save_temperature(self, p_tar, before_temp_nll, after_temp_nll, before_temp_ece, after_temp_ece):
@@ -97,7 +97,7 @@ class GlobalTemperatureScaling(nn.Module):
 			for data, label in tqdm(valid_loader):
 				data, label = data.to(self.device), label.to(self.device)  
 				#Check the next row to confirm 
-				logits, confs, _, exit_branch = self.model.forwardEval(data, p_tar)
+				logits, confs, _, _ = self.model.forwardGlobalTS(data, p_tar)
 
 				logits_list.append(logits), labels_list.append(label)
 
