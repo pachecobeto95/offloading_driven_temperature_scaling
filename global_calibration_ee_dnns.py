@@ -100,10 +100,13 @@ if (__name__ == "__main__"):
 	parser.add_argument('--model_name', type=str, choices=["mobilenet", "resnet18", "resnet152", "vgg16"], 
 		help='DNN model name (default: mobilenet)')
 
+	parser.add_argument('--cuda', type=bool, default=config.cuda, 
+		help='Cuda? Default: %s'%(config.cuda))
+
 	#This argument defines the ratio to split the Traning Set, Val Set, and Test Set.
 	parser.add_argument('--id', type=int)
 
 	args = parser.parse_args()
 
 	main(args)
-	
+
