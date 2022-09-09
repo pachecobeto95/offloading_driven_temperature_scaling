@@ -234,8 +234,8 @@ class SPSA (object):
 		return theta, loss, losses
 
 
-	def save_temperature(self, filepath, loss, theta, n_exits):
-		results = {"loss": loss}
+	def save_temperature(self, filepath, loss, theta, n_exits, beta=0):
+		results = {"loss": loss, "beta": beta}
 
 		for i in range(n_exits):
 			results["temp_branch_%s"%(i+1)] = theta[i]
@@ -272,15 +272,15 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 	return avg_inf_time
 
 
-def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time):
+def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time, beta):
 
 	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
 	inf_time_current = compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
 
-	f1 = (acc_current - loss_acc)/loss_acc
-	f2 = (inf_time_current - loss_time)/loss_time	
+	#f1 = (acc_current - loss_acc)/loss_acc
+	#f2 = (inf_time_current - loss_time)/loss_time	
 
-	return f1 + f2
+	return beta*acc_current + (1-beta)*inf_time_current
 
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
@@ -396,7 +396,7 @@ def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, a
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses = optim.min()
 
-	optim.save_temperature(config.filePath_acc, loss_opt, theta_opt, n_exits)
+	#optim.save_temperature(config.filePath_acc, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
@@ -412,7 +412,7 @@ def run_SPSA_inf_time_old_version(model, test_loader, threshold, max_iter, n_bra
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses = optim.min()
 
-	optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
+	#optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
@@ -430,11 +430,11 @@ def run_SPSA_inf_time(df_preds, avg_inf_time, threshold, max_iter, n_branches, a
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses = optim.min()
 
-	optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
+	#optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
 
 	return theta_opt, loss_opt
 
-def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
 
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
@@ -442,11 +442,11 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time))
+		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time, beta))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses = optim.min()
 
-	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits)
+	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits, beta)
 
 	return theta_opt, loss_opt
