@@ -30,7 +30,7 @@ threshold = 0.8
 max_exits = 6
 timeout = 3
 temp_init = 1.5
-beta = 0.1
+step = 0.1
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.
