@@ -132,6 +132,9 @@ if (__name__ == "__main__"):
 	parser.add_argument('--threshold', type=float, default=config.threshold, 
 		help="Threshold that decides if the prediction if confidence enough. Default: %s"%(config.threshold))	
 
+	parser.add_argument('--step', type=float, default=config.step, 
+		help="Step of beta. Default: %s"%(config.step))	
+
 	args = parser.parse_args()
 
 	main(args)
