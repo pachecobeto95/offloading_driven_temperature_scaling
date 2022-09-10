@@ -168,7 +168,7 @@ class SPSA (object):
 	def compute_loss(self, theta):
 		return self.function(theta, self.dim, *(self.args) )
 
-	def min(self, report_interval=100):
+	def min(self, report_interval=1000):
 
 		n_iter, patience = 0, 0
 		best_loss = np.inf
@@ -226,8 +226,8 @@ class SPSA (object):
 			n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
-			#if(n_iter%report_interval == 0):
-			#print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
+			if(n_iter%report_interval == 0):
+				print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
 
 		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
