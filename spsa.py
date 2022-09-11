@@ -227,8 +227,8 @@ class SPSA (object):
 			n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
-			#if(n_iter%report_interval == 0):
-			logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(self.args[-1], n_iter, loss, best_loss, best_theta))
+			if(n_iter%report_interval == 0):
+				logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(self.args[-1], n_iter, loss, best_loss, best_theta))
 
 		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
@@ -441,9 +441,7 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
 
-	logPath = "./logTest1.log"
-
-	logging.basicConfig(level=logging.DEBUG, filename=logPath, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+	logging.basicConfig(level=logging.DEBUG, filename=config.logFile, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 	# Instantiate SPSA class to initializes the parameters

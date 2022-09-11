@@ -51,6 +51,7 @@ nr_class_dict = {"caltech256": 258}
 filePath_acc = os.path.join(resultsPath, "temp_scaling_accuracy.csv")
 filePath_inf_time = os.path.join(resultsPath, "temp_scaling_inference_time.csv")
 filePath_joint_opt = os.path.join(resultsPath, "temp_scaling_joint_optimization.csv")
+logFile = os.path.join(DIR_NAME, "logTestingJointOpt.log")
 
 
 DEBUG = True
