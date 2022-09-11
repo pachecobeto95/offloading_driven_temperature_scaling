@@ -463,7 +463,7 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 
 	return theta_opt, loss_opt
 
-def run_multi_obj_analysis(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
+def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
 
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
