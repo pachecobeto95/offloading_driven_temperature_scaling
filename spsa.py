@@ -198,7 +198,7 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
-			loss = self.compute_loss(theta)
+			loss, f_acc, f_inf_time = self.compute_loss(theta)
 
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
@@ -216,6 +216,8 @@ class SPSA (object):
 			if(loss < best_loss):
 				best_loss = loss
 				best_theta = theta
+				best_f_acc = f_acc
+				best_f_inf_time = f_inf_time
 			#	patience = 0
 			#else:
 			#	patience += 1
@@ -232,10 +234,10 @@ class SPSA (object):
 
 		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
-		return theta, loss, losses
+		return best_theta, best_loss, best_f_acc, best_f_inf_time
 
 
-	def save_temperature(self, filepath, loss, theta, n_exits, beta=0):
+	def save_temperature(self, filepath, loss, theta, n_exits):
 		results = {"loss": loss, "beta": beta}
 
 		for i in range(n_exits):
@@ -244,7 +246,15 @@ class SPSA (object):
 		df = pd.DataFrame([results])
 		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
 
+	def save_temperature_analysis(filePath, theta, loss_acc, loss_inf_time, n_exits, beta):
 
+		results = {"loss_acc": loss_acc, "loss_inf_time": loss_inf_time, "beta": beta}
+
+		for i in range(n_exits):
+			results["temp_branch_%s"%(i+1)] = theta[i]
+
+		df = pd.DataFrame([results])
+		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
 
 def objective_function(x):
 	return x[0]**2 + x[1]**2
@@ -275,13 +285,14 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 
 def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time, beta):
 
-	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current = compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+	acc_current = beta*accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current = (1-beta)*compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+	joint_f = acc_current + inf_time_current
 
 	#f1 = (acc_current - loss_acc)/loss_acc
 	#f2 = (inf_time_current - loss_time)/loss_time	
 
-	return beta*acc_current + (1-beta)*inf_time_current
+	return joint_f, acc_current, inf_time_current
 
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
@@ -441,6 +452,23 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
 
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time, beta))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt, losses = optim.min()
+
+	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits)
+
+	return theta_opt, loss_opt
+
+def run_multi_obj_analysis(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
+
+	n_exits = n_branches + 1
+	theta_initial = np.ones(n_exits)
+	min_bounds = np.zeros(n_exits)
+
 	logging.basicConfig(level=logging.DEBUG, filename=config.logFile, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
@@ -449,8 +477,8 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time, beta))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses = optim.min()
+	theta_opt, loss_opt, f_acc, f_inf_time = optim.min()
 
-	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits, beta)
+	optim.save_temperature_analysis(config.filePath_joint_opt, f_acc, f_inf_time, theta_opt, n_exits, beta)
 
 	return theta_opt, loss_opt
