@@ -76,7 +76,7 @@ class SPSA (object):
 
 		ghat = 0
 
-		for i in range(1):
+		for i in range(2):
 			
 			# Compute the Delta vector
 			delta_k = delta()
@@ -90,8 +90,8 @@ class SPSA (object):
 			#theta_plus = np.minimum(theta_plus, self.max_bounds)
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
 
-			y_plus = self.compute_loss(theta_plus)
-			y_minus = self.compute_loss(theta_minus)
+			y_plus, _, _ = self.compute_loss(theta_plus)
+			y_minus, _, _ = self.compute_loss(theta_minus)
 
 			ghat += (y_plus-y_minus)/(2*ck*delta_k)
 
@@ -177,7 +177,7 @@ class SPSA (object):
 
 		delta = Bernoulli(dim=self.dim+1)
 
-		loss_old = self.compute_loss(theta)
+		loss_old, _, _ = self.compute_loss(theta)
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
