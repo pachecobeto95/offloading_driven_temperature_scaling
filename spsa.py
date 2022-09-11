@@ -441,7 +441,7 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
 
-	logPath = "./logTest_%s_%s.log"%(args.model_name, args.dataset_name)
+	logPath = "./logTest1.log"
 
 	logging.basicConfig(level=logging.DEBUG, filename=logPath, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
