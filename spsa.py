@@ -171,7 +171,7 @@ class SPSA (object):
 	def min(self, report_interval=1000):
 
 		n_iter, patience = 0, 0
-		best_loss = np.inf
+		best_loss, best_f_acc, best_f_inf_time = np.inf, np.inf, np.inf
 		losses = []
 		theta = self.theta_initial
 
@@ -283,16 +283,25 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 	return avg_inf_time
 
 
-def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time, beta):
+def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time):
+
+	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current = compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+
+	f1 = (acc_current - loss_acc)/loss_acc
+	f2 = (inf_time_current - loss_time)/loss_time	
+
+	return f1+f2
+
+def joint_function_analysis(temp_list, n_branches, threshold, df, inf_time_branch, beta):
 
 	acc_current = beta*accuracy_edge(temp_list, n_branches, threshold, df)
 	inf_time_current = (1-beta)*compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
 	joint_f = acc_current + inf_time_current
 
-	#f1 = (acc_current - loss_acc)/loss_acc
-	#f2 = (inf_time_current - loss_time)/loss_time	
-
 	return joint_f, acc_current, inf_time_current
+
+
 
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
@@ -473,8 +482,8 @@ def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branch
 
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time, beta))
+	optim = SPSA(joint_function_analysis, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, df_preds, avg_inf_time, beta))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, f_acc, f_inf_time = optim.min()

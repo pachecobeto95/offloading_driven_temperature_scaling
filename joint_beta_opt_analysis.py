@@ -52,10 +52,6 @@ def main(args):
 		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, args.threshold, args.max_iter, args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
 
 
-		print("Success")
-		sys.exit()
-
-
 if (__name__ == "__main__"):
 	# Input Arguments to configure the early-exit model .
 	parser = argparse.ArgumentParser(description="Learning the Temperature driven for offloading.")
