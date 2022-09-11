@@ -1,5 +1,5 @@
 from itertools import tee, islice
-import random, sys, torch, os
+import random, sys, torch, os, logging
 import numpy as np
 import config
 import pandas as pd
@@ -223,11 +223,12 @@ class SPSA (object):
 
 			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
 
+
 			n_iter += 1
 
 			# Be friendly to the user, tell him/her how it's going on...
-			if(n_iter%report_interval == 0):
-				print("Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(n_iter, loss, best_loss, best_theta))
+			#if(n_iter%report_interval == 0):
+			logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(args.beta, n_iter, loss, best_loss, best_theta))
 
 		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
@@ -439,6 +440,11 @@ def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_it
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
+
+	logPath = "./logTest_%s_%s.log"%(args.model_name, args.dataset_name)
+
+	logging.basicConfig(level=logging.DEBUG, filename=logPath, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 

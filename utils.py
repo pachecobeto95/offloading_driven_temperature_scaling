@@ -233,3 +233,11 @@ def sendModelConf(url, n_branches, dataset_name, model_name, location):
 	#The next row mounts a dictionary to configure the model's parameters. 
 	data_dict = {"n_branches": n_branches, "model_name": model_name, "location": location}
 	sendData(url, data_dict)
+
+
+def read_temp(filepath):
+
+	df = pd.read_csv(filepath)
+	temp_list = np.array([df["temp_branch_%s"%(i+1)][0] for i in range(config.n_exits)])
+	loss = df["loss"][0]
+	return temp_list, loss
