@@ -228,7 +228,7 @@ class SPSA (object):
 
 			# Be friendly to the user, tell him/her how it's going on...
 			#if(n_iter%report_interval == 0):
-			logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(args.beta, n_iter, loss, best_loss, best_theta))
+			logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(self.args.beta, n_iter, loss, best_loss, best_theta))
 
 		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
 
