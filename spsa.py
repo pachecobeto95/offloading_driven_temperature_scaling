@@ -250,6 +250,7 @@ class SPSA (object):
 
 		results = {"loss_acc": loss_acc, "loss_inf_time": loss_inf_time, "beta": beta}
 
+		print(theta)
 		for i in range(n_exits):
 			results["temp_branch_%s"%(i+1)] = theta[i]
 
