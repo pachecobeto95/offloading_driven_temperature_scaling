@@ -489,6 +489,6 @@ def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branch
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, f_acc, f_inf_time = optim.min()
 
-	optim.save_temperature_analysis(config.filePath_joint_opt, f_acc, f_inf_time, theta_opt, n_exits, beta)
+	optim.save_temperature_analysis(config.filePath_joint_opt, theta_opt, f_acc, f_inf_time, n_exits, beta)
 
 	return theta_opt, loss_opt
