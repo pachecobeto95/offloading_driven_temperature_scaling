@@ -246,7 +246,7 @@ class SPSA (object):
 		df = pd.DataFrame([results])
 		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
 
-	def save_temperature_analysis(self, filePath, theta, loss_acc, loss_inf_time, n_exits, beta):
+	def save_temperature_analysis(self, filepath, theta, loss_acc, loss_inf_time, n_exits, beta):
 
 		results = {"loss_acc": loss_acc, "loss_inf_time": loss_inf_time, "beta": beta}
 
