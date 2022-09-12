@@ -45,7 +45,7 @@ def main(args):
 	#theta_opt_acc, loss_opt_acc = utils.read_temp(config.filePath_acc)
 	#theta_opt_inf_time, loss_opt_inf_time = utils.read_temp(config.filePath_inf_time)
 
-	beta_list = np.arange(0, 1, args.step)
+	beta_list = [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 
 	for beta in beta_list:
 		print("Start Joint Optimization")
