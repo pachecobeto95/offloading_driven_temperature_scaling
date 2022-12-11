@@ -58,8 +58,6 @@ def main(args):
 		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 			args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
 
- run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta)
-
 
 		print("Success")
 		sys.exit()
