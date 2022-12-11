@@ -42,19 +42,23 @@ def main(args):
 	# Obtain the average inference time to process up to each side branch.
 	inference_time_branch = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, args.threshold, device)
 
-	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
-	#	args.c, args.alpha, args.gamma)
+	theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
+		args.c, args.alpha, args.gamma)
 
-	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
-	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
+		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
 
 
 	beta_list = np.arange(0, 1, args.step)
 
 	for beta in beta_list:
 		print("Start Joint Optimization")
-		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
+		#theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
+		#	args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
+		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 			args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
+
+ run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta)
 
 
 		print("Success")
