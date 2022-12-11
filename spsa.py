@@ -177,6 +177,7 @@ class SPSA (object):
 
 		delta = Bernoulli(dim=self.dim+1)
 
+		#loss_old, _, _ = self.compute_loss(theta)
 		loss_old, _, _ = self.compute_loss(theta)
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
@@ -369,9 +370,6 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 	remaining_data = df
 
-	#print("Temp")
-	#print(temp_list)
-
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
 
@@ -389,7 +387,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	#print("Neg Accuracy: %s" %( - acc_edge))
+	print("Neg Accuracy: %s" %( - acc_edge))
 
 	return - acc_edge
 
