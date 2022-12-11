@@ -53,7 +53,7 @@ def main(args):
 
 	for beta in beta_list:
 		print("Start Joint Optimization")
-		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
+		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
 			args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
 
 
