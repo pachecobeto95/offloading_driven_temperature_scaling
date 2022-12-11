@@ -178,7 +178,7 @@ class SPSA (object):
 		delta = Bernoulli(dim=self.dim+1)
 
 		#loss_old, _, _ = self.compute_loss(theta)
-		loss_old, _, _ = self.compute_loss(theta)
+		loss_old = self.compute_loss(theta)
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -199,8 +199,9 @@ class SPSA (object):
 			theta = self.adjusting_to_bounds(theta, ghat, ak)
 
 			# The new loss value evaluating the objective function.
-			loss, f_acc, f_inf_time = self.compute_loss(theta)
-
+			#loss, f_acc, f_inf_time = self.compute_loss(theta)
+			loss = self.compute_loss(theta)
+			
 			# Saves the loss in a list to create a loss history
 			losses += [loss]
 
