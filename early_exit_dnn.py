@@ -625,7 +625,6 @@ class Early_Exit_DNN(nn.Module):
       x = self.stages[i](x)
 
       output_branch = exitBlock(x)
-      #output_branch = self.update_logits(output_branch, temp_list, i)
 
       conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
 
@@ -646,8 +645,8 @@ class Early_Exit_DNN(nn.Module):
     inf_time_main = time.time() - start_time
     inf_time_list.append(inf_time_main)
     
-    inf_time_list = np.cumsum(inf_time_list)
-    return inf_time_list
+    cumulative_inf_time_list = np.cumsum(inf_time_list)
+    return inf_time_list, cumulative_inf_time_list
 
   def measuring_inference_time(self, x, temp_list, threshold):
 

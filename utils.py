@@ -163,7 +163,7 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 
 	df_confs, df_corrects = pd.DataFrame(conf_dict), pd.DataFrame(prediction_dict)
 
-	df_data = pd.concat([a, b], axis=1)
+	df_data = pd.concat([df_confs, df_corrects], axis=1)
 
 	# Returns confidences and predictions into a DataFrame.
 	return df_data
@@ -172,7 +172,10 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 
 	n_exits = n_branches + 1
 
-	inf_time_list = []
+	inf_time_list, cumulative_inf_time_list = [], []
+
+	conf_columns_list = ["inf_time_branch_%s"%(i) for i in range(1, n_exits+1)]
+	correct_columns_list = ["cumulative_inf_time_branch_%s"%(i)  for i in range(1, n_exits+1)]	
 	
 	model.eval()
 	with torch.no_grad():
@@ -182,14 +185,24 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 			data, target = data.to(device), target.to(device)
 
 			# The next line gathers the dictionary of the inference time for running the current input data.
-			inf_time = model.run_measuring_inference_time_branch(data)
-			inf_time_list.append(inf_time)
+			inf_time, cumulative_inf_time = model.run_measuring_inference_time_branch(data)
+			inf_time_list.append(inf_time), cumulative_inf_time_list.append(cumulative_inf_time)
 
 	# The next line computes the average inference time
 	avg_inf_time = np.mean(inf_time_list, axis=0)
+	avg_cumulative_inf_time = np.mean(cumulative_inf_time_list, axis=0)
 
-	# Returns the average inference time
-	return avg_inf_time
+	avg_inf_time, avg_cumulative_inf_time = np.array(avg_inf_time).T, np.array(avg_cumulative_inf_time).T
+
+	avg_inf_time_dict = dict(zip(conf_columns_list, avg_inf_time))
+	avg_cumulative_inf_time_dict = dict(zip(correct_columns_list, avg_cumulative_inf_time))
+
+	df_inf_time, df_cumulative_inf_time = pd.DataFrame(avg_inf_time_dict), pd.DataFrame(prediction_dict)
+
+	df_inf_time_branches = pd.concat([df_inf_time, df_cumulative_inf_time], axis=1)
+
+	# Returns confidences and predictions into a DataFrame.
+	return df_inf_time_branches
 
 
 def sendData(url, data):

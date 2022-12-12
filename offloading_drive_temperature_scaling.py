@@ -48,6 +48,7 @@ def main(args):
 	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
 
+	sys.exit()
 
 	beta_list = np.arange(0, 1, args.step)
 
