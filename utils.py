@@ -194,8 +194,8 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 
 	avg_inf_time, avg_cumulative_inf_time = np.array(avg_inf_time).T, np.array(avg_cumulative_inf_time).T
 
-	avg_inf_time_dict = dict(zip(conf_columns_list, avg_inf_time))
-	avg_cumulative_inf_time_dict = dict(zip(correct_columns_list, avg_cumulative_inf_time))
+	avg_inf_time_dict = dict(zip(conf_columns_list, [avg_inf_time]))
+	avg_cumulative_inf_time_dict = dict(zip(correct_columns_list, [avg_cumulative_inf_time]))
 
 	df_inf_time, df_cumulative_inf_time = pd.DataFrame(avg_inf_time_dict), pd.DataFrame(prediction_dict)
 
