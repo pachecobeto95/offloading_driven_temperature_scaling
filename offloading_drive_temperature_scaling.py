@@ -8,45 +8,51 @@ import pandas as pd
 
 def main(args):
 
-
 	model_id = config.models_id_dict[args.model_name]
 
 	n_classes = config.nr_class_dict[args.dataset_name]
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
-	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
-		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
+	#model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
+	#	"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
-	inference_data_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
-		"no_calib_exp_data_%s.csv"%(model_id))
+
+	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
+
+	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
 
 	# Instantiate LoadDataset class
-	dataset = utils.LoadDataset(args, model_id)
+	#dataset = utils.LoadDataset(args, model_id)
 
-	dataset_path = config.dataset_path_dict[args.dataset_name]
-	idx_path = config.idx_path_dict[args.dataset_name]
+	#dataset_path = config.dataset_path_dict[args.dataset_name]
+	#idx_path = config.idx_path_dict[args.dataset_name]
 
-	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
+	#_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
 
 	#Instantiate the Early-exit DNN model.
-	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
-		args.exit_type, device, args.distribution)
+	#ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
+	#	args.exit_type, device, args.distribution)
 	#Load the trained early-exit DNN model.
-	ee_model = ee_model.to(device)
-	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
+	#ee_model = ee_model.to(device)
+	#ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
+	#df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
 
 	# Obtain the average inference time to process up to each side branch.
-	inference_time_branch = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, args.threshold, device)
+	#inference_time_branch = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, args.threshold, device)
 
-	theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
-		args.c, args.alpha, args.gamma)
+	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
+	#	args.c, args.alpha, args.gamma)
 
-	theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
-		args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
+	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+
+	
+	df_inf_data = pd.read_csv(inf_data_path)
+	df_inf_time = pd.read_csv(inf_time_path)
+
 
 	sys.exit()
 
