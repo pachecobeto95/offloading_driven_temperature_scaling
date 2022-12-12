@@ -159,9 +159,9 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	conf_list, correct_list = np.array(conf_list).T, np.array(correct_list).T
 
 	conf_dict = dict(zip(conf_columns_list, conf_list))
-	prediction_dict = dict(zip(correct_columns_list, prediction_list))
+	correct_dict = dict(zip(correct_columns_list, correct_list))
 
-	df_confs, df_corrects = pd.DataFrame(conf_dict), pd.DataFrame(prediction_dict)
+	df_confs, df_corrects = pd.DataFrame(conf_dict), pd.DataFrame(correct_dict)
 
 	df_data = pd.concat([df_confs, df_corrects], axis=1)
 
