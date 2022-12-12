@@ -177,8 +177,9 @@ class SPSA (object):
 
 		delta = Bernoulli(dim=self.dim+1)
 
-		#loss_old, _, _ = self.compute_loss(theta)
-		loss_old = self.compute_loss(theta)
+		loss_old, _, _ = self.compute_loss(theta)
+
+		sys.exit()
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
@@ -295,15 +296,6 @@ def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_a
 	f2 = (inf_time_current - loss_time)/loss_time	
 
 	return f1+f2
-
-def joint_function_analysis(temp_list, n_branches, threshold, df, inf_time_branch, beta):
-
-	acc_current = beta*accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current = (1-beta)*compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
-	joint_f = acc_current + inf_time_current
-
-	return joint_f, acc_current, inf_time_current
-
 
 
 def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
@@ -491,3 +483,13 @@ def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branch
 	optim.save_temperature_analysis(config.filePath_joint_opt, theta_opt, f_acc, f_inf_time, n_exits, beta)
 
 	return theta_opt, loss_opt
+
+def joint_function_analysis(temp_list, n_branches, threshold, df, inf_time_branch, beta):
+
+	acc_current = beta*accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current = (1-beta)*compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+	joint_f = acc_current + inf_time_current
+
+	return joint_f, acc_current, inf_time_current
+
+
