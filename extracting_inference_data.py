@@ -24,8 +24,6 @@ def main(args):
 	inf_time_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
 		"inference_time_%s.csv"%(model_id))
 
-	print(args.n_branches)
-	sys.exit()
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
