@@ -40,7 +40,7 @@ def main(args):
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	#df_inference_data = utils.run_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
+	df_inference_data = utils.run_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
 
 	# Obtain the average inference time to process up to each side branch.
 	df_inf_time_branches = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, 
