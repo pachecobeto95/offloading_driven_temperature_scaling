@@ -24,6 +24,8 @@ def main(args):
 	inf_time_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
 		"inference_time_%s.csv"%(model_id))
 
+	print(args.n_branches)
+	sys.exit()
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
 
@@ -38,6 +40,7 @@ def main(args):
 	#Load the trained early-exit DNN model.
 	ee_model = ee_model.to(device)
 	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
+
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_inference_data = utils.run_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
