@@ -53,19 +53,14 @@ def main(args):
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_inf_time = pd.read_csv(inf_time_path)
 
-	print(df_inf_time)
 
-	sys.exit()
 
 	beta_list = np.arange(0, 1, args.step)
 
 	for beta in beta_list:
 		print("Start Joint Optimization")
-		#theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, loss_opt_acc, loss_opt_inf_time, args.threshold, args.max_iter, 
-		#	args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
-		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_preds, inference_time_branch, args.threshold, args.max_iter, 
+		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_inf_data, df_inf_time, args.threshold, args.max_iter, 
 			args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
-
 
 		print("Success")
 		sys.exit()
