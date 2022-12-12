@@ -198,12 +198,6 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 		avg_inf_time_dict["inf_time_branch_%s"%(i+1)] = [avg_inf_time[i]]
 		avg_cumulative_inf_time_dict["cumulative_inf_time_branch_%s"%(i+1)] = [avg_cumulative_inf_time[i]]		
 
-	print(avg_inf_time_dict)
-	sys.exit()
-
-	avg_inf_time_dict = dict(zip(conf_columns_list, [avg_inf_time]))
-	avg_cumulative_inf_time_dict = dict(zip(correct_columns_list, [avg_cumulative_inf_time]))
-
 	df_inf_time, df_cumulative_inf_time = pd.DataFrame(avg_inf_time_dict), pd.DataFrame(avg_cumulative_inf_time_dict)
 
 	df_inf_time_branches = pd.concat([df_inf_time, df_cumulative_inf_time], axis=1)

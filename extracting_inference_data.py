@@ -18,11 +18,9 @@ def main(args):
 	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
 		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
-	inf_data_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
-		"inference_data_%s.csv"%(model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
 
-	inf_time_path = os.path.join(config.DIR_NAME, "models", args.model_name, "results", 
-		"inference_time_%s.csv"%(model_id))
+	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
 
 	# Instantiate LoadDataset class
 	dataset = utils.LoadDataset(args, model_id)
