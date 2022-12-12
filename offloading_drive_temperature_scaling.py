@@ -53,6 +53,7 @@ def main(args):
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_inf_time = pd.read_csv(inf_time_path)
 
+	print(df_inf_time)
 
 	sys.exit()
 
