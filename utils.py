@@ -174,8 +174,7 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 
 	inf_time_list, cumulative_inf_time_list = [], []
 
-	conf_columns_list = ["inf_time_branch_%s"%(i) for i in range(1, n_exits+1)]
-	correct_columns_list = ["cumulative_inf_time_branch_%s"%(i)  for i in range(1, n_exits+1)]	
+	avg_inf_time_dict, avg_cumulative_inf_time_dict = {}, {}
 	
 	model.eval()
 	with torch.no_grad():
@@ -192,7 +191,15 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 	avg_inf_time = np.mean(inf_time_list, axis=0)
 	avg_cumulative_inf_time = np.mean(cumulative_inf_time_list, axis=0)
 
-	avg_inf_time, avg_cumulative_inf_time = np.array(avg_inf_time).T, np.array(avg_cumulative_inf_time).T
+	#avg_inf_time, avg_cumulative_inf_time = np.array(avg_inf_time).T, np.array(avg_cumulative_inf_time).T
+
+	
+	for i in range(n_exits):
+		avg_inf_time_dict["inf_time_branch_%s"%(i+1)] = [avg_inf_time[i]]
+		avg_cumulative_inf_time_dict["cumulative_inf_time_branch_%s"%(i+1)] = [avg_cumulative_inf_time[i]]		
+
+	print(avg_inf_time_dict)
+	sys.exit()
 
 	avg_inf_time_dict = dict(zip(conf_columns_list, [avg_inf_time]))
 	avg_cumulative_inf_time_dict = dict(zip(correct_columns_list, [avg_cumulative_inf_time]))
