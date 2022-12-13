@@ -1,6 +1,6 @@
 import os, time, sys, json, os, argparse, torch
 import config, utils, spsa
-from early_exit_dnn import Early_Exit_DNN
+#from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
 
@@ -18,9 +18,14 @@ def main(args):
 	#	"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
 
-	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
+	#inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
 
-	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
+	#inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
+
+	inf_data_path = os.path.join("inference_data_%s_%s.csv"%(args.model_name, model_id))
+
+	inf_time_path = os.path.join("inference_time_%s_%s.csv"%(args.model_name, model_id))
+
 
 	# Instantiate LoadDataset class
 	#dataset = utils.LoadDataset(args, model_id)

@@ -361,6 +361,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
+
 	remaining_data = df
 
 	for i in range(n_branches):
@@ -378,6 +379,8 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+	print(numexits, correct_list)
+	sys.exit()
 	#print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	print("Neg Accuracy: %s" %( - acc_edge))
