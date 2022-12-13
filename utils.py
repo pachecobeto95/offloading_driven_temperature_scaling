@@ -150,6 +150,8 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			confs, predictions = model.evaluating_prediction(data)
+
+			print(confs, predictions, target)
 			
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
