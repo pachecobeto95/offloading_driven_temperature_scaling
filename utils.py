@@ -139,8 +139,8 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 	n_exits = n_branches + 1
 	conf_list, correct_list = [], []
 	conf_columns_list = ["conf_branch_%s"%(i) for i in range(1, n_exits+1)]
-	correct_columns_list = ["correct_branch_%s"%(i)  for i in range(1, n_branches+1+1)]
-	
+	correct_columns_list = ["correct_branch_%s"%(i)  for i in range(1, n_exits+1)]
+	result_dict = {}
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
@@ -151,24 +151,23 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 			# The next line gathers the dictionary of the inference time for running the current input data.
 			confs, predictions = model.evaluating_prediction(data)
 
-			print(confs, predictions, target)
-			
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
 			conf_list.append(confs)
 
 
-	conf_list, correct_list = np.array(conf_list).T, np.array(correct_list).T
+	conf_list, correct_list = np.array(conf_list), np.array(correct_list)
 
-	conf_dict = dict(zip(conf_columns_list, conf_list))
-	correct_dict = dict(zip(correct_columns_list, correct_list))
 
-	df_confs, df_corrects = pd.DataFrame(conf_dict), pd.DataFrame(correct_dict)
+	for i in range(n_exits):
+		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
+		result_dict["correct_branch_%s"%(i+1)] = correct_list[:, i]
 
-	df_data = pd.concat([df_confs, df_corrects], axis=1)
+
+	df = pd.DataFrame(np.array(list(result_dict.values())).T, columns=list(result_dict.keys()))
 
 	# Returns confidences and predictions into a DataFrame.
-	return df_data
+	return df
 
 def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device):
 
