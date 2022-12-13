@@ -158,7 +158,8 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 
 	conf_list, correct_list = np.array(conf_list), np.array(correct_list)
 
-	print([sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)])
+	#print([sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)])
+	print(correct_list[:, -1])
 
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
