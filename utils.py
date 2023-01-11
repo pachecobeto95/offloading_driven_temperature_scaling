@@ -15,6 +15,8 @@ class LoadDataset():
 		self.split_ratio = args.split_ratio
 		self.seed = args.seed
 
+		print(self.input_dim)
+
 		# Note that we apply data augmentation in the training dataset.
 		self.transformations_train = transforms.Compose([
 			transforms.Resize(self.input_dim),
