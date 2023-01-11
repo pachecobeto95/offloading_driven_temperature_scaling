@@ -38,9 +38,10 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	val_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 	test_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 
-	train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_%s.npy"%(args.model_id))
-	val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_%s.npy"%(args.model_id))
-	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_%s.npy"%(args.model_id))
+	train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
+	val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
+	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
+	
 
 	if( os.path.exists(train_idx_path) ):
 		#Load the indices to always use the same indices for training, validating and testing.
