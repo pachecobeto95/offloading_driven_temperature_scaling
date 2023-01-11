@@ -31,27 +31,13 @@ def main(args):
 	# Instantiate LoadDataset class
 	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
-
 	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
 
-	print("pronto")
-	sys.exit()
-
-
-	idx_path = config.idx_path_dict[args.dataset_name]
-
-	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
-
-	#Instantiate the Early-exit DNN model.
-	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
-		args.exit_type, device, args.distribution)
-	#Load the trained early-exit DNN model.
-	ee_model = ee_model.to(device)
-	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-	ee_model.eval()
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_inference_data = utils.run_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
+
+	sys.exit()
 
 	# Obtain the average inference time to process up to each side branch.
 	df_inf_time_branches = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, 
