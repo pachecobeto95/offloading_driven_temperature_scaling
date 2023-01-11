@@ -31,7 +31,7 @@ def main(args):
 	# Instantiate LoadDataset class
 	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
-	for data in test_loader
+	for data in test_loader:
 		print(data[0].shape)
 		sys.exit()
 
