@@ -4,6 +4,24 @@ import numpy as np
 import config
 import pandas as pd
 
+def get_indices(dataset, split_ratio):
+	
+	nr_samples = len(dataset)
+	indices = list(range(nr_samples))
+	np.random.shuffle(indices)
+
+	train_val_size = nr_samples - int(np.floor(split_ratio * nr_samples))
+
+
+	train_val_idx, test_idx = indices[:train_val_size], indices[train_val_size:]
+
+	np.random.shuffle(train_val_idx)
+
+	train_size = len(train_val_idx) - int(np.floor(split_ratio * len(train_val_idx) ))
+
+	train_idx, val_idx = train_val_idx[:train_size], train_val_idx[train_size:]
+
+	return train_val_idx, val_idx, test_idx
 
 
 def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
