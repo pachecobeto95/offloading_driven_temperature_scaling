@@ -31,7 +31,12 @@ def main(args):
 	# Instantiate LoadDataset class
 	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
+
+	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
+
+	print("pronto")
 	sys.exit()
+
 
 	idx_path = config.idx_path_dict[args.dataset_name]
 

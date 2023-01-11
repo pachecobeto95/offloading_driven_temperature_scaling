@@ -1,5 +1,5 @@
 from torchvision import datasets, transforms
-import torch, os, sys, requests
+import torch, os, sys, requests, early_exit_dnn
 import numpy as np
 import config
 import pandas as pd
@@ -236,3 +236,31 @@ def read_temp(filepath):
 	temp_list = np.array([df["temp_branch_%s"%(i+1)][0] for i in range(config.n_exits)])
 	loss = df["loss"][0]
 	return temp_list, loss
+
+
+def load_ee_model(args, model_path, n_classes, dim, device):
+
+
+	if (args.n_branches == 1):
+
+		ee_model = early_exit_dnn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, dim, device, args.exit_type, 
+			args.distribution)
+
+	elif(args.n_branches == 3):
+		ee_model = b_mobilenet.B_MobileNet(n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device)
+
+	elif(args.n_branches == 5):
+
+		ee_model = early_exit_dnn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, dim, device, args.exit_type, 
+			args.distribution)
+
+	else:
+		raise Exception("The number of early-exit branches is not available yet.")
+
+
+	ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
+
+	ee_model = ee_model.to(device)
+	ee_model.eval()
+
+	return ee_model
