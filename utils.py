@@ -62,7 +62,7 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 
 	train_idx = np.load(train_idx_path)
 	val_idx = np.load(val_idx_path)
-	test_idx = np.load(test_idx_path, allow_pickle=True)
+	test_idx = list(np.load(test_idx_path, allow_pickle=True))
 
 	print(test_idx, type(test_idx))
 	sys.exit()
