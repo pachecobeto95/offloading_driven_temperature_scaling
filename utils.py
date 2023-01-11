@@ -133,6 +133,8 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 			#confs, predictions = model.evaluating_prediction(data)
 			confs, predictions = model(data)
 
+			print(confs, predictions, target)
+
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
 			conf_list.append(confs)
