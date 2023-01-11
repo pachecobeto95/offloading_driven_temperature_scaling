@@ -138,7 +138,7 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 			conf_list.append(confs)
 
 
-	conf_list, correct_list = np.array(conf_list), np.array(correct_list)
+	#conf_list, correct_list = np.array(conf_list), np.array(correct_list)
 
 	print([sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)])
 	sys.exit()
