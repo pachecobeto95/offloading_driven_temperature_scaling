@@ -47,7 +47,7 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 		#Load the indices to always use the same indices for training, validating and testing.
 		train_idx = np.load(train_idx_path)
 		val_idx = np.load(val_idx_path)
-		test_idx = np.load(test_idx_path, allow_pickle=False)
+		test_idx = np.load(test_idx_path, allow_pickle=True)
 
 	else:
 		# This line get the indices of the samples which belong to the training dataset and test dataset. 
