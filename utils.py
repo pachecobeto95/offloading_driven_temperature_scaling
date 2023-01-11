@@ -1,5 +1,5 @@
 from torchvision import datasets, transforms
-import torch, os, sys, requests, early_exit_dnn
+import torch, os, sys, requests, early_exit_dnn, b_mobilenet
 import numpy as np
 import config
 import pandas as pd
