@@ -31,7 +31,8 @@ def main(args):
 	# Instantiate LoadDataset class
 	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
-	print(len(test_loader))
+
+	sys.exit()
 
 	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
 

@@ -43,30 +43,17 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
 
 
-	if( os.path.exists(train_idx_path) ):
-		#Load the indices to always use the same indices for training, validating and testing.
-		train_idx = np.load(train_idx_path)
-		val_idx = np.load(val_idx_path)
-		test_idx = np.load(test_idx_path, allow_pickle=True)
-		print(test_idx)
-
-	else:
-		# This line get the indices of the samples which belong to the training dataset and test dataset. 
-		train_val_idx, test_idx = get_indices(train_set, args.split_ratio)
-		train_idx, val_idx = get_indices(train_set, args.split_ratio)
-
-		#Save the training, validation and testing indices.
-		np.save(train_idx_path, train_idx), np.save(val_idx_path, val_idx), np.save(test_idx_path, test_idx)
+	# This line get the indices of the samples which belong to the training dataset and test dataset. 
+	train_val_idx, test_idx = get_indices(train_set, args.split_ratio)
+	train_idx, val_idx = get_indices(train_set, args.split_ratio)
 
 	train_data = torch.utils.data.Subset(train_set, indices=train_idx)
 	val_data = torch.utils.data.Subset(val_set, indices=val_idx)
 	test_data = torch.utils.data.Subset(test_set, indices=test_idx)
 
-	print(test_data)
-
-	train_loader = torch.utils.data.DataLoader(train_data, batch_size=args.batch_size_train, shuffle=True, num_workers=4, pin_memory=True)
-	val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=4, pin_memory=True)
-	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=4, pin_memory=True)
+	train_loader = torch.utils.data.DataLoader(train_data, batch_size=args.batch_size_train, shuffle=True, num_workers=1, pin_memory=True)
+	val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=1, pin_memory=True)
+	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=1, pin_memory=True)
 
 	return train_loader, val_loader, test_loader
 
