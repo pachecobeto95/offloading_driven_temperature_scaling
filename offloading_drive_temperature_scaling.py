@@ -12,15 +12,13 @@ def main(args):
 
 	n_classes = config.nr_class_dict[args.dataset_name]
 
-	print(n_classes)
-
-	sys.exit()
-
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
-	#model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
-	#	"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
+	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
+		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
 
+	print(model_id, model_path)
+	sys.exit()
 
 	#inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
 
