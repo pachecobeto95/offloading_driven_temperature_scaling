@@ -24,13 +24,12 @@ def main(args):
 
 	idx_path = config.idx_path_dict[args.dataset_name]
 
-
 	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
 	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
 	# Instantiate LoadDataset class
-	_, _, test_loader = utils.load_caltech256(args, dataset_path, save_indices_path, input_dim, dim)
+	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
 	sys.exit()
 
