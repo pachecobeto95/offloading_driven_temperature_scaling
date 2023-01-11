@@ -209,7 +209,7 @@ class B_MobileNet(nn.Module):
       prob_vector = self.softmax(output_branch)
       conf, infered_class = torch.max(prob_vector, 1)
 
-      conf_list.append(conf), class_list.append(infered_class)
+      conf_list.append(conf), class_list.append(infered_class-1)
 
     x = self.stages[-1](x)
     x = x.mean(3).mean(2)
@@ -219,7 +219,7 @@ class B_MobileNet(nn.Module):
 
     infered_conf, infered_class = torch.max(prob_vector, 1)
     
-    conf_list.append(infered_conf), class_list.append(infered_class)
+    conf_list.append(infered_conf), class_list.append(infered_class-1)
 
     return conf_list, class_list
 
