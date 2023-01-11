@@ -13,19 +13,27 @@ def main(args):
 
 	n_classes = config.nr_class_dict[args.dataset_name]
 
+	input_dim, dim = config.input_dim_dict[args.n_branches]
+
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
-		"ee_mobilenet_branches_%s_id_%s.pth"%(args.n_branches, model_id))
-
-	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
-
-	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
-
-	# Instantiate LoadDataset class
-	dataset = utils.LoadDataset(args, model_id)
+		"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
+
+	idx_path = config.idx_path_dict[args.dataset_name]
+
+
+	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+
+	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+
+	# Instantiate LoadDataset class
+	_, _, test_loader = load_caltech256(args, dataset_path, save_indices_path, input_dim, dim)
+
+	sys.exit()
+
 	idx_path = config.idx_path_dict[args.dataset_name]
 
 	_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
@@ -75,10 +83,6 @@ if (__name__ == "__main__"):
 		help='Train Batch Size. Default: %s'%(config.batch_size_train))
 	parser.add_argument('--batch_size_test', type=int, default=config.batch_size_test, 
 		help='Test Batch Size. Default: %s'%(config.batch_size_test))
-
-	# This argument defines the input dimension.
-	parser.add_argument('--input_dim', type=int, default=config.input_dim, 
-		help='Input Dimension. Default: %s'%(config.input_dim))
 
 	# This argument defines the seed for random operations.
 	parser.add_argument('--seed', type=int, default=config.seed, 
