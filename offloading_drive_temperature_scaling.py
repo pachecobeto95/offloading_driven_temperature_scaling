@@ -13,7 +13,6 @@ def main(args):
 	n_classes = config.nr_class_dict[args.dataset_name]
 
 	print(n_classes)
-	print("oi")
 
 	sys.exit()
 
