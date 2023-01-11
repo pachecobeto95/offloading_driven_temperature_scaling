@@ -128,6 +128,9 @@ if (__name__ == "__main__"):
 	parser.add_argument('--step', type=float, default=config.step, 
 		help="Step of beta. Default: %s"%(config.step))	
 
+	parser.add_argument('--model_id', type=int, default=1)	
+
+
 	args = parser.parse_args()
 
 	main(args)
