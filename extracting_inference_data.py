@@ -11,7 +11,7 @@ def main(args):
 
 	model_id = config.models_id_dict[args.model_name]
 
-	n_classes = config.nr_class_dict[args.dataset_name]
+	n_classes = config.nr_class_dict[args.dataset_name][args.n_branches]
 
 	input_dim, dim = config.input_dim_dict[args.n_branches]
 
