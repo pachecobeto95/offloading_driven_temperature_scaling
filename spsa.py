@@ -23,10 +23,11 @@ class Bernoulli(object):
 		return np.array([random.choice((-self.r, self.r)) for _ in range(self.dim)])
 
 
+
 class SPSA (object):
 
-	def __init__(self, function, theta_initial, max_iter, dim, a0, c, alpha, gamma,  min_bounds, args=(), 
-		max_patience=20, function_tol=None, param_tol=None, ens_size=5, epsilon=1e-4):
+	def __init__(self, function, theta_initial, nr_iter, n_branches, a0, c, alpha, gamma,  min_bounds, args=(), 
+		function_tol=None, param_tol=None, ens_size=5, seed=42):
 
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
 
@@ -43,228 +44,140 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.max_iter = max_iter
-		self.dim = dim
-		self.a = a0
-		self.A = max_iter/10
+		self.nr_iter = 100000
+		self.n_branches = n_branches
+		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = c
+		self.c = 1e-2 # a small number
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
 		self.function_tol = function_tol
 		self.param_tol = param_tol
-		self.epsilon = epsilon
-		self.max_patience = max_patience
+
+		# Defining the seed to have same results
+		np.random.seed(seed)
 
 
-	def compute_ak(self, k):
-		# This method returns the parameter ak for each iteration
-		# k - is the current number of iterations
-		return self.a/(k+1+self.A)**self.alpha
+	def init_hyperparameters(self):
 
-	def compute_ck(self, k):
-		# This method computes the parameter ck for each iteration
-		# k - is the current number of iterations
-		return self.c/(k+1)**self.gamma
+		# A is <= 10% of the number of iterations
+		A = self.nr_iter*0.1
 
-	def estimate_gradient(self, theta, ck, delta):
+		# order of magnitude of first gradients
+		magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
 
-		# This method estimates the gradient based on two measuments of the objective function self.function.
+		# the number 2 in the front is an estimative of
+		# the initial changes of the parameters,
+		# different changes might need other choices
+		a = 2*((A+1)**self.alpha)/magnitude_g0
 
-		ghat = 0
-
-		for i in range(2):
-			
-			# Compute the Delta vector
-			delta_k = delta()
-
-			#Stochastic perturbantions
-			theta_plus = theta + ck * delta_k
-			theta_minus = theta - ck * delta_k
-			
-			#This block forces the theta parameters after stochastic perturbations to be inside the limits 
-			#defined by max_bounds and min_bounds.
-			#theta_plus = np.minimum(theta_plus, self.max_bounds)
-			theta_minus = np.maximum(theta_minus, self.min_bounds)
-
-			y_plus, _, _ = self.compute_loss(theta_plus)
-			y_minus, _, _ = self.compute_loss(theta_minus)
-
-			ghat += (y_plus-y_minus)/(2*ck*delta_k)
-
-		
-		ghat = ghat/float(self.ens_size)
-
-		return ghat
-
-	def check_boundaries(self, theta):
-		""" This method checks whether the current theta is inside the boundaries
-			In this case, we check only the min_bounds"""
-
-		theta = np.maximum(theta, self.min_bounds)
-		return theta
-
-	def adjusting_to_bounds(self, theta, ghat, ak):
-
-		not_all_pass = True
-		this_ak = ( theta*0 + 1 )*ak
-		theta_new = theta
-		while (not_all_pass):
-			#out_of_bounds = np.where ( np.logical_or (theta_new - this_ak*ghat > self.max_bounds, 
-			#	theta_new - this_ak*ghat < self.min_bounds ) )[0]
-			out_of_bounds = np.where (theta_new - this_ak*ghat < self.min_bounds)[0]
-			theta_new = theta - this_ak*ghat
-			if len ( out_of_bounds ) == 0:
-				theta = theta - this_ak*ghat
-				not_all_pass = False
-			else:
-				this_ak[out_of_bounds] = this_ak[out_of_bounds]/2.
-
-		return theta
-
-	def compute_distance_theta(self, theta_old, theta):
-		return np.linalg.norm(theta_old-theta)/np.linalg.norm(theta_old)
-	
-	
-	def check_function_tolerance(self, loss_new, loss_old, theta, theta_saved):
-
-		reject_iter = False
-
-		if (self.function_tol is not None):
-
-			if (np.abs(loss_new-loss_old) > self.function_tol):
-				theta = theta_saved
-				reject_iter = True
-			else:
-				loss_old = loss_new
-
-		return theta, loss_old, reject_iter
-
-
-	def check_param_tolerance(self, loss_new, loss_old, theta, theta_saved):
-		"""
-		This method rejects an iteration if a theta update results in a shifts too much the objective function.
-		This procedure aims to decrease slowly to avoid deconvergence.
-
-		Outputs:
-			theta: this is the current parameter
-			reject_iter: this output is a bool that denotes if we must reject the iteration
-		"""
-
-		reject_iter = False
-
-		if (self.param_tol is not None):
-			delta_theta = theta_dif = np.abs ( theta - theta_saved )
-
-			if (not np.all ( delta_theta < self.param_tol )):
-				theta = theta_saved
-				reject_iter = True
-
-		return theta, loss_old, reject_iter
+		return a, A, c
 
 	def compute_loss(self, theta):
 		return self.function(theta, self.dim, *(self.args) )
 
-	def min(self, report_interval=1000):
+	def estimate_grad(self, theta, ck):
 
-		n_iter, patience = 0, 0
-		best_loss, best_f_acc, best_f_inf_time = np.inf, np.inf, np.inf
-		losses = []
+		grad_hat = 0.0
+
+		for i in range(self.ens_size):
+
+			# bernoulli-like distribution
+			deltak = np.random.choice([-1, 1], size=self.n_branches+1) # TROCAR ATÉ O FINAL DO DIA.
+
+			ck_deltak = ck * deltak
+
+			#Stochastic perturbantions
+			theta_plus = theta + ck_deltak
+			theta_minus = theta - ck_deltak
+
+			delta_y_pred = self.compute_loss(theta_plus) - self.compute_loss(theta_minus)
+
+			grad_hat += (delta_y_pred)/(2*ck_deltak)
+
+		avg_grad_hat = grad_hat/float(self.ens_size)
+
+		return avg_grad_hat
+
+	def compute_ak(self, a, A, k):
+		return a/((k+A)**(self.alpha))
+
+	def compute_ck(self, c, k):
+		return c/(k**(self.gamma))
+
+
+	def check_function_tolerante(self, theta, old_theta, k):
+	
+		j_old = self.compute_loss(old_theta)
+		j_new = self.compute_loss(theta)
+
+		j_delta = np.abs( j_new - j_old)
+
+
+		return False if(j_delta > self.function_tol) else True
+
+
+	def check_theta_tolerante(self, theta, old_theta, k):
+
+		delta_theta = np.abs (theta - old_theta)
+
+		return False if(delta_theta > self.param_tol) else True
+
+
+
+	def check_violation_step(self, theta, old_theta, k):
+
+		is_function_step_ok, is_theta_step_ok = True, True
+
+		if (self.function_tol is not None):
+			is_function_step_ok = check_function_tolerante(theta, old_theta, k)
+
+
+		if (self.param_tol is not None):
+			is_theta_step_ok = check_theta_tolerante(theta, old_theta, k)
+
+
+		if(is_function_step_ok and is_theta_step_ok):
+			return theta, k + 1
+		else:
+			return old_theta, k
+
+	def min(self):
+
 		theta = self.theta_initial
 
-		delta = Bernoulli(dim=self.dim+1)
+		a, A, c = self.init_hyperparameters()
 
-		print(self.theta_initial, self.dim)
+		k = 1
+		#for k in range(1, self.nr_iter):
+		while (k <= self.nr_iter):
 
-		sys.exit()
+			old_theta = theta
 
+			#Computes the parameters for each iteration
+			ak = self.compute_ak(a, A, k)
+			ck = self.compute_ck(c, k)
 
-		loss_old, _, _ = self.compute_loss(theta)
+			#Estimate Gradient
+			grad_hat = self.estimate_grad(theta, ck)
 
+			# update parameters
+			theta -= ak*grad_hat
 
-		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
-		#Convergence means that the theta is not significantly changes until max_patience times in a row.
+			#Avoid for constraint violation
+			theta = max(theta, self.min_bounds)
 
-		#while ((patience < self.max_patience) and (n_iter < self.max_iter)):
-		while (n_iter < self.max_iter):
-
-			# Store theta at the start of the interation. We update theta later.
-			theta_saved = theta
-
-			#Obtains the ak, ck for the current iteration
-			ak = self.compute_ak(n_iter)
-			ck = self.compute_ck(n_iter)
-
-			# Get estimated gradient
-			ghat = self.estimate_gradient(theta, ck, delta)
-
-			theta = self.adjusting_to_bounds(theta, ghat, ak)
-
-			# The new loss value evaluating the objective function.
-			#loss, f_acc, f_inf_time = self.compute_loss(theta)
-			loss = self.compute_loss(theta)
 			
-			# Saves the loss in a list to create a loss history
-			losses += [loss]
-
-			# Function tolerance: 
-			# You can ignore theta values that result in large shifts in the function value.
-			# This procedure aims to decrease slowly to avoid deconvergence.
-			#theta, loss_old, reject_iter = self.check_function_tolerance(loss, loss_old, theta, theta_saved)
-
-			# Parameter tolerance: 
-			# You can ignore iteration if a theta update results in a shifts too much the objective function.
-			# This procedure aims to decrease slowly to avoid deconvergence.			
-			#theta, loss_old, reject_iter = self.check_param_tolerance(loss, loss_old, theta, theta_saved)
-
-			if(loss < best_loss):
-				best_loss = loss
-				best_theta = theta
-				best_f_acc = f_acc
-				best_f_inf_time = f_inf_time
-			#	patience = 0
-			#else:
-			#	patience += 1
+			theta, k = self.check_violation_step(theta, old_theta, k)
 
 
-			#patience = patience + 1 if(self.compute_distance_theta(theta_saved, theta) < self.epsilon) else 0
+		y_final = self.compute_loss(theta):
 
+		print("Parameter: %s, Function: %s"%(theta, y_final))
 
-			n_iter += 1
-
-			# Be friendly to the user, tell him/her how it's going on...
-			if(n_iter%report_interval == 0):
-				logging.debug("Beta: %s, Iter: %s, Loss: %s, Best Loss: %s, Best Theta: %s."%(self.args[-1], n_iter, loss, best_loss, best_theta))
-
-		#print("Iter: %s, Loss: %s, Best Theta: %s."%(n_iter, loss, theta))
-
-		return best_theta, best_loss, best_f_acc, best_f_inf_time
-
-
-	def save_temperature(self, filepath, loss, theta, n_exits):
-		results = {"loss": loss, "beta": beta}
-
-		for i in range(n_exits):
-			results["temp_branch_%s"%(i+1)] = theta[i]
-
-		df = pd.DataFrame([results])
-		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
-
-	def save_temperature_analysis(self, filepath, theta, loss_acc, loss_inf_time, n_exits, beta):
-
-		results = {"loss_acc": loss_acc, "loss_inf_time": loss_inf_time, "beta": beta}
-
-		print(theta)
-		for i in range(n_exits):
-			results["temp_branch_%s"%(i+1)] = theta[i]
-
-		df = pd.DataFrame([results])
-		df.to_csv(filepath, mode='a', header=not os.path.exists(filepath))
-
-def objective_function(x):
-	return x[0]**2 + x[1]**2
+		return theta, y_final 
 
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
@@ -382,12 +295,10 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	print(numexits, correct_list)
-	sys.exit()
-	#print(correct_list, numexits)
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	print("Neg Accuracy: %s" %( - acc_edge))
 
+	sys.exit()
 	return - acc_edge
 
 
