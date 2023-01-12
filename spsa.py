@@ -408,7 +408,7 @@ def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches, a0, c, alpha
 	min_bounds = np.zeros(n_exits)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_inf_data))
 
 	sys.exit()
 
