@@ -752,3 +752,45 @@ class Early_Exit_DNN(nn.Module):
     return output_list, conf_list, class_list
 
 
+
+  def forwardInference(self, x, threshold):
+    """
+    This method is used to train the early-exit DNN model
+    """
+    conf_list, class_list  = [], []
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+
+      # Note that if confidence value is greater than a p_tar value, we terminate the dnn inference and returns the output
+      if (conf.item() >= threshold):
+        return output_branch, conf, infered_class, True
+
+      else:
+        conf_list.append(conf.item()), class_list.append(infered_class)
+
+    x = self.stages[-1](x)
+    
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    
+    # Note that if confidence value is greater than a p_tar value, we terminate the dnn inference and returns the output
+    # This also happens in the last exit
+    if (conf.item() >= threshold):
+      return output, conf.item(), infered_class, False
+    else:
+
+      # If any exit can reach the p_tar value, the output is give by the more confidence output.
+      # If evaluation, it returns max(output), max(conf) and the number of the early exit.
+
+      conf_list.append(conf.item()), class_list.append(infered_class)
+      max_conf = np.argmax(conf_list)
+      return output, conf_list[max_conf], class_list[max_conf], False
+
+
+
