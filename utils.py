@@ -1,5 +1,5 @@
 from torchvision import datasets, transforms
-import torch, os, sys, requests, early_exit_dnn, b_mobilenet
+import torch, os, sys, requests, early_exit_dnn, b_mobilenet, ee_nn
 import numpy as np
 import config
 import pandas as pd
@@ -259,7 +259,7 @@ def load_ee_model(args, model_path, n_classes, dim, device):
 
 	if (args.n_branches == 1):
 
-		ee_model =  b_mobilenet.B_MobileNet(258, args.pretrained, args.n_branches, 300, None, device)
+		ee_model =  ee_nn.B_MobileNet(258, args.pretrained, args.n_branches, 300, None, device)
 
 	elif(args.n_branches == 3):
 		ee_model = b_mobilenet.B_MobileNet(n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device)
