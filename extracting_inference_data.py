@@ -28,21 +28,21 @@ def main(args):
 
 	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
-	# Instantiate LoadDataset class
+	threshold_list = [0.7, 0.8, 0.9]
+
+	#Load Dataset 
 	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
 
-
+	#Load Early-exit DNN model.
 	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
 
-
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	df_inference_data = utils.run_ee_dnn_inference(test_loader, ee_model, args.n_branches, device)
-
-	sys.exit()
+	df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
 
 	# Obtain the average inference time to process up to each side branch.
-	df_inf_time_branches = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, 
-		args.threshold, device)
+	
+	df_inf_time_branches = utils.extracting_ee_inference_time(ee_model, test_loader, args.n_branches, threshold_list, device)
+
 
 	df_inference_data.to_csv(inf_data_path)
 
@@ -113,9 +113,6 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--gamma', type=int, default=config.gamma, 
 		help='gamma. Default: %s'%(config.gamma))
-
-	parser.add_argument('--threshold', type=float, default=config.threshold, 
-		help="Threshold that decides if the prediction if confidence enough. Default: %s"%(config.threshold))	
 
 	parser.add_argument('--step', type=float, default=config.step, 
 		help="Step of beta. Default: %s"%(config.step))	

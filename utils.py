@@ -109,7 +109,7 @@ def get_confs_predictions(data_path, n_branches):
 	# Returns confidences and predictions into a DataFrame.
 	return df_data
 
-def run_ee_dnn_inference(test_loader, model, n_branches, device):
+def extracting_ee_inference_data(test_loader, model, n_branches, device):
 	"""
 	This function gathers the processing time to run up to each block layer.
 	Then, this function repeats this procedure for other inputs on test sets.
@@ -134,41 +134,48 @@ def run_ee_dnn_inference(test_loader, model, n_branches, device):
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
 
-			# The next line gathers the dictionary of the inference time for running the current input data.
-			#confs, predictions = model.evaluating_prediction(data)
+			# Obtain confs and predictions for each side branch.
 			confs, predictions = model(data)
-
-			#print(confs, predictions, target)
 
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
 			conf_list.append(confs)
 
+	conf_list, correct_list = np.array(conf_list), np.array(correct_list)
 
-	#conf_list, correct_list = np.array(conf_list), np.array(correct_list)
-	correct_list = np.array(correct_list)
+	accuracy_branches = [sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)]
 
-	print([sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)])
-	sys.exit()
+	print("Accuracy: %s"%(accuracy_branches))
 
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
 		result_dict["correct_branch_%s"%(i+1)] = correct_list[:, i]
 
 
+	#Converts to a DataFrame Format.
 	df = pd.DataFrame(np.array(list(result_dict.values())).T, columns=list(result_dict.keys()))
 
 	# Returns confidences and predictions into a DataFrame.
 	return df
 
+
+def extracting_ee_inference_time(model, test_loader, n_branches, threshold_list, device):
+
+	df_inf_time = pd.DataFrame()
+
+	for threshold in threshold_list:
+		df_inf_time_branches = collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device)
+		df_inf_time.append(df_inf_time_branches, ignore_index=True)
+
+	return df_inf_time
+
 def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device):
 
 	n_exits = n_branches + 1
 
-	inf_time_list, cumulative_inf_time_list = [], []
+	inf_time_list = []
+	starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
 
-	avg_inf_time_dict, avg_cumulative_inf_time_dict = {}, {}
-	
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
@@ -176,27 +183,21 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
 
+			starter.record()
+
 			# The next line gathers the dictionary of the inference time for running the current input data.
-			inf_time, cumulative_inf_time = model.run_measuring_inference_time_branch(data)
-			inf_time_list.append(inf_time), cumulative_inf_time_list.append(cumulative_inf_time)
+			_, _ = model.forwardInference(data, threshold)
 
-	# The next line computes the average inference time
-	avg_inf_time = np.mean(inf_time_list, axis=0)
-	avg_cumulative_inf_time = np.mean(cumulative_inf_time_list, axis=0)
+			ender.record()
+			torch.cuda.synchronize()
+			curr_time = starter.elapsed_time(ender)
 
-	#avg_inf_time, avg_cumulative_inf_time = np.array(avg_inf_time).T, np.array(avg_cumulative_inf_time).T
+			inf_time_list.append(curr_time)
 
-	
-	for i in range(n_exits):
-		avg_inf_time_dict["inf_time_branch_%s"%(i+1)] = [avg_inf_time[i]]
-		avg_cumulative_inf_time_dict["cumulative_inf_time_branch_%s"%(i+1)] = [avg_cumulative_inf_time[i]]		
 
-	df_inf_time, df_cumulative_inf_time = pd.DataFrame(avg_inf_time_dict), pd.DataFrame(avg_cumulative_inf_time_dict)
+	result_dict = {"threshold": [threshold]*len(inf_time_list), "inference_time": inf_time_list}
 
-	df_inf_time_branches = pd.concat([df_inf_time, df_cumulative_inf_time], axis=1)
-
-	# Returns confidences and predictions into a DataFrame.
-	return df_inf_time_branches
+	return result_dict
 
 
 def sendData(url, data):
