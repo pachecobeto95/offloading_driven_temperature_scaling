@@ -66,7 +66,7 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	test_idx = np.load(test_idx_path, allow_pickle=True)
 	test_idx = np.array(list(test_idx.tolist()))
 
-	train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
+	#train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
 
 	train_data = torch.utils.data.Subset(train_set, indices=train_idx)
 	val_data = torch.utils.data.Subset(val_set, indices=val_idx)
