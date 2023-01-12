@@ -403,9 +403,9 @@ class Early_Exit_DNN(nn.Module):
       # If any exit can reach the p_tar value, the output is give by the more confidence output.
       # If evaluation, it returns max(output), max(conf) and the number of the early exit.
 
-      conf_list.append(conf.item()), class_list.append(infered_class.item())
+      conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
       max_conf = np.argmax(conf_list)
-      return output, conf_list[max_conf], class_list[max_conf], False
+      return output, conf_list[max_conf], infered_class_list[max_conf], False
 
   def forwardInferenceNoCalib(self, x):
     output_list, conf_list, infered_class_list = [], [], []
