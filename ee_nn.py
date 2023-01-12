@@ -349,7 +349,7 @@ class Early_Exit_DNN(nn.Module):
     This method is used to train the early-exit DNN model
     """
 
-    conf_list, class_list  = [], [], []
+    conf_list, class_list  = [], []
 
     for i, exitBlock in enumerate(self.exits):
 
