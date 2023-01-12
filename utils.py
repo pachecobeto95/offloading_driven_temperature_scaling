@@ -199,7 +199,7 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 
 	result_dict = {"threshold": [threshold]*len(inf_time_list), "inference_time": inf_time_list}
 
-	return result_dict
+	return pd.DataFrame(result_dict)
 
 
 def sendData(url, data):
