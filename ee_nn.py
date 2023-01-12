@@ -382,7 +382,7 @@ class Early_Exit_DNN(nn.Module):
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
 
       if(conf.item() >= threshold):
-        return conf.item(), infered_class, True
+        return output_branch, conf.item(), infered_class, True
 
       else:
 
