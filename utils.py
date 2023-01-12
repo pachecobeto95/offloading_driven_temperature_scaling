@@ -266,7 +266,7 @@ def load_ee_model(args, model_path, n_classes, dim, device):
 
 	elif(args.n_branches == 5):
 
-		ee_model = early_exit_dnn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, dim, device, args.exit_type, 
+		ee_model = early_exit_dnn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device, 
 			args.distribution)
 
 	else:
