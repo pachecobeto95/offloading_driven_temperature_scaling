@@ -8,23 +8,30 @@ import pandas as pd
 
 def main(args):
 
+
 	model_id = config.models_id_dict[args.model_name]
 
-	n_classes = config.nr_class_dict[args.dataset_name]
+	n_classes = config.nr_class_dict[args.dataset_name][args.n_branches]
+
+	input_dim, dim = config.input_dim_dict[args.n_branches]
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
 		"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
 
-	#inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s.csv"%(args.model_name, model_id))
+	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	#inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s.csv"%(args.model_name, model_id))
+	idx_path = config.idx_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join("inference_data_%s_%s.csv"%(args.model_name, model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
-	inf_time_path = os.path.join("inference_time_%s_%s.csv"%(args.model_name, model_id))
+	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
+	threshold_list = [0.7, 0.8, 0.9]
+
+
+	sys.exit()
 
 	# Instantiate LoadDataset class
 	#dataset = utils.LoadDataset(args, model_id)
