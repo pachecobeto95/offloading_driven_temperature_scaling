@@ -136,7 +136,6 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 
 			# Obtain confs and predictions for each side branch.
 			confs, predictions = model(data)
-			print(confs, predictions, target)
 
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
