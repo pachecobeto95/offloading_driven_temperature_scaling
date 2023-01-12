@@ -297,6 +297,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 		remaining_data = remaining_data[~early_exit_samples]
 
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
+	print(sum(numexits)/n_samples)
 	print("Neg Accuracy: %s" %( - acc_edge))
 
 	sys.exit()
