@@ -42,10 +42,10 @@ def main(args):
 		print("Threshold: %s"%(threshold) )
 		df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
 
+		theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, args.n_branches, args.a0, 
+			args.c, args.alpha, args.gamma)
 
-	sys.exit()
-	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
-	#	args.c, args.alpha, args.gamma)
+		sys.exit()
 
 	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
