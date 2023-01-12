@@ -56,16 +56,16 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	val_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 	test_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 
-	train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
-	val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
-	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
+	#train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
+	#val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
+	#test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
 
-	train_idx = np.load(train_idx_path)
-	val_idx = np.load(val_idx_path)
-	test_idx = np.load(test_idx_path, allow_pickle=True)
-	test_idx = np.array(list(test_idx.tolist()))
+	#train_idx = np.load(train_idx_path)
+	#val_idx = np.load(val_idx_path)
+	#test_idx = np.load(test_idx_path, allow_pickle=True)
+	#test_idx = np.array(list(test_idx.tolist()))
 
-	#train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
+	train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
 
 	train_data = torch.utils.data.Subset(train_set, indices=train_idx)
 	val_data = torch.utils.data.Subset(val_set, indices=val_idx)
@@ -165,9 +165,12 @@ def extracting_ee_inference_time(model, test_loader, n_branches, threshold_list,
 
 	for threshold in threshold_list:
 		df_inf_time_branches = collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device)
-		df_inf_time.append(df_inf_time_branches, ignore_index=True)
+		
+		df_inf_time = pd.concat([df_inf_time, df_inf_time_branches], ignore_index=True)
 
 	return df_inf_time
+
+
 
 def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device):
 
@@ -185,7 +188,7 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 
 			starter.record()
 
-			# The next line gathers the dictionary of the inference time for running the current input data.
+			# The next line gathers the conf, prediction, early classification for running the current input data.
 			_, _, _, _ = model.forwardInference(data, threshold)
 
 			ender.record()
@@ -193,7 +196,6 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 			curr_time = starter.elapsed_time(ender)
 
 			inf_time_list.append(curr_time)
-
 
 	result_dict = {"threshold": [threshold]*len(inf_time_list), "inference_time": inf_time_list}
 
