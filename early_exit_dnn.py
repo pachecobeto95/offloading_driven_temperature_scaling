@@ -577,7 +577,7 @@ class Early_Exit_DNN(nn.Module):
     self.set_device()
     self.softmax = nn.Softmax(dim=1)
 
-  def evaluating_prediction(self, x):
+  def forward(self, x):
 
     conf_list, prediction_list = [], []
 
