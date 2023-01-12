@@ -43,7 +43,6 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		#self.threshold = threshold
 		self.max_iter = max_iter
 		self.dim = dim
 		self.a = a0
@@ -177,9 +176,13 @@ class SPSA (object):
 
 		delta = Bernoulli(dim=self.dim+1)
 
-		loss_old, _, _ = self.compute_loss(theta)
+		print(self.theta_initial, self.dim)
 
 		sys.exit()
+
+
+		loss_old, _, _ = self.compute_loss(theta)
+
 
 		# The optimisation runs until the solution has converged, or the maximum number of itertions has been reached.
 		#Convergence means that the theta is not significantly changes until max_patience times in a row.
