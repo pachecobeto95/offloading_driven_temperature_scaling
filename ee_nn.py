@@ -344,12 +344,12 @@ class Early_Exit_DNN(nn.Module):
     self.softmax = nn.Softmax(dim=1)
 
 
-  def forwardTrain(self, x):
+  def forward(self, x):
     """
     This method is used to train the early-exit DNN model
     """
 
-    output_list, conf_list, class_list  = [], [], []
+    conf_list, class_list  = [], [], []
 
     for i, exitBlock in enumerate(self.exits):
 
@@ -359,7 +359,7 @@ class Early_Exit_DNN(nn.Module):
       #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
       
-      output_list.append(output_branch), conf_list.append(conf), class_list.append(infered_class)
+      conf_list.append(conf), class_list.append(infered_class)
 
     x = self.stages[-1](x)
 
@@ -367,9 +367,9 @@ class Early_Exit_DNN(nn.Module):
 
     output = self.classifier(x)
     infered_conf, infered_class = torch.max(self.softmax(output), 1)
-    output_list.append(output), conf_list.append(infered_conf), class_list.append(infered_class)
+    conf_list.append(infered_conf), class_list.append(infered_class)
 
-    return output_list, conf_list, class_list
+    return conf_list, class_list
 
   def forwardInferenceNoCalib(self, x):
     output_list, conf_list, infered_class_list = [], [], []
