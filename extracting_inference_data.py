@@ -13,8 +13,6 @@ def main(args):
 
 	n_classes = config.nr_class_dict[args.dataset_name][args.n_branches]
 
-	print(n_classes)
-
 	input_dim, dim = config.input_dim_dict[args.n_branches]
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')

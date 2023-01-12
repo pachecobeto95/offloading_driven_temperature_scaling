@@ -260,4 +260,4 @@ class B_MobileNet(nn.Module):
 
       conf_list.append(conf.item()), class_list.append(infered_class.item())
       max_conf = np.argmax(conf_list)
-      return output, conf_list[max_conf], class_list[max_conf], True
+      return output, conf_list[max_conf], class_list[max_conf], False

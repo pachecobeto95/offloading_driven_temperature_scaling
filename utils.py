@@ -265,7 +265,6 @@ def load_ee_model(args, model_path, n_classes, dim, device):
 		ee_model = b_mobilenet.B_MobileNet(n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device)
 
 	elif(args.n_branches == 5):
-		print(n_classes)
 		ee_model = early_exit_dnn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device, 
 			args.distribution)
 
