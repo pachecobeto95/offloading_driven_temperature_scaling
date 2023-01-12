@@ -1,256 +1,377 @@
-import torch
-import torch.nn as nn
-#from utils import ExitBlock
-from pthflops import count_ops
-import torchvision.models as models
+import torchvision, torch, os, sys, time, math
+from PIL import Image
 import numpy as np
-#import config
+import torch.nn as nn
+import torch.nn.functional as F
+import torchvision.models as models
+from pthflops import count_ops
+from torch import Tensor
 
-class ConvBasic(nn.Module):
-    def __init__(self, nIn, nOut, kernel=3, stride=1,
-                 padding=1):
-        super(ConvBasic, self).__init__()
-        self.net = nn.Sequential(
-            nn.Conv2d(nIn, nOut, kernel_size=kernel, stride=stride,
-                      padding=padding, bias=False),
-            nn.BatchNorm2d(nOut),
-            nn.ReLU(True)
-        )
-
-    def forward(self, x):
-        return self.net(x)
-
-def conv_bn(inp, oup, stride):
-    return nn.Sequential(
-        nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
-        nn.BatchNorm2d(oup),
-        nn.ReLU6(inplace=True)
+"""
+(18): ConvBNActivation(
+      (0): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (1): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU6(inplace=True)
     )
-
-def conv_bn(inp, oup, stride):
-    return nn.Sequential(
-        nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
-        nn.BatchNorm2d(oup),
-        nn.ReLU6(inplace=True)
-    )
-
-
-def conv_1x1_bn(inp, oup):
-    return nn.Sequential(
-        nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
-        nn.BatchNorm2d(oup),
-        nn.ReLU6(inplace=True)
-    )
-
-
-class ExitBlock(nn.Module):
-  """
-  This class defines the Early Exit, which allows to finish the inference at the middle layers when
-  the classification confidence achieves a predefined threshold
-  """
-  def __init__(self, n_classes, input_shape, exit_type, device):
-    super(ExitBlock, self).__init__()
+  )
+  (classifier): Sequential(
+    (0): Dropout(p=0.2, inplace=False)
+    (1): Linear(in_features=1280, out_features=1000, bias=True)
+"""
+"""
+class EarlyExitBlock(nn.Module):
+  def __init__(self, input_shape, last_channel, n_classes, exit_type, device):
+    super(EarlyExitBlock, self).__init__()
+    self.input_shape = input_shape
     _, channel, width, height = input_shape
-    """
-    This creates a random input sample whose goal is to find out the input shape after each layer.
-    In fact, this finds out the input shape that arrives in the early exits, to build a suitable branch.
-
-    Arguments are
-
-    nIn:          (int)    input channel of the data that arrives into the given branch.
-    n_classes:    (int)    number of the classes
-    input_shape:  (tuple)  input shape that arrives into the given branch
-    exit_type:    (str)    this argument define the exit type: exit with conv layer or not, just fc layer
-    dataset_name: (str)   defines tha dataset used to train and evaluate the branchyNet
-     """
-
-    self.expansion = 1
-    self.device = device
+    
     self.layers = nn.ModuleList()
 
-    # creates a random input sample to find out input shape in order to define the model architecture.
-    x = torch.rand(1, channel, width, height).to(device)
-    
-    self.conv = nn.Sequential(
-        ConvBasic(channel, channel, kernel=3, stride=2, padding=1),
-        nn.AvgPool2d(2),)
-    
-    #gives the opportunity to add conv layers in the branch, or only fully-connected layers
-    if (exit_type == "conv"):
-      self.layers.append(self.conv)
+    if (exit_type == 'bnpool'):
+      self.layers.append(nn.BatchNorm2d(channel))
+      self.layers.append(nn.AdaptiveAvgPool2d(1))
+
+    elif(exit_type == 'conv'):
+      self.layers.append(nn.Conv2d(channel, last_channel, kernel_size=(1,1)))
+      self.layers.append(nn.BatchNorm2d(last_channel))
+      self.layers.append(nn.MaxPool2d(2))
+      self.layers.append(nn.ReLU6(inplace=True))
+
+    elif(exit_type == 'pooling'):
+      self.layers.append(nn.BatchNorm2d(channel))
+      self.layers.append(nn.MaxPool2d(2))
+
     else:
-      self.layers.append(nn.AdaptiveAvgPool2d(2))
-      
-    feature_shape = nn.Sequential(*self.layers).to(device)(x).shape
-    
-    total_neurons = feature_shape[1]*feature_shape[2]*feature_shape[3] # computes the input neurons of the fc layer 
-    self.layers = self.layers.to(device)
-    self.classifier = nn.Linear(total_neurons , n_classes).to(device) # finally creates 
-    
+      self.layers = nn.ModuleList()
+
+    #This line defines the data shape that fully-connected layer receives.
+    current_channel, current_width, current_height = self.get_current_data_shape()
+    self.classifier = nn.Sequential(nn.Dropout(0.2), 
+      nn.Linear(current_channel*current_width*current_height, n_classes))
+    self.classifier = self.classifier.to(device)
+
+  def get_current_data_shape(self):
+    print("Before")
+    print(self.input_shape)
+    _, channel, width, height = self.input_shape
+    temp_layers = nn.Sequential(*self.layers)
+
+    input_tensor = torch.rand(1, channel, width, height)
+    _, output_channel, output_width, output_height = temp_layers(input_tensor).shape
+    print("After")
+    print(output_channel, output_width, output_height)    
+    return output_channel, output_width, output_height
+
+  def forward(self, x):
+    for layer in self.layers:
+      x = layer(x)
+    #x = x.view(x.size(0), -1)
+    x = torch.flatten(x, 1)
+    output = self.classifier(x)
+
+    return output
+"""
+
+class EarlyExitBlock(nn.Module):
+  def __init__(self, input_shape, pool_size, n_classes, exit_type, device):
+    super(EarlyExitBlock, self).__init__()
+    self.input_shape = input_shape
+
+    _, channel, width, height = input_shape
+    self.expansion = width * height if exit_type == 'plain' else 1
+
+    self.layers = nn.ModuleList()
+
+    if (exit_type == 'bnpool'):
+      self.layers.append(nn.BatchNorm2d(channel))
+
+    if (exit_type != 'plain'):
+      self.layers.append(nn.AdaptiveAvgPool2d(1))
+
+    #This line defines the data shape that fully-connected layer receives.
+    current_channel, current_width, current_height = self.get_current_data_shape()
+
+    self.layers = self.layers#.to(device)
+
+    #This line builds the fully-connected layer
+    self.classifier = nn.Sequential(nn.Linear(current_channel*current_width*current_height, n_classes))#.to(device)
+
+    self.softmax_layer = nn.Softmax(dim=1)
+
+
+  def get_current_data_shape(self):
+    _, channel, width, height = self.input_shape
+    temp_layers = nn.Sequential(*self.layers)
+
+    input_tensor = torch.rand(1, channel, width, height)
+    _, output_channel, output_width, output_height = temp_layers(input_tensor).shape
+    return output_channel, output_width, output_height
+
   def forward(self, x):
     for layer in self.layers:
       x = layer(x)
     x = x.view(x.size(0), -1)
+    output = self.classifier(x)
+    #confidence = self.softmax_layer()
+    return output
 
-    return self.classifier(x)
 
-class B_MobileNet(nn.Module):
-  def __init__(self, n_classes: int, 
-               pretrained: bool, n_branches: int, img_dim:int, 
-               exit_type: str, device, branches_positions=None, distribution="linear"):
-    super(B_MobileNet, self).__init__()
+class Early_Exit_DNN(nn.Module):
+  def __init__(self, model_name: str, n_classes: int, pretrained: bool, n_branches: int, input_dim: int, 
+    device, exit_type: str, distribution: str, ee_point_location=10):
 
+    super(Early_Exit_DNN, self).__init__()
+
+    """
+    This classes builds an early-exit DNNs architectures
+    Args:
+
+    model_name: model name 
+    n_classes: number of classes in a classification problem, according to the dataset
+    pretrained: 
+    n_branches: number of branches (early exits) inserted into middle layers
+    input_dim: dimension of the input image
+    exit_type: type of the exits
+    distribution: distribution method of the early exit blocks.
+    device: indicates if the model will processed in the cpu or in gpu
+        
+    Note: the term "backbone model" refers to a regular DNN model, considering no early exits.
+    """
+
+    self.model_name = model_name
     self.n_classes = n_classes
     self.pretrained = pretrained
     self.n_branches = n_branches
-    self.img_dim = img_dim
+    self.input_dim = input_dim
     self.exit_type = exit_type
-    self.branches_positions = branches_positions
     self.distribution = distribution
-    self.softmax = nn.Softmax(dim=1)
     self.device = device
+    self.ee_point_location = ee_point_location
 
-    self.model = self.initialize_model()
-    self.n_blocks = len(list(self.model.features))
-    self.insertBranches()
-  
-  def initialize_model(self):
-    model = models.mobilenet_v2(pretrained=self.pretrained)
-    model.classifier[1] = nn.Linear(model.classifier[1].in_features, self.n_classes)
-    return model.to(self.device)
-  
-  def countFlops(self):
-    x = torch.rand(1, 3, self.img_dim, self.img_dim).to(self.device)
-    flops_count_dict = {}
-    flops_acc_dict = {}
-    flops_list = []
-    total_flops = 0
-    for i, layer in enumerate(self.model.features, 1):
-      ops, all_data = count_ops(layer, x, print_readable=False, verbose=False)
-      x = layer(x)
-      flops_count_dict[i] = ops
-      total_flops += ops
-      flops_acc_dict[i] = total_flops
-    
-    #for key, value in flops_acc_dict.items():
-    #  flops_acc_dict[key] = value/total_flops
+    build_early_exit_dnn = self.select_dnn_architecture_model()
+    build_early_exit_dnn()
 
-    return flops_count_dict, flops_acc_dict, total_flops
-
-  def set_thresholds(self, total_flops):
+  def select_dnn_architecture_model(self):
     """
+    This method selects the backbone to insert the early exits.
+    """
+
+    architecture_dnn_model_dict = {"mobilenet": self.early_exit_mobilenet, 
+    "alexnet": self.early_exit_alexnet}
+    print(self.model_name)
+    return architecture_dnn_model_dict.get(self.model_name, self.invalid_model)
+
+
+  def select_distribution_method(self):
+    """
+    This method selects the distribution method to insert early exits into the middle layers.
+    """
+    distribution_method_dict = {"linear":self.linear_distribution,
+    "pareto":self.paretto_distribution,
+    "fibonacci":self.fibo_distribution}
+    return distribution_method_dict.get(self.distribution, self.invalid_distribution)
+    
+  def linear_distribution(self, i):
+    """
+    This method defines the Flops to insert an early exits, according to a linear distribution.
+    """
+    flop_margin = 1.0 / (self.n_branches+1)
+    return self.total_flops * flop_margin * (i+1)
+
+  def paretto_distribution(self, i):
+    """
+    This method defines the Flops to insert an early exits, according to a pareto distribution.
+    """
+    return self.total_flops * (1 - (0.8**(i+1)))
+
+  def fibo_distribution(self, i):
+    """
+    This method defines the Flops to insert an early exits, according to a fibonacci distribution.
     """
     gold_rate = 1.61803398875
-    flop_margin = 1.0 / (self.n_branches+1)
-    self.threshold = []
-    self.percentage_threshold = []
-        
-    for i in range(self.n_branches):
-      if (self.distribution == 'pareto'):
-        self.threshold.append(total_flops * (1 - (0.8**(i+1))))
-        self.percentage_threshold.append(1 - (0.8**(i+1)))
-      elif (self.distribution == 'fine'):
-        self.threshold.append(total_flops * (1 - (0.95**(i+1))))
-        self.percentage_threshold.append(1 - (0.95**(i+1)))
-      elif (self.distribution == 'linear'):
-        self.threshold.append(total_flops * flop_margin * (i+1))
-        self.percentage_threshold.append(flop_margin * (i+1))
+    return total_flops * (gold_rate**(i - self.num_ee))
 
-      else:
-        self.threshold.append(total_flops * (gold_rate**(i - self.num_ee)))
-        self.percentage_threshold.append(gold_rate**(i - self.n_branches))
-  
-  
-  def is_suitable_for_exit(self, i, flop_count):
-    if (self.branches_positions is None):
-      return self.stage_id < self.n_branches and flop_count >= self.threshold[self.stage_id]
+  def verifies_nr_exits(self, backbone_model):
+    """
+    This method verifies if the number of early exits provided is greater than a number of layers in the backbone DNN model.
+    """
     
-    else:
-      return i in self.branches_positions
-  
-  def add_early_exit(self, layer):
-    #print("Adding")
-    self.stages.append(nn.Sequential(*self.layers))
-    x = torch.rand(1, 3, self.img_dim, self.img_dim).to(self.device)
-    feature_shape = nn.Sequential(*self.stages)(x).shape
-    self.exits.append(ExitBlock(self.n_classes, feature_shape, self.exit_type, self.device))
-    self.stage_id += 1
-    self.layers = nn.ModuleList()
+    total_layers = len(list(backbone_model.children()))
+    if (self.n_branches >= total_layers):
+      raise Exception("The number of early exits is greater than number of layers in the DNN backbone model.")
 
-  def insertBranches(self):
+
+  def where_insert_early_exits(self):
+    """
+    This method defines where insert the early exits, according to the dsitribution method selected.
+    Args:
+
+    total_flops: Flops of the backbone (full) DNN model.
+    """
+    threshold_flop_list = []
+    distribution_method = self.select_distribution_method()
+
+    for i in range(self.n_branches):
+      threshold_flop_list.append(distribution_method(i))
+
+    return threshold_flop_list
+
+  def invalid_model(self):
+    raise Exception("This DNN backbone model has not implemented yet.")
+
+  def invalid_distribution(self):
+    raise Exception("This early-exit distribution has not implemented yet.")
+
+  def countFlops(self, model):
+    input_data = torch.rand(1, 3, self.input_dim, self.input_dim).to(self.device)
+    flops, all_data = count_ops(model, input_data, print_readable=False, verbose=False)
+    return flops
+
+  def is_suitable_for_exit(self, nr_block):
+
+    if(self.distribution=="predefined"):
+      return (self.stage_id < self.n_branches) and (nr_block > self.ee_point_location)
+
+    else:
+      intermediate_model = nn.Sequential(*(list(self.stages)+list(self.layers))).to(self.device)
+      x = torch.rand(1, 3, self.input_dim, self.input_dim).to(self.device)
+      current_flop, _ = count_ops(intermediate_model, x, verbose=False, print_readable=False)
+      return self.stage_id < self.n_branches and current_flop >= self.threshold_flop_list[self.stage_id]
+
+  def add_exit_block(self):
+    """
+    This method adds an early exit in the suitable position.
+    """
+    input_tensor = torch.rand(1, 3, self.input_dim, self.input_dim)
+
+    self.stages.append(nn.Sequential(*self.layers))
+    x = torch.rand(1, 3, self.input_dim, self.input_dim).to(self.device)
+
+    feature_shape = nn.Sequential(*self.stages)(x).shape
+    
+    self.exits.append(EarlyExitBlock(feature_shape, self.last_channel, self.n_classes, self.exit_type, self.device).to(self.device))
+    self.layers = nn.ModuleList()
+    self.stage_id += 1    
+
+  def early_exit_alexnet(self):
+
     self.stages = nn.ModuleList()
     self.exits = nn.ModuleList()
     self.layers = nn.ModuleList()
     self.stage_id = 0
 
-    flops_count_dict, flops_acc_dict, total_flops = self.countFlops()
-    self.set_thresholds(total_flops)
+    self.last_channel = 1280
 
-    for i, layer in enumerate(self.model.features, 1):
-      if (self.is_suitable_for_exit(i, flops_acc_dict[i])):
-        self.add_early_exit(layer)
-      else:
-        self.layers.append(layer)
 
+    # Loads the backbone model. In other words, Mobilenet architecture provided by Pytorch.
+    backbone_model = models.alexnet(self.pretrained).to(self.device)
+
+    #backbone_model = torch.hub.load('pytorch/vision:v0.6.0', 'alexnet', pretrained=self.pretrained)
+
+    # It verifies if the number of early exits provided is greater than a number of layers in the backbone DNN model.
+    self.verifies_nr_exits(backbone_model.features)
+
+    # This obtains the flops total of the backbone model
+    self.total_flops = self.countFlops(backbone_model)
+
+    # This line obtains where inserting an early exit based on the Flops number and accordint to distribution method
+    #self.threshold_flop_list = self.where_insert_early_exits()
+
+    # This line obtains where inserting an early exit based on the Flops number and accordint to distribution method
+    if(self.distribution != "predefined"):
+      self.threshold_flop_list = self.where_insert_early_exits()
+
+
+    for nr_block, block in enumerate(backbone_model.features.children()):
+      
+      self.layers.append(block)
+      if (self.is_suitable_for_exit(nr_block)):
+        self.add_exit_block()
+
+    self.layers.append(nn.AdaptiveAvgPool2d(output_size=(6,6)))
     self.stages.append(nn.Sequential(*self.layers))
-    self.fully_connected = self.model.classifier
+
+    self.classifier = backbone_model.classifier
+    
+    self.classifier[4] = nn.Linear(in_features=4096, out_features=1024, bias=True)
+    self.classifier[6] = nn.Linear(in_features=1024, out_features=self.n_classes, bias=True)
+    
+    self.softmax = nn.Softmax(dim=1)
+
+
+
+
+  def early_exit_mobilenet(self):
+
+    self.stages = nn.ModuleList()
+    self.exits = nn.ModuleList()
+    self.layers = nn.ModuleList()
+    self.stage_id = 0
+
+    self.last_channel = 1280
+
+
+    # Loads the backbone model. In other words, Mobilenet architecture provided by Pytorch.
+    backbone_model = models.mobilenet_v2(self.pretrained).to(self.device)
+
+    # It verifies if the number of early exits provided is greater than a number of layers in the backbone DNN model.
+    self.verifies_nr_exits(backbone_model.features)
+
+    # This obtains the flops total of the backbone model
+    self.total_flops = self.countFlops(backbone_model)
+
+    # This line obtains where inserting an early exit based on the Flops number and accordint to distribution method
+    #self.threshold_flop_list = self.where_insert_early_exits()
+
+    # This line obtains where inserting an early exit based on the Flops number and accordint to distribution method
+    if(self.distribution != "predefined"):
+      self.threshold_flop_list = self.where_insert_early_exits()
+
+    for nr_block, block in enumerate(backbone_model.features.children()):
+      
+      self.layers.append(block)
+      if (self.is_suitable_for_exit(nr_block)):
+        self.add_exit_block()
+
+    self.layers.append(nn.AdaptiveAvgPool2d(1))
+    self.stages.append(nn.Sequential(*self.layers))
+
+    #self.classifier = backbone_model.classifier
+    self.classifier = nn.Sequential(
+      nn.Dropout(0.2),
+      nn.Linear(self.last_channel, self.n_classes),)
+    
+    self.softmax = nn.Softmax(dim=1)
 
 
   def forwardTrain(self, x):
+    """
+    This method is used to train the early-exit DNN model
+    """
+
     output_list, conf_list, class_list  = [], [], []
+
     for i, exitBlock in enumerate(self.exits):
+
       x = self.stages[i](x)
       output_branch = exitBlock(x)
-      output_list.append(output_branch)
+
+      #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
-      conf_list.append(conf)
-      class_list.append(infered_class)
+      
+      output_list.append(output_branch), conf_list.append(conf), class_list.append(infered_class)
 
     x = self.stages[-1](x)
-    x = x.mean(3).mean(2)
 
-    output = self.fully_connected(x)
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
     infered_conf, infered_class = torch.max(self.softmax(output), 1)
-    output_list.append(output)
-    conf_list.append(infered_conf)
-    class_list.append(infered_class)
+    output_list.append(output), conf_list.append(infered_conf), class_list.append(infered_class)
+
     return output_list, conf_list, class_list
 
-  def forwardEval(self, x, p_tar):
-    output_list, conf_list, class_list  = [], [], []
-    for i, exitBlock in enumerate(self.exits): #[:config.N_BRANCHES] it acts to select until branches will be processed. 
-      x = self.stages[i](x)
-      output_branch = exitBlock(x)
-      conf, infered_class = torch.max(self.softmax(output_branch), 1)
-      if (conf.item() > p_tar):
-        return output_branch, conf_list, infered_class
-
-      else:
-        output_list.append(output_branch), conf_list.append(conf.item()), class_list.append(infered_class)
-
-    return x, conf_list, None
-
-  def forwardEmulation(self, x, p_tar_list):
-    output_list, conf_list, class_list  = [], [], []
-    for i, exitBlock in enumerate(self.exits): #[:config.N_BRANCHES] it acts to select until branches will be processed. 
-      x = self.stages[i](x)
-      output_branch = exitBlock(x)
-      conf, infered_class = torch.max(self.softmax(output_branch), 1)
-      if (conf.item() > p_tar_list[i]):
-        return output_branch, conf_list, infered_class
-
-      else:
-        output_list.append(output_branch)
-        conf_list.append(conf.item())
-        class_list.append(infered_class)
-
-    return x, conf_list, None
-
-  def forward(self, x, p_tar=0.5):
-    return self.forwardEval(x, p_tar)
-
   def forwardInferenceNoCalib(self, x):
-
     output_list, conf_list, infered_class_list = [], [], []
 
     for i, exitBlock in enumerate(self.exits):
@@ -262,12 +383,95 @@ class B_MobileNet(nn.Module):
       output_list.append(output_branch), infered_class_list.append(infered_class), conf_list.append(conf)
 
     x = self.stages[-1](x)
-    x = x.mean(3).mean(2)
+    x = torch.flatten(x, 1)
 
-    output = self.fully_connected(x)
+    output = self.classifier(x)
 
     conf, infered_class = torch.max(self.softmax(output), 1)
 
     output_list.append(output), infered_class_list.append(infered_class), conf_list.append(conf)
 
     return output_list, conf_list, infered_class_list
+
+  def global_temperature_scaling(self, logits, temp_overall):
+    return torch.div(logits, temp_overall)
+
+  def per_branch_temperature_scaling(self, logits, temp, exit_branch):
+    return torch.div(logits, temp[exit_branch])
+
+  def forwardGlobalCalibration(self, x, temp_overall):
+    output_list, conf_list, class_list = [], [], []
+
+    n_exits = self.n_branches + 1
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+
+      output_branch = self.global_temperature_scaling(output_branch, temp_overall)
+
+      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+
+      output_list.append(output_branch), conf_list.append(conf_branch), class_list.append(infered_class_branch)
+
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    output = self.global_temperature_scaling(output, temp_overall)
+
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
+
+  def forwardPerBranchesCalibration(self, x, temp_branches):
+    output_list, conf_list, class_list = [], [], []
+    n_exits = self.n_branches + 1
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+      output_branch = self.per_branch_temperature_scaling(output_branch, temp_branches, i)
+
+      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+
+      output_list.append(output_branch), conf_list.append(conf_branch), class_list.append(infered_class_branch)
+
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    output = self.per_branch_temperature_scaling(output, temp_branches, -1)
+
+    conf, infered_class = torch.max(self.softmax(output), 1)
+    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
+
+  def forwardAllSamplesCalibration(self, x, temp):
+    output_list, conf_list, class_list = [], [], []
+    n_exits = self.n_branches + 1
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+      output_branch = self.per_branch_temperature_scaling(output_branch, temp, i)
+
+      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+
+      output_list.append(output_branch), conf_list.append(conf_branch), class_list.append(infered_class_branch)
+
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    output = self.per_branch_temperature_scaling(output, temp, -1)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+
+    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
