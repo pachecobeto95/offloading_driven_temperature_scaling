@@ -222,3 +222,42 @@ class B_MobileNet(nn.Module):
     conf_list.append(infered_conf.item()), class_list.append(infered_class-1)
 
     return conf_list, class_list
+
+  def forwardInference(self, x, threshold):
+
+
+    conf_list, class_list = [], []
+    n_exits = self.n_branches + 1
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+
+      if (conf_branch.item() >= threshold):
+        return output_branch, conf_branch.item(), infered_class_branch.item(), True
+
+      else:
+        conf_list.append(conf_branch.item()), class_list.append(infered_class_branch.item())
+      
+
+    x = self.stages[-1](x)
+    x = x.mean(3).mean(2)
+
+    output = self.fully_connected(x)
+    prob_vector = self.softmax(output)
+
+    conf, infered_class = torch.max(prob_vector, 1)
+
+    if (conf.item() >= threshold):
+      return output, conf.item(), infered_class.item(), False
+
+    else:
+
+      # If any exit can reach the p_tar value, the output is give by the more confidence output.
+      # If evaluation, it returns max(output), max(conf) and the number of the early exit.
+
+      conf_list.append(conf.item()), class_list.append(infered_class.item())
+      max_conf = np.argmax(conf_list)
+      return output, conf_list[max_conf], class_list[max_conf], True

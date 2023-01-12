@@ -186,7 +186,7 @@ def collect_avg_inference_time_branch(model, test_loader, n_branches, threshold,
 			starter.record()
 
 			# The next line gathers the dictionary of the inference time for running the current input data.
-			_, _ = model.forwardInference(data, threshold)
+			_, _, _, _ = model.forwardInference(data, threshold)
 
 			ender.record()
 			torch.cuda.synchronize()
