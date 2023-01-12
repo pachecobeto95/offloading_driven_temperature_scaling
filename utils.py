@@ -56,16 +56,16 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	val_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 	test_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
 
-	#train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
-	#val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
-	#test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
+	train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
+	val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
+	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
 
-	#train_idx = np.load(train_idx_path)
-	#val_idx = np.load(val_idx_path)
-	#test_idx = np.load(test_idx_path, allow_pickle=True)
-	#test_idx = np.array(list(test_idx.tolist()))
+	train_idx = np.load(train_idx_path)
+	val_idx = np.load(val_idx_path)
+	test_idx = np.load(test_idx_path, allow_pickle=True)
+	test_idx = np.array(list(test_idx.tolist()))
 
-	train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
+	#train_idx, val_idx, test_idx = get_indices(train_set, args.split_ratio)
 
 	train_data = torch.utils.data.Subset(train_set, indices=train_idx)
 	val_data = torch.utils.data.Subset(val_set, indices=val_idx)
