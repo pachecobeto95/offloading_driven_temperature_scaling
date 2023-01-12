@@ -31,6 +31,8 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 
 
+	print("sucesso")
+
 	sys.exit()
 
 	# Instantiate LoadDataset class
