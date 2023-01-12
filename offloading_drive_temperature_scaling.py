@@ -4,6 +4,14 @@ import config, utils, spsa
 import numpy as np
 import pandas as pd
 
+def read_inference_data(inf_data_path, inf_time_path, threshold):
+
+	df_inf_data = pd.read_csv(inf_data_path)
+	df_inf_time = pd.read_csv(inf_time_path)
+
+	df_inf_time = df_inf_time[df_inf_time.threshold==threshold]
+
+	return df_inf_data, df_inf_time
 
 
 def main(args):
@@ -30,32 +38,11 @@ def main(args):
 
 	threshold_list = [0.7, 0.8, 0.9]
 
+	for threshold in threshold_list:
+		df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
 
-	print("sucesso")
 
 	sys.exit()
-
-	# Instantiate LoadDataset class
-	#dataset = utils.LoadDataset(args, model_id)
-
-	#dataset_path = config.dataset_path_dict[args.dataset_name]
-	#idx_path = config.idx_path_dict[args.dataset_name]
-
-	#_, _, test_loader = dataset.getDataset(dataset_path, args.dataset_name, idx_path)
-
-	#Instantiate the Early-exit DNN model.
-	#ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.input_dim, 
-	#	args.exit_type, device, args.distribution)
-	#Load the trained early-exit DNN model.
-	#ee_model = ee_model.to(device)
-	#ee_model.load_state_dict(torch.load(model_path, map_location=device)["model_state_dict"])
-
-	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	#df_preds = utils.eval_ee_dnn_inference(test_loader, ee_model, args.n_branches, device, inference_data_path, args.read_inf_data)
-
-	# Obtain the average inference time to process up to each side branch.
-	#inference_time_branch = utils.collect_avg_inference_time_branch(ee_model, test_loader, args.n_branches, args.threshold, device)
-
 	#theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(ee_model, df_preds, args.threshold, args.max_iter, args.n_branches, args.a0, 
 	#	args.c, args.alpha, args.gamma)
 
@@ -63,8 +50,6 @@ def main(args):
 	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
 
 	
-	df_inf_data = pd.read_csv(inf_data_path)
-	df_inf_time = pd.read_csv(inf_time_path)
 
 
 
