@@ -399,12 +399,16 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 
 	return theta_opt, loss_opt
 
-def run_SPSA_accuracy(model, df_preds, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+
+def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
 
 	min_bounds = np.zeros(n_exits)
+
+	print("success")
+	sys.exit()
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_preds))
