@@ -77,7 +77,7 @@ class SPSA (object):
 		return a, A, c
 
 	def compute_loss(self, theta):
-		return self.function(theta, self.dim, *(self.args) )
+		return self.function(theta, self.n_branches, *(self.args) )
 
 	def estimate_grad(self, theta, ck):
 
