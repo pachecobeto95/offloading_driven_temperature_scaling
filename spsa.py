@@ -173,7 +173,7 @@ class SPSA (object):
 			theta, k = self.check_violation_step(theta, old_theta, k)
 
 
-		y_final = self.compute_loss(theta):
+		y_final = self.compute_loss(theta)
 
 		print("Parameter: %s, Function: %s"%(theta, y_final))
 
