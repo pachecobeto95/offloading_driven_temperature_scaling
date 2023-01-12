@@ -259,8 +259,7 @@ def load_ee_model(args, model_path, n_classes, dim, device):
 
 	if (args.n_branches == 1):
 
-		ee_model =  b_mobilenet.B_MobileNet(args.model_name, 258, False, args.n_branches, 300, None, device, 
-			args.distribution)
+		ee_model =  b_mobilenet.B_MobileNet(258, args.pretrained, args.n_branches, 300, None, device)
 
 	elif(args.n_branches == 3):
 		ee_model = b_mobilenet.B_MobileNet(n_classes, args.pretrained, args.n_branches, dim, args.exit_type, device)
