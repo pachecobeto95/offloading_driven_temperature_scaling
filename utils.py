@@ -58,7 +58,8 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 
 	train_idx_path = os.path.join(save_indices_path, "training_idx_caltech256_id_%s.npy"%(args.model_id))
 	val_idx_path = os.path.join(save_indices_path, "validation_idx_caltech256_id_%s.npy"%(args.model_id))
-	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
+	#test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256_id_%s.npy"%(args.model_id))
+	test_idx_path = os.path.join(save_indices_path, "test_idx_caltech256.npy")
 
 	train_idx = np.load(train_idx_path)
 	val_idx = np.load(val_idx_path)
