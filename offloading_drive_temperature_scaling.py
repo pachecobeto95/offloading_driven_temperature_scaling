@@ -39,6 +39,7 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 
 	for threshold in threshold_list:
+		print("Threshold: %s"%(threshold) )
 		df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
 
 
