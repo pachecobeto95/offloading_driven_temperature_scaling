@@ -38,7 +38,7 @@ def main(args):
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
-
+	sys.exit()
 	# Obtain the average inference time to process up to each side branch.	
 	df_inf_time_branches = utils.extracting_ee_inference_time(ee_model, test_loader, args.n_branches, threshold_list, device)
 

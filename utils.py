@@ -76,7 +76,7 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=1, pin_memory=True)
 	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=1, pin_memory=True)
 
-	return train_loader, val_loader, test_loader
+	return train_loader, val_loader, train_loader
 
 
 
