@@ -142,7 +142,7 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 
 			conf_list.append(confs), inference_time_list.append(inf_time_branches)
 
-	conf_list, correct_list, inference_time_list = np.array(conf_list), np.array(correct_list), np.array(inf_time_branches)
+	conf_list, correct_list, inference_time_list = np.array(conf_list), np.array(correct_list), np.array(inference_time_list)
 
 	accuracy_branches = [sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)]
 
