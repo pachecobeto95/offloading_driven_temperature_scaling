@@ -281,15 +281,15 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	remaining_data = df
 
-	for i in range(n_branches):
+	for i in range(n_branches+1):
 		current_n_samples = len(remaining_data)
 
-		if (i == config.max_exits):
-			early_exit_samples = np.ones(current_n_samples, dtype=bool)
-		else:
-			confs = remaining_data["conf_branch_%s"%(i+1)]
-			calib_confs = confs/temp_list[i]
-			early_exit_samples = calib_confs >= threshold
+		#if (i == config.max_exits):
+		#	early_exit_samples = np.ones(current_n_samples, dtype=bool)
+		#else:
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
 		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
@@ -297,7 +297,6 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 		remaining_data = remaining_data[~early_exit_samples]
 
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	print(sum(numexits)/n_samples)
 	print("Neg Accuracy: %s" %( - acc_edge))
 
 	sys.exit()
