@@ -1,4 +1,4 @@
-import os, time, sys, json, os, argparse, torch
+import os, time, sys, json, os, argparse
 import config, utils, spsa
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
@@ -23,18 +23,13 @@ def main(args):
 
 	input_dim, dim = config.input_dim_dict[args.n_branches]
 
-	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
-
-	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
-		"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
-
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
 	idx_path = config.idx_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+	inf_data_path = os.path.join(".", "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
-	inf_time_path = os.path.join(config.DIR_NAME, "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+	inf_time_path = os.path.join(".", "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
 	threshold_list = [0.7, 0.8, 0.9]
 
@@ -42,8 +37,12 @@ def main(args):
 		print("Threshold: %s"%(threshold) )
 		df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
 
-		theta_opt_acc, loss_opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, args.n_branches, args.a0, 
+		theta_opt_acc, opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, args.n_branches, args.a0, 
 			args.c, args.alpha, args.gamma)
+
+		#theta_inf_time, opt_inf_time = spsa.run_SPSA_inf_time(df_inf_data, df_inf_time, threshold, args.max_iter, args.n_branches, args.a0, args.c, 
+		#	args.alpha, args.gamma)
+
 
 		sys.exit()
 

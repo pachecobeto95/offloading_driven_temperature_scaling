@@ -126,7 +126,7 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 	"""
 
 	n_exits = n_branches + 1
-	conf_list, correct_list = [], []
+	conf_list, correct_list, inference_time_list = [], [], []
 	result_dict = {}
 	model.eval()
 	with torch.no_grad():
@@ -136,13 +136,13 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 			data, target = data.to(device), target.to(device)
 
 			# Obtain confs and predictions for each side branch.
-			confs, predictions = model(data)
+			confs, predictions, inf_time_branches = model(data)
 
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
-			conf_list.append(confs)
+			conf_list.append(confs), inference_time_list.append(inf_time_branches)
 
-	conf_list, correct_list = np.array(conf_list), np.array(correct_list)
+	conf_list, correct_list, inference_time_list = np.array(conf_list), np.array(correct_list), np.array(inf_time_branches)
 
 	accuracy_branches = [sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)]
 
@@ -151,6 +151,7 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
 		result_dict["correct_branch_%s"%(i+1)] = correct_list[:, i]
+		result_dict["inferente_time_branch_%s"%(i+1)] = inference_time_list[:, i]
 
 
 	#Converts to a DataFrame Format.

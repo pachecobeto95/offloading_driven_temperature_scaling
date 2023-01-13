@@ -44,17 +44,17 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = 100000
+		self.nr_iter = 100
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 1e-2 # a small number
+		self.c = 1e-1 # a small number
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
-		self.function_tol = function_tol
-		self.param_tol = param_tol
+		self.function_tol = 0.1
+		self.param_tol = 0.01
 
 		# Defining the seed to have same results
 		np.random.seed(seed)
@@ -67,12 +67,12 @@ class SPSA (object):
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
-		magnitude_g0 = np.abs(self.estimate_grad(self.theta_initial, self.c))
+		magnitude_g0 = np.abs(self.estimate_grad(self.theta_initial, self.c).mean())
 
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = 2*((A+1)**self.alpha)/magnitude_g0
+		a = 0.1*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
@@ -114,8 +114,9 @@ class SPSA (object):
 		j_old = self.compute_loss(old_theta)
 		j_new = self.compute_loss(theta)
 
-		j_delta = np.abs( j_new - j_old)
+		j_delta = np.abs(j_new - j_old)
 
+		print(j_delta)
 
 		return False if(j_delta > self.function_tol) else True
 
@@ -124,7 +125,7 @@ class SPSA (object):
 
 		delta_theta = np.abs (theta - old_theta)
 
-		return False if(delta_theta > self.param_tol) else True
+		return False if((np.any(delta_theta) > self.param_tol).any() ) else True
 
 
 
@@ -133,13 +134,14 @@ class SPSA (object):
 		is_function_step_ok, is_theta_step_ok = True, True
 
 		if (self.function_tol is not None):
-			is_function_step_ok = check_function_tolerante(theta, old_theta, k)
+			is_function_step_ok = self.check_function_tolerante(theta, old_theta, k)
 
 
 		if (self.param_tol is not None):
-			is_theta_step_ok = check_theta_tolerante(theta, old_theta, k)
+			is_theta_step_ok = self.check_theta_tolerante(theta, old_theta, k)
 
 
+		#print(is_function_step_ok, is_theta_step_ok)
 		if(is_function_step_ok and is_theta_step_ok):
 			return theta, k + 1
 		else:
@@ -152,7 +154,8 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		#for k in range(1, self.nr_iter):
+		best_loss = np.inf
+
 		while (k <= self.nr_iter):
 
 			old_theta = theta
@@ -166,13 +169,18 @@ class SPSA (object):
 
 			# update parameters
 			theta -= ak*grad_hat
-
-			#Avoid for constraint violation
-			theta = max(theta, self.min_bounds)
-
 			
 			theta, k = self.check_violation_step(theta, old_theta, k)
+			
+			theta = np.maximum(theta, self.min_bounds)
 
+			y_k = self.compute_loss(theta)
+
+			if (y_k < best_loss):  
+				best_theta = theta
+				best_loss = y_k
+
+			print("Parameter: %s, Function: %s"%(best_theta, best_loss))
 
 		y_final = self.compute_loss(theta)
 
@@ -215,7 +223,7 @@ def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_a
 	return f1+f2
 
 
-def compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
+def compute_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
 
 	avg_inference_time = 0
 	total_samples = 0
@@ -284,9 +292,6 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
 
-		#if (i == config.max_exits):
-		#	early_exit_samples = np.ones(current_n_samples, dtype=bool)
-		#else:
 		confs = remaining_data["conf_branch_%s"%(i+1)]
 		calib_confs = confs/temp_list[i]
 		early_exit_samples = calib_confs >= threshold
@@ -296,8 +301,9 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+	print("Early - Exit Prob: %s"%(sum(numexits)/n_samples))
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	print("Neg Accuracy: %s" %( - acc_edge))
+	#print("Neg Accuracy: %s" %( - acc_edge))
 
 	return - acc_edge
 
@@ -331,32 +337,16 @@ def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches, a0, c, alpha
 
 	return theta_opt, loss_opt
 
-def run_SPSA_inf_time_old_version(model, test_loader, threshold, max_iter, n_branches, a0, c, alpha, gamma, device): 
 
-	theta_initial = np.ones(n_branches+1)
-	min_bounds = np.zeros(n_branches+1)
-
-	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(measure_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, test_loader, model, device))
-
-	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses = optim.min()
-
-	#optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
-
-	return theta_opt, loss_opt
-
-
-def run_SPSA_inf_time(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
+def run_SPSA_inf_time(df_inf_data, df_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
 	n_exits = n_branches + 1
 	theta_initial = np.ones(n_exits)
 	min_bounds = np.zeros(n_exits)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(compute_avg_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_preds, avg_inf_time))
+	optim = SPSA(compute_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(threshold, df_inf_data, df_inf_time))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt, losses = optim.min()

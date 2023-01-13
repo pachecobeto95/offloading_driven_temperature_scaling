@@ -349,9 +349,14 @@ class Early_Exit_DNN(nn.Module):
     This method is used to train the early-exit DNN model
     """
 
-    conf_list, class_list  = [], []
+    conf_list, class_list, inference_time_list  = [], [], []
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+
+    cumulative_inf_time = 0.0
 
     for i, exitBlock in enumerate(self.exits):
+
+      starter.record()
 
       x = self.stages[i](x)
       output_branch = exitBlock(x)
@@ -359,17 +364,30 @@ class Early_Exit_DNN(nn.Module):
       #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
       
-      conf_list.append(conf.item()), class_list.append(infered_class)
+      ender.record()
+      torch.cuda.synchronize()
+      curr_time = starter.elapsed_time(ender)
+      cumulative_inf_time += curr_time
 
+      conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+
+    starter.record()
     x = self.stages[-1](x)
 
     x = torch.flatten(x, 1)
 
     output = self.classifier(x)
-    infered_conf, infered_class = torch.max(self.softmax(output), 1)
-    conf_list.append(infered_conf.item()), class_list.append(infered_class)
+    conf, infered_class = torch.max(self.softmax(output), 1)
 
-    return conf_list, class_list
+    ender.record()
+    torch.cuda.synchronize()
+    curr_time = starter.elapsed_time(ender)
+    cumulative_inf_time += curr_time
+
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+
+    return conf_list, class_list, inference_time_list
+
 
 
   def forwardInference(self, x, threshold):
