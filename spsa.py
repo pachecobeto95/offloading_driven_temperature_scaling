@@ -74,7 +74,7 @@ class SPSA (object):
 		# different changes might need other choices
 		a = 2*((A+1)**self.alpha)/magnitude_g0
 
-		return a, A, c
+		return a, A, self.c
 
 	def compute_loss(self, theta):
 		return self.function(theta, self.n_branches, *(self.args) )
