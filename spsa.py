@@ -281,7 +281,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	remaining_data = df
 
-	for i in range(n_branches+1):
+	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
 
 		#if (i == config.max_exits):
