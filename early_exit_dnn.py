@@ -599,7 +599,7 @@ class Early_Exit_DNN(nn.Module):
       curr_time = starter.elapsed_time(ender)
       cumulative_inf_time += curr_time
 
-      conf_list.append(conf.item()), class_list.append(prediction), inference_time_list.append(cumulative_inf_time)
+      conf_list.append(conf_branch.item()), class_list.append(prediction), inference_time_list.append(cumulative_inf_time)
 
     starter.record()
     x = self.stages[-1](x)
