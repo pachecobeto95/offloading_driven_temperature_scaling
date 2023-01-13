@@ -579,16 +579,29 @@ class Early_Exit_DNN(nn.Module):
 
   def forward(self, x):
 
-    conf_list, prediction_list = [], []
+    conf_list, class_list, inference_time_list  = [], [], []
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+
+    cumulative_inf_time = 0.0
 
     for i, exitBlock in enumerate(self.exits):
-      #
+      
+      starter.record()
+
       x = self.stages[i](x)
 
       output_branch = exitBlock(x)
       conf_branch, prediction = torch.max(self.softmax(output_branch), 1)
-      conf_list.append(conf_branch.item()), prediction_list.append(prediction)
 
+
+      ender.record()
+      torch.cuda.synchronize()
+      curr_time = starter.elapsed_time(ender)
+      cumulative_inf_time += curr_time
+
+      conf_list.append(conf.item()), class_list.append(prediction), inference_time_list.append(cumulative_inf_time)
+
+    starter.record()
     x = self.stages[-1](x)
     
     if((self.model_name == "mobilenet") and (not self.pretrained)):
@@ -599,9 +612,15 @@ class Early_Exit_DNN(nn.Module):
     output = self.classifier(x)
 
     conf, infered_class = torch.max(self.softmax(output), 1)
-    conf_list.append(conf_branch.item()), prediction_list.append(prediction)
     
-    return conf_list, prediction_list
+    ender.record()
+    torch.cuda.synchronize()
+    curr_time = starter.elapsed_time(ender)
+    cumulative_inf_time += curr_time
+
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+   
+    return conf_list, class_list, inference_time_list
 
 
   def update_logits(self, logits, temp_list, branch):

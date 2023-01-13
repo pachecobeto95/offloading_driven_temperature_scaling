@@ -199,17 +199,29 @@ class B_MobileNet(nn.Module):
 
   def forward(self, x):
 
-    conf_list, class_list = [], []
+    conf_list, class_list, inference_time_list  = [], [], []
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+
+    cumulative_inf_time = 0.0
 
     for i, exitBlock in enumerate(self.exits):
       
+      starter.record()
+
       x = self.stages[i](x)
       output_branch = exitBlock(x)
 
       prob_vector = self.softmax(output_branch)
       conf, infered_class = torch.max(prob_vector, 1)
 
-      conf_list.append(conf.item()), class_list.append(infered_class-1)
+      ender.record()
+      torch.cuda.synchronize()
+      curr_time = starter.elapsed_time(ender)
+      cumulative_inf_time += curr_time
+
+      conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+
+    starter.record()
 
     x = self.stages[-1](x)
     x = x.mean(3).mean(2)
@@ -219,9 +231,14 @@ class B_MobileNet(nn.Module):
 
     infered_conf, infered_class = torch.max(prob_vector, 1)
     
-    conf_list.append(infered_conf.item()), class_list.append(infered_class-1)
+    ender.record()
+    torch.cuda.synchronize()
+    curr_time = starter.elapsed_time(ender)
+    cumulative_inf_time += curr_time
 
-    return conf_list, class_list
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+
+    return conf_list, class_list, inference_time_list
 
   def forwardInference(self, x, threshold):
 
