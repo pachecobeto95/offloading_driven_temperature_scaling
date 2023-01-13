@@ -219,7 +219,7 @@ class B_MobileNet(nn.Module):
       curr_time = starter.elapsed_time(ender)
       cumulative_inf_time += curr_time
 
-      conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+      conf_list.append(conf.item()), class_list.append(infered_class-1), inference_time_list.append(cumulative_inf_time)
 
     starter.record()
 
@@ -236,7 +236,7 @@ class B_MobileNet(nn.Module):
     curr_time = starter.elapsed_time(ender)
     cumulative_inf_time += curr_time
 
-    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+    conf_list.append(conf.item()), class_list.append(infered_class-1), inference_time_list.append(cumulative_inf_time)
 
     return conf_list, class_list, inference_time_list
 
