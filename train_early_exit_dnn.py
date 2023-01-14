@@ -130,7 +130,7 @@ def main(args):
 	loss_weights = loss_weights_dict[args.loss_weights_type]
 
 	current_result = {"exit_type": args.exit_type, "distribution": args.distribution, "n_classes": n_classes,
-	"input_dim": dim, "loss_weights_type": args.loss_weights_type}
+	"input_dim": args.dim, "loss_weights_type": args.loss_weights_type}
 
 	current_result.update(indices)	
 
