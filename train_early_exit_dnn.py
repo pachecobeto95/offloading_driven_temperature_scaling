@@ -228,7 +228,7 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--max_patience', type=int, default=20, help='Max Patience.')
 
-	parser.add_argument('--model_id', type=int, default=config.model_id, help='Epochs.')
+	parser.add_argument('--model_id', type=int, help='Model_id.')
 
 	args = parser.parse_args()
 
