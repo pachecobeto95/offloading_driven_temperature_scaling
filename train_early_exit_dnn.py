@@ -208,7 +208,7 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
 
-	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s'%(config.dim))
+	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
 
 	parser.add_argument('--seed', type=int, default=config.seed, help='Seed.')
 
