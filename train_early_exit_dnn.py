@@ -224,9 +224,9 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--pretrained', type=bool, default=config.pretrained, help='Backbone DNN is pretrained.')
 
-	parser.add_argument('--epochs', type=int, default=config.epochs, help='Epochs.')
+	#parser.add_argument('--epochs', type=int, default=config.epochs, help='Epochs.')
 
-	parser.add_argument('--max_patience', type=int, default=config.max_patience, help='Epochs.')
+	parser.add_argument('--max_patience', type=int, default=20, help='Max Patience.')
 
 	parser.add_argument('--model_id', type=int, default=config.model_id, help='Epochs.')
 
