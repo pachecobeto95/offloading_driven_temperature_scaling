@@ -29,39 +29,34 @@ def main(args):
 
 	inf_data_path = os.path.join(".", "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
-	inf_time_path = os.path.join(".", "inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+	result_path = os.path.join(".", "temperature_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
 	threshold_list = [0.7, 0.8, 0.9]
 
-	for threshold in threshold_list:
-		print("Threshold: %s"%(threshold) )
-		df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
+	df_inf_data = pd.read_csv(inf_data_path)
 
-		theta_opt_acc, opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, args.n_branches, args.a0, 
-			args.c, args.alpha, args.gamma)
+	for n_branches_edge in reversed(range(1, args.n_branches+1)):
 
-		#theta_inf_time, opt_inf_time = spsa.run_SPSA_inf_time(df_inf_data, df_inf_time, threshold, args.max_iter, args.n_branches, args.a0, args.c, 
-		#	args.alpha, args.gamma)
+		for threshold in threshold_list:
+			print("Number of Branches: %s, Threshold: %s"%(n_branches_edge, threshold))
+			#df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
+
+			theta_opt_acc, opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, 
+				args.c, args.alpha, args.gamma, result_path)
 
 
-		sys.exit()
+			theta_inf_time, opt_inf_time = spsa.run_SPSA_inf_time(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
+				args.alpha, args.gamma, result_path)
+
+			sys.exit()
+
+			joint_theta, joint_opt_loss = spsa.run_multi_obj(df_inf_data, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
+				args.alpha, args.gamma, result_path)
+
+			sys.exit()
 
 	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
 	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
-
-	
-
-
-
-	beta_list = np.arange(0, 1, args.step)
-
-	for beta in beta_list:
-		print("Start Joint Optimization")
-		theta_opt_joint, loss_opt_joint = spsa.run_multi_obj_analysis(df_inf_data, df_inf_time, args.threshold, args.max_iter, 
-			args.n_branches, args.a0, args.c, args.alpha, args.gamma, beta)
-
-		print("Success")
-		sys.exit()
 
 
 if (__name__ == "__main__"):

@@ -19,7 +19,7 @@ batch_size_test = 1
 pretrained = True
 n_branches = 5
 n_exits = n_branches + 1
-max_iter = 200000
+max_iter = 1000
 #max_iter = 10
 read_inf_data = True
 a0 = 1
@@ -49,6 +49,7 @@ dataset_path_dict = {"caltech256": os.path.join(root_dataset_path, "caltech256")
 idx_path_dict = {"caltech256": os.path.join(root_indices_path, "caltech256")}
 nr_class_dict = {"caltech256": {3: 258, 5: 258, 1: 257}}
 input_dim_dict = {3: [330, 300], 5: [256, 224], 1: [256, 224]}
+
 
 filePath_acc = os.path.join(resultsPath, "temp_scaling_accuracy.csv")
 filePath_inf_time = os.path.join(resultsPath, "temp_scaling_inference_time.csv")

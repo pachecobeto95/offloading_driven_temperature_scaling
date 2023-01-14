@@ -44,7 +44,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = 100
+		self.nr_iter = nr_iter
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
@@ -86,15 +86,17 @@ class SPSA (object):
 		for i in range(self.ens_size):
 
 			# bernoulli-like distribution
-			deltak = np.random.choice([-1, 1], size=self.n_branches+1) # TROCAR ATÉ O FINAL DO DIA.
-
+			deltak = np.random.choice([-1, 1], size=self.n_branches)
 			ck_deltak = ck * deltak
 
 			#Stochastic perturbantions
 			theta_plus = theta + ck_deltak
 			theta_minus = theta - ck_deltak
 
-			delta_y_pred = self.compute_loss(theta_plus) - self.compute_loss(theta_minus)
+			y_plus, _ = self.compute_loss(theta_plus) 
+			y_minus, _ = self.compute_loss(theta_minus)
+
+			delta_y_pred = y_plus - y_minus
 
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
@@ -111,12 +113,10 @@ class SPSA (object):
 
 	def check_function_tolerante(self, theta, old_theta, k):
 	
-		j_old = self.compute_loss(old_theta)
-		j_new = self.compute_loss(theta)
+		j_old, _ = self.compute_loss(old_theta)
+		j_new, _ = self.compute_loss(theta)
 
 		j_delta = np.abs(j_new - j_old)
-
-		print(j_delta)
 
 		return False if(j_delta > self.function_tol) else True
 
@@ -174,20 +174,17 @@ class SPSA (object):
 			
 			theta = np.maximum(theta, self.min_bounds)
 
-			y_k = self.compute_loss(theta)
-
-			if (y_k < best_loss):  
+			y_k, ee_prob = self.compute_loss(theta)
+			
+			if (y_k < best_loss):
 				best_theta = theta
 				best_loss = y_k
+				best_ee_prob = ee_prob
 
-			print("Parameter: %s, Function: %s"%(best_theta, best_loss))
+			#if (k % 1000 ==0):
+			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 
-		y_final = self.compute_loss(theta)
-
-		print("Parameter: %s, Function: %s"%(theta, y_final))
-
-		return theta, y_final 
-
+		return best_theta, best_loss 
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
 
@@ -209,13 +206,12 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 	avg_inf_time = np.mean(inf_time_list)
 
 	# Returns the average inference time
-	return avg_inf_time
 
 
-def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_acc, loss_time):
+def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time):
 
 	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current = compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
+	inf_time_current = compute_inference_time(temp_list, n_branches, max_exits, threshold, df)
 
 	f1 = (acc_current - loss_acc)/loss_acc
 	f2 = (inf_time_current - loss_time)/loss_time	
@@ -223,55 +219,51 @@ def joint_function(temp_list, n_branches, threshold, df, inf_time_branch, loss_a
 	return f1+f2
 
 
-def compute_inference_time(temp_list, n_branches, threshold, df, inf_time_branch):
+def compute_inference_time(temp_list, n_branches, max_exits, threshold, df):
 
 	avg_inference_time = 0
-	total_samples = 0
 	n_samples = len(df)
 	remaining_data = df
 
-	#print("Total Samples: %s"%(n_samples))
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
+	numexits = np.zeros(n_branches)
 
-	for i in range(n_branches+1):
+	for i in range(n_branches):
 
 		current_n_samples = len(remaining_data)
 
-		if (i == config.max_exits-1):
-			early_exit_samples = np.ones(current_n_samples, dtype=bool)
-		else:
-			confs = remaining_data["conf_branch_%s"%(i+1)]
-			calib_confs = confs/temp_list[i]
-			early_exit_samples = calib_confs >= threshold
+		#if (i == n_branches):
+		#	early_exit_samples = np.ones(current_n_samples, dtype=bool)
+		#else:
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs*temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
-		#print(temp_list[i])
-		#print(sum(calib_confs >= threshold), current_n_samples)
-		#numexits = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		numexits = float(sum(early_exit_samples))
-		#numexits = float(remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count())
-		total_samples += numexits
-		#print("Calib Confs: %s, Number of Exits: %s, Total Samples: %s"%(calib_confs.mean(), numexits, total_samples))
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 
-		avg_inference_time += numexits*inf_time_branch[i]
+		inf_time_branch = df["inferente_time_branch_%s"%(i+1)].mean()
 
-		#prob = numexits/current_n_samples if(current_n_samples > 0) else 0
+		avg_inference_time += numexits[i]*inf_time_branch
 
-		#avg_inference_time +=  prob*inf_time_branch[i]
-		#print("Branch: %s, Prob: %s, Inf_time: %s, S_prob: %s"%(i+1, prob, prob*inf_time_branch[i], s_prob))
 		remaining_data = remaining_data[~early_exit_samples]
 
-	#print("Total TIMe: %s"%(avg_inference_time))
-	#avg_inference_time = avg_inference_time/float(n_samples)
-	#print("Avg Time: %s"%(avg_inference_time))
 
-	return avg_inference_time
+	inf_time_backbone = df["inferente_time_branch_%s"%(max_exits)].mean()
+	avg_inference_time += len(remaining_data)*inf_time_backbone
+
+
+	avg_inference_time = avg_inference_time/float(n_samples)
+	early_classification_prob = sum(numexits)/n_samples
+
+	return avg_inference_time, early_classification_prob
 
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	"""
 	This function computes the accuracy on the edge
+	return avg_inf_time
 
 	Inputs:
 		temp_list:  temperature vector
@@ -301,11 +293,11 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	print("Early - Exit Prob: %s"%(sum(numexits)/n_samples))
+	#print("Early - Exit Prob: %s"%(sum(numexits)/n_samples))
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	#print("Neg Accuracy: %s" %( - acc_edge))
+	early_classification_prob = sum(numexits)/n_samples
 
-	return - acc_edge
+	return - acc_edge, early_classification_prob
 
 
 def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamma):
@@ -319,58 +311,72 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 
 	return theta_opt, loss_opt
 
+def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, savePath):
 
-def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches, a0, c, alpha, gamma):
-
-	n_exits = n_branches + 1
-	theta_initial = np.ones(n_exits)
-
-	min_bounds = np.zeros(n_exits)
+	theta_initial, min_bounds = np.ones(n_branches_edge+1), np.zeros(n_branches_edge+1)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, args=(threshold, df_inf_data))
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches_edge+1, a0, c, alpha, gamma, min_bounds, args=(threshold, df_inf_data))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses = optim.min()
+	theta_opt, loss_opt = optim.min()
 
-	#optim.save_temperature(config.filePath_acc, loss_opt, theta_opt, n_exits)
+	save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches_edge, max_branches, metric="acc")
 
 	return theta_opt, loss_opt
 
 
-def run_SPSA_inf_time(df_inf_data, df_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma):
 
-	n_exits = n_branches + 1
-	theta_initial = np.ones(n_exits)
-	min_bounds = np.zeros(n_exits)
+
+def run_SPSA_inf_time(df_inf_data, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, savePath):
+
+	max_exits = max_branches + 1
+
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(compute_inference_time, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_inf_data, df_inf_time))
+	optim = SPSA(compute_inference_time, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses = optim.min()
+	theta_opt, loss_opt = optim.min()
 
-	#optim.save_temperature(config.filePath_inf_time, loss_opt, theta_opt, n_exits)
+	theta_opt = 1./np.array(theta_opt)
+
+	save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches_edge, max_branches, metric="inf_time")
 
 	return theta_opt, loss_opt
 
-def run_multi_obj(df_preds, avg_inf_time, loss_acc, loss_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
 
-	n_exits = n_branches + 1
-	theta_initial = np.ones(n_exits)
-	min_bounds = np.zeros(n_exits)
+def run_multi_obj(df_inf_data, loss_acc, loss_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, savePath):
+
+	max_exits = max_branches + 1
+
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(joint_function, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_preds, avg_inf_time, loss_acc, loss_time, beta))
+	optim = SPSA(joint_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data, loss_acc, loss_time))
 
 	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, losses = optim.min()
+	theta_opt, loss_opt = optim.min()
 
-	optim.save_temperature(config.filePath_joint_opt, loss_opt, theta_opt, n_exits)
+	save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches_edge, max_branches, metric="joint")
 
 	return theta_opt, loss_opt
+
+
+def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_branches, metric):
+
+	result_temp_dict = {"threshold": [threshold], "opt_loss": [loss_opt], "n_branches": [n_branches], "metric": [metric], "max_branches": [max_branches]}
+
+	for i in range(n_branches):
+		result_temp_dict["temp_branch_%s"%(i+1)] = [theta_opt[i]]
+
+	df_temp = pd.DataFrame(result_temp_dict)
+
+	df_temp.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
+
 
 def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
 

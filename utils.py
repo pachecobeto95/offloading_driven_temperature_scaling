@@ -24,18 +24,20 @@ def get_indices(dataset, split_ratio):
 	return train_val_idx, val_idx, test_idx
 
 
-def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
+#def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
+def load_caltech256(args, dataset_path):
+
 	mean, std = [0.457342265910642, 0.4387686270106377, 0.4073427106250871], [0.26753769276329037, 0.2638145880487105, 0.2776826934044154]
 
 	torch.manual_seed(args.seed)
 	np.random.seed(seed=args.seed)
 
 	transformations_train = transforms.Compose([
-		transforms.Resize((input_dim, input_dim)),
+		transforms.Resize((args.input_dim, args.input_dim)),
 		transforms.RandomChoice([
 			transforms.ColorJitter(brightness=(0.80, 1.20)),
 			transforms.RandomGrayscale(p = 0.25)]),
-		transforms.CenterCrop((dim, dim)),
+		transforms.CenterCrop((args.dim, args.dim)),
 		transforms.RandomHorizontalFlip(p=0.25),
 		transforms.RandomRotation(25),
 		transforms.ToTensor(), 
@@ -43,8 +45,8 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 		])
 
 	transformations_test = transforms.Compose([
-		transforms.Resize((input_dim, input_dim)),
-		transforms.CenterCrop((dim, dim)),
+		transforms.Resize((args.input_dim, args.input_dim)),
+		transforms.CenterCrop((args.dim, args.dim)),
 		transforms.ToTensor(), 
 		transforms.Normalize(mean = mean, std = std),
 		])
@@ -76,7 +78,7 @@ def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
 	val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, num_workers=1, pin_memory=True)
 	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=1, pin_memory=True)
 
-	return train_loader, val_loader, test_loader
+	return train_loader, val_loader, test_loader, {"train": train_idx, "val": val_idx, "test": test_idx}
 
 
 
