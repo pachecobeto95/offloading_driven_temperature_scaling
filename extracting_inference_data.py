@@ -31,7 +31,7 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 
 
-	a = torch.load(os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_mobilenet_1_branches_id_1.pth") , map_location=device)
+	a = torch.load(os.path.join(config.DIR_NAME, "new_models", "models", "ee_mobilenet_1_branches_id_1.pth") , map_location=device)
 
 	print(a["test"])
 
