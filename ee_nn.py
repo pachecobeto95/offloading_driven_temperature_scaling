@@ -389,6 +389,38 @@ class Early_Exit_DNN(nn.Module):
     return conf_list, class_list, inference_time_list
 
 
+  def forwardTraining(self, x):
+    """
+    This method is used to train the early-exit DNN model
+    """
+
+    output_list, conf_list, class_list  = [], [], []
+
+    for i, exitBlock in enumerate(self.exits):
+
+      starter.record()
+
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+
+      #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+      
+      output_list.append(output_branch), conf_list.append(conf.item()), class_list.append(infered_class)
+
+    starter.record()
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+
+    output_list.append(output), conf_list.append(conf.item()), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
+
+
 
   def forwardInference(self, x, threshold):
     conf_list, infered_class_list = [], []
