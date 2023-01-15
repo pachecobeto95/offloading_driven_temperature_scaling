@@ -112,11 +112,9 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]		
 
-	model_save_path = os.path.join(config.DIR_NAME, "new_models", config.dataset_name, config.model_name, 
-		"ee_model_%s_%s.pth"%(config.model_name, args.model_id))
+	model_save_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s.pth"%(config.model_name, args.model_id))
 
-	history_path = os.path.join(config.DIR_NAME, "new_history", config.dataset_name, config.model_name, 
-		"history_ee_model_%s_%s.csv"%(config.model_name, args.model_id))
+	history_path = os.path.join(config.DIR_NAME, "new_models", "history", "history_ee_model_%s_%s.csv"%(config.model_name, args.model_id))
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
