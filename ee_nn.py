@@ -404,7 +404,7 @@ class Early_Exit_DNN(nn.Module):
       #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
       
-      output_list.append(output_branch), conf_list.append(conf.item()), class_list.append(infered_class)
+      output_list.append(output_branch), conf_list.append(conf), class_list.append(infered_class)
 
     x = self.stages[-1](x)
 
@@ -413,7 +413,7 @@ class Early_Exit_DNN(nn.Module):
     output = self.classifier(x)
     conf, infered_class = torch.max(self.softmax(output), 1)
 
-    output_list.append(output), conf_list.append(conf.item()), class_list.append(infered_class)
+    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
 
     return output_list, conf_list, class_list
 
