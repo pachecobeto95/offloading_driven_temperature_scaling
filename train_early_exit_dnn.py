@@ -80,7 +80,7 @@ def evalEEDNNs(model, val_loader, criterion, n_exits, epoch, device, loss_weight
 		for (data, target) in tqdm(val_loader):
 			data, target = data.to(device), target.to(device)
 
-			output_list, conf_list, class_list = model.forwardTrain(data)
+			output_list, conf_list, class_list = model.forwardTraining(data)
 
 			model_loss, ee_loss, model_acc, ee_acc = compute_metrics(criterion, output_list, conf_list, class_list, target, loss_weights)
 
@@ -119,6 +119,8 @@ def main(args):
 		"history_ee_model_%s_%s.csv"%(config.model_name, args.model_id))
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
+
+	print(device)
 
 	train_loader, val_loader, test_loader, indices = utils.load_caltech256(args, dataset_path)
 
