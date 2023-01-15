@@ -21,7 +21,7 @@ def get_indices(dataset, split_ratio):
 
 	train_idx, val_idx = train_val_idx[:train_size], train_val_idx[train_size:]
 
-	return train_val_idx, val_idx, test_idx
+	return train_idx, val_idx, test_idx
 
 
 #def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
