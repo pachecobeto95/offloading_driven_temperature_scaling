@@ -128,6 +128,8 @@ def main(args):
 	"equal": np.ones(args.n_branches+1)}
 	
 	loss_weights = loss_weights_dict[args.loss_weights_type]
+	print(loss_weights)
+	sys.exit()
 
 	current_result = {"exit_type": args.exit_type, "distribution": args.distribution, "n_classes": n_classes,
 	"input_dim": args.dim, "loss_weights_type": args.loss_weights_type}
