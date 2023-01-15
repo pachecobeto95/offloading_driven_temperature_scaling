@@ -398,8 +398,6 @@ class Early_Exit_DNN(nn.Module):
 
     for i, exitBlock in enumerate(self.exits):
 
-      starter.record()
-
       x = self.stages[i](x)
       output_branch = exitBlock(x)
 
@@ -408,7 +406,6 @@ class Early_Exit_DNN(nn.Module):
       
       output_list.append(output_branch), conf_list.append(conf.item()), class_list.append(infered_class)
 
-    starter.record()
     x = self.stages[-1](x)
 
     x = torch.flatten(x, 1)
