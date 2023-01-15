@@ -56,8 +56,8 @@ def trainEEDNNs(model, train_loader, optimizer, criterion, n_exits, epoch, devic
 
 	avg_acc, avg_ee_acc = round(np.mean(model_acc_list), 2), np.mean(ee_acc_list, axis=0)
 
-	#logging.debug("Epoch: %s, Train Model Loss: %s, Train Model Acc: %s"%(epoch, avg_loss, avg_acc))
-	print("Epoch: %s, Train Model Loss: %s, Train Model Acc: %s"%(epoch, avg_loss, avg_acc))
+	logging.debug("Epoch: %s, Train Model Loss: %s, Train Model Acc: %s"%(epoch, avg_loss, avg_acc))
+	#print("Epoch: %s, Train Model Loss: %s, Train Model Acc: %s"%(epoch, avg_loss, avg_acc))
 
 	result_dict = {"epoch": epoch, "train_loss": avg_loss, "train_acc": avg_acc}
 
@@ -96,8 +96,8 @@ def evalEEDNNs(model, val_loader, criterion, n_exits, epoch, device, loss_weight
 
 	avg_acc, avg_ee_acc = round(np.mean(model_acc_list), 2), np.mean(ee_acc_list, axis=0)
 
-	#logging.debug("Epoch: %s, Val Model Loss: %s, Val Model Acc: %s"%(epoch, avg_loss, avg_acc))
-	print("Epoch: %s, Val Model Loss: %s, Val Model Acc: %s"%(epoch, avg_loss, avg_acc))
+	logging.debug("Epoch: %s, Val Model Loss: %s, Val Model Acc: %s"%(epoch, avg_loss, avg_acc))
+	#print("Epoch: %s, Val Model Loss: %s, Val Model Acc: %s"%(epoch, avg_loss, avg_acc))
 
 	result_dict = {"epoch": epoch, "val_loss": avg_loss, "val_acc": avg_acc}
 
@@ -115,6 +115,10 @@ def main(args):
 	model_save_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
 	history_path = os.path.join(config.DIR_NAME, "new_models", "history", "history_ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+
+	logPath = os.path.join(config.DIR_NAME, "log_train_ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+
+	logging.basicConfig(level=logging.DEBUG, filename=logPath, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
