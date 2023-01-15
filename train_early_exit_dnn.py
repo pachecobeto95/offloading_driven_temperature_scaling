@@ -124,7 +124,7 @@ def main(args):
 
 	n_classes = 257
 
-	loss_weights_dict = {"crescent": np.linspace(0.3, 1, args.n_branches+1), "crescent": np.linspace(1, 0.3, args.n_branches+1), 
+	loss_weights_dict = {"crescent": np.linspace(0.3, 1, args.n_branches+1), "decrescent": np.linspace(1, 0.3, args.n_branches+1), 
 	"equal": np.ones(args.n_branches+1)}
 	
 	loss_weights = loss_weights_dict[args.loss_weights_type]
