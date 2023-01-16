@@ -35,6 +35,7 @@ def main(args):
 	train_idx, val_idx, test_idx = model_dict["train"], model_dict["val"], model_dict["test"]
 
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model.load_state_dict(model_dict["model_state_dict"])
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
 
