@@ -25,10 +25,7 @@ def main(args):
 
 	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
-	inf_time_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_time_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
-
 	threshold_list = [0.7, 0.8, 0.9]
-
 
 	model_dict = torch.load(model_path, map_location=device)
 
@@ -39,10 +36,8 @@ def main(args):
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
 
-
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
-
 
 	#Load Early-exit DNN model.
 	#ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
