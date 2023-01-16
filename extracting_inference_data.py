@@ -1,5 +1,5 @@
 import os, time, sys, json, os, argparse, torch
-import config, utils, spsa, ee_nn
+import config, utils, spsa, 
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
@@ -11,9 +11,7 @@ def main(args):
 
 	model_id = config.models_id_dict[args.model_name]
 
-	n_classes = config.nr_class_dict[args.dataset_name][args.n_branches]
-
-	input_dim, dim = config.input_dim_dict[args.n_branches]
+	n_classes = 257
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
@@ -124,6 +122,10 @@ if (__name__ == "__main__"):
 		help="Step of beta. Default: %s"%(config.step))	
 
 	parser.add_argument('--model_id', type=int, default=1)	
+
+	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
+
+	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
 
 
 	args = parser.parse_args()
