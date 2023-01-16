@@ -1,5 +1,5 @@
 import os, time, sys, json, os, argparse, torch
-import config, utils, spsa
+import config, utils, spsa, ee_nn
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
