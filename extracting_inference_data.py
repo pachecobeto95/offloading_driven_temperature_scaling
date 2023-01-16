@@ -40,7 +40,7 @@ def main(args):
 
 
 	#Load Dataset 
-	_, _, test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
 
 	#Load Early-exit DNN model.
