@@ -17,12 +17,13 @@ def main(args):
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
-	model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
-		"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
+	#model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
+	#	"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
+
+	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, model_id) )	
+
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
-
-	idx_path = config.idx_path_dict[args.dataset_name]
 
 	inf_data_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
 
@@ -31,14 +32,18 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 
 
-	a = torch.load(os.path.join(config.DIR_NAME, "new_models", "models", "ee_mobilenet_1_branches_id_1.pth") , map_location=device)
+	model_dict = torch.load(model_path, map_location=device)
 
-	print(a["test"])
+	train_idx, val_idx, test_idx = model_dict["train"], model_dict["val"], model_dict["test"]
 
-	sys.exit()
+	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model = 	ee_model.to(device)
+	ee_model.eval()
+
 
 	#Load Dataset 
-	_, _, test_loader = utils.load_caltech256(args, dataset_path, idx_path, input_dim, dim)
+	_, _, test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+
 
 	#Load Early-exit DNN model.
 	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
