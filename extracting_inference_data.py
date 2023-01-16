@@ -8,9 +8,6 @@ import pandas as pd
 
 def main(args):
 
-
-	model_id = config.models_id_dict[args.model_name]
-
 	n_classes = 257
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
@@ -18,12 +15,12 @@ def main(args):
 	#model_path = os.path.join(config.DIR_NAME, "models", args.model_name, "models", 
 	#	"ee_model_%s_branches_id_%s.pth"%(args.n_branches, model_id))
 
-	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, model_id) )	
+	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )	
 
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.7, 0.8, 0.9]
 
