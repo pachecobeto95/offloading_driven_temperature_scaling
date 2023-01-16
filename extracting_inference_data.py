@@ -44,7 +44,7 @@ def main(args):
 
 
 	#Load Early-exit DNN model.
-	ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
+	#ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
