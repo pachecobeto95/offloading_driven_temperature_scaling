@@ -21,7 +21,7 @@ def get_indices(dataset, split_ratio):
 
 	train_idx, val_idx = train_val_idx[:train_size], train_val_idx[train_size:]
 
-	return train_idx, val_idx, test_idx
+	return train_val_idx, val_idx, test_idx
 
 
 #def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
@@ -79,6 +79,43 @@ def load_caltech256(args, dataset_path):
 	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=4, pin_memory=True)
 
 	return train_loader, val_loader, test_loader, {"train": train_idx, "val": val_idx, "test": test_idx}
+
+
+
+#def load_caltech256(args, dataset_path, save_indices_path, input_dim, dim):
+def load_caltech256_test_inference(args, dataset_path, test_idx):
+
+	mean, std = [0.457342265910642, 0.4387686270106377, 0.4073427106250871], [0.26753769276329037, 0.2638145880487105, 0.2776826934044154]
+
+	torch.manual_seed(args.seed)
+	np.random.seed(seed=args.seed)
+
+	transformations_train = transforms.Compose([
+		transforms.Resize((args.input_dim, args.input_dim)),
+		transforms.RandomChoice([
+			transforms.ColorJitter(brightness=(0.80, 1.20)),
+			transforms.RandomGrayscale(p = 0.25)]),
+		transforms.CenterCrop((args.dim, args.dim)),
+		transforms.RandomHorizontalFlip(p=0.25),
+		transforms.RandomRotation(25),
+		transforms.ToTensor(), 
+		transforms.Normalize(mean = mean, std = std),
+		])
+
+	transformations_test = transforms.Compose([
+		transforms.Resize((args.input_dim, args.input_dim)),
+		transforms.CenterCrop((args.dim, args.dim)),
+		transforms.ToTensor(), 
+		transforms.Normalize(mean = mean, std = std),
+		])
+
+	test_set = datasets.ImageFolder(dataset_path, transform=transformations_test)
+
+	test_data = torch.utils.data.Subset(test_set, indices=test_idx)
+
+	test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, num_workers=4, pin_memory=True)
+
+	return test_loader
 
 
 
