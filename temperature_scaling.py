@@ -64,7 +64,7 @@ class GlobalTemperatureScaling(nn.Module):
 		return logits / temperature
 
 
-	def forwardCalibrationInference(self, data, threshold):
+	def forwardCalibrationInference(self, x, threshold):
 		return self.model.forwardGlobalCalibrationInference(x, threshold, self.temperature_overall)
 
 
