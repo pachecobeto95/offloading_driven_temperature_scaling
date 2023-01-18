@@ -65,6 +65,11 @@ class GlobalTemperatureScaling(nn.Module):
 		temperature = self.temperature_overall.unsqueeze(1).expand(logits.size(0), logits.size(1))
 		return logits / temperature
 
+
+	def forwardCalibrationInference(self, data, threshold):
+		return self.model.forwardGlobalCalibrationInference(x, threshold, self.temperature_overall)
+
+
 	def forwardGlobalTS(self, x):
 		return self.model.forwardGlobalCalibration(x, self.temperature_overall)
 
@@ -109,7 +114,7 @@ class GlobalTemperatureScaling(nn.Module):
 
 		# Calculate NLL and ECE before temperature scaling
 		before_temperature_nll = nll_criterion(logits, labels).item()
-		before_temperature_ece = ece_criterion(logits, labels).item()
+		#before_temperature_ece = ece_criterion(logits, labels).item()
 		#print('Before temperature - NLL: %.3f, ECE: %.3f' % (before_temperature_nll, before_temperature_ece))
 
 		# Next: optimize the temperature w.r.t. NLL
@@ -124,102 +129,15 @@ class GlobalTemperatureScaling(nn.Module):
 
 		# Calculate NLL and ECE after temperature scaling
 		after_temperature_nll = nll_criterion(self.temperature_scale(logits), labels).item()
-		after_temperature_ece = ece_criterion(self.temperature_scale(logits), labels).item()
+		#after_temperature_ece = ece_criterion(self.temperature_scale(logits), labels).item()
 		#print('Optimal temperature: %.3f' % self.temperature_overall.item())
 		#print('After temperature - NLL: %.3f, ECE: %.3f' % (after_temperature_nll, after_temperature_ece))
 
 		#self.save_temperature(p_tar, before_temperature_nll, after_temperature_nll, before_temperature_ece, after_temperature_ece)
 		
+		#return self.temperature_overall
 		return self
 
-
-class GlobalTemperatureScaling2(nn.Module):
-	"""This class implements Global Temperature Scaling for early-exit DNNs"""
-
-	def __init__(self, model, device, n_exits, saveTempPath, temp_init, lr=0.001, max_iter=1000):
-		super(GlobalTemperatureScaling, self).__init__()
-    
-		self.model = model #the model to be calibrated
-		self.device = device
-		self.temperature_overall = nn.Parameter((temp_init*torch.ones(1)).to(self.device)) #initial temperature to be optimized
-		self.lr = lr #learning rate
-		self.max_iter = max_iter #maximum iteration to the optimization method
-		self.saveTempPath = saveTempPath #Path to save the learned temperature parameters.
-		self.n_exits = n_exits
-
-
-	def temperature_scale(self, logits):
-		temperature = self.temperature_overall.unsqueeze(1).expand(logits.size(0), logits.size(1))
-		return logits / temperature
-
-	def forwardOverall(self, x):
-		return self.model.forwardOverallCalibration(x, self.temperature_overall)
-
-
-	def save_temperature(self, p_tar, before_temp_nll, after_temp_nll, before_temp_ece, after_temp_ece):
-		# This function probably should live outside of this class, but whatever
-		# This method sves the learned temperature parameters.
-
-
-		result = {"p_tar": round(p_tar, 2), "before_nll": before_temp_nll, "after_nll": after_temp_nll, "before_ece": before_temp_ece, 
-		"after_ece": after_temp_ece, "temperature": self.temperature_overall.item()}
-
-		df = pd.DataFrame([result])
-		df.to_csv(self.saveTempPath, mode='a', header=not os.path.exists(self.saveTempPath))
-
-	def set_temperature(self, valid_loader):
-		"""
-		Tune the tempearature of the model (using the validation set).
-		We're going to set it to optimize NLL.
-		valid_loader (DataLoader): validation set loader
-		p_tar: confidence threshold to decide wheter an input should be classified earlier or not.
-		"""
-        
-		nll_criterion = nn.CrossEntropyLoss().to(self.device)
-		ece_criterion = ECE().to(self.device)
-
-		# First: collect all the logits and labels for the validation set
-		logits_list, labels_list = torch.empty((0, self.n_exits), dtype=torch.int64), torch.empty((0, 1), dtype=torch.int64)
-
-		self.model.eval()
-		with torch.no_grad():
-			#Run inference over samples from validation dataset
-			for data, label in tqdm(valid_loader):
-				data, label = data.to(self.device), label.to(self.device)  
-				#Check the next row to confirm 
-				logits, confs, _, exit_branch = self.model.forwardEval2(data)
-
-				logits_list = torch.cat((logits_list, logits), 0).to(self.device)
-				labels_list = labels_list.expand(1, self.n_exits)
-				labels_list = torch.cat((labels_list, label), 0).to(self.device)
-
-
-		logits_list = torch.flatten(logits_list).to(self.device)
-		labels_list = torch.flatten(labels_list).to(self.device)
-			
-		# Calculate NLL and ECE before temperature scaling
-		before_temperature_nll = nll_criterion(logits_list, labels_list).item()
-		before_temperature_ece = ece_criterion(logits_list, labels_list).item()
-
-		optimizer = optim.LBFGS([self.temperature_overall], lr=self.lr, max_iter=self.max_iter)
-
-		def eval():
-			optimizer.zero_grad()
-			loss = nll_criterion(self.temperature_scale(logits_list), labels_list)
-			loss.backward()
-			return loss
-		optimizer.step(eval)
-
-		# Calculate NLL and ECE after temperature scaling
-		after_temperature_nll = nll_criterion(self.temperature_scale(logits_list), labels_list).item()
-		after_temperature_ece = ece_criterion(self.temperature_scale(logits_list), labels_list).item()
-
-		#print('Optimal temperature: %.3f' % self.temperature_overall.item())
-		#print('After temperature - NLL: %.3f, ECE: %.3f' % (after_temperature_nll, after_temperature_ece))
-
-		self.save_temperature(p_tar, before_temperature_nll, after_temperature_nll, before_temperature_ece, after_temperature_ece)
-		
-		return self
 
 
 class PerBranchTemperatureScaling(nn.Module):
@@ -257,7 +175,7 @@ class PerBranchTemperatureScaling(nn.Module):
 		df = pd.DataFrame([result])
 		df.to_csv(self.saveTempPath, mode='a', header=not os.path.exists(self.saveTempPath))
 
-	def set_temperature(self, valid_loader, p_tar):
+	def run(self, valid_loader, p_tar):
 
 		nll_criterion = nn.CrossEntropyLoss().to(self.device)
 		ece = ECE()
@@ -322,126 +240,11 @@ class PerBranchTemperatureScaling(nn.Module):
 
 
 		# This saves the parameter to save the temperature parameter for each side branch
-		self.save_temperature(p_tar, before_temp_nll_list, before_ece_list, after_temp_nll_list, after_ece_list)
+		#self.save_temperature(p_tar, before_temp_nll_list, before_ece_list, after_temp_nll_list, after_ece_list)
 		return self
 
 
-
-
-class PerBranchTemperatureScaling(nn.Module):
-
-  def __init__(self, model, device, modelPath, saveTempPath, lr=0.01, max_iter=1000):
-    super(PerBranchTemperatureScaling, self).__init__()
-
-    self.model = model
-    self.device = device
-    self.n_exits = model.n_branches + 1
-
-    self.temperature_branches = [nn.Parameter((1.*torch.ones(1)).to(self.device)) for i in range(self.n_exits)]
-    self.lr = lr
-    self.max_iter = max_iter
-    self.saveTempPath = saveTempPath
-
-    self.model.load_state_dict(torch.load(modelPath, map_location=device)["model_state_dict"])
-
-  def forwardBranchesCalibration(self, x):
-    return self.model.forwardBranchesCalibration(x, self.temperature_branches)
-  
-  def temperature_scale_branches(self, logits):
-    return torch.div(logits, self.temperature_branch)
-
-  def save_temperature(self, result):
-
-    df = pd.read_csv(self.saveTempPath) if (os.path.exists(self.saveTempPath)) else pd.DataFrame()    
-    df = df.append(pd.Series(result), ignore_index=True)
-    df.to_csv(self.saveTempPath)
-  
-  def set_temperature(self, val_loader, p_tar):
-
-    nll_criterion = nn.CrossEntropyLoss().to(self.device)
-    ece = _ECELoss()
-
-    logits_list = [[] for i in range(self.n_exits)]
-    labels_list = [[] for i in range(self.n_exits)]
-
-    before_ece_list, after_ece_list = [], []    
-    before_temperature_nll_list, after_temperature_nll_list = [], []
-
-    error_measure_dict = {"p_tar": p_tar}
-
-    self.model.eval()
-    with torch.no_grad():
-      for (data, target) in tqdm(val_loader):
-          
-        data, target = data.to(self.device), target.to(self.device)
-
-        logits, _, _ = self.model.forwardAllExits(data)
-
-
-        for i in range(self.n_exits):
-          logits_list[i].append(logits[i])
-          labels_list[i].append(target)
-
-    for i in range(self.n_exits):
-      print("Exit: %s"%(i))
-
-      if (len(logits_list[i]) == 0):
-        before_temperature_nll_list.append(None), after_temperature_nll_list.append(None)
-        before_ece_list.append(None), after_ece_list.append(None)
-        continue
-
-      self.temperature_branch = nn.Parameter((torch.ones(1)*1.).to(self.device))
-      optimizer = optim.LBFGS([self.temperature_branch], lr=self.lr, max_iter=self.max_iter)
-
-      logit_branch = torch.cat(logits_list[i]).to(self.device)
-      label_branch = torch.cat(labels_list[i]).to(self.device)
-
-      before_temperature_nll = nll_criterion(logit_branch, label_branch).item()
-      before_temperature_nll_list.append(before_temperature_nll)
-
-      before_ece = ece(logit_branch, label_branch).item()
-      before_ece_list.append(before_ece)
-
-      def eval():
-        optimizer.zero_grad()
-        loss = nll_criterion(self.temperature_scale_branches(logit_branch), label_branch)
-        loss.backward()
-        return loss
-      
-      optimizer.step(eval)
-
-      after_temperature_nll = nll_criterion(self.temperature_scale_branches(logit_branch), label_branch).item()
-      after_temperature_nll_list.append(after_temperature_nll)
-      
-      after_ece = ece(self.temperature_scale_branches(logit_branch), label_branch).item()
-      after_ece_list.append(after_ece)
-
-      print("Branch: %s, Before NLL: %s, After NLL: %s"%(i+1, before_temperature_nll, after_temperature_nll))
-      print("Branch: %s, Before ECE: %s, After ECE: %s"%(i+1, before_ece, after_ece))
-
-      print("Temp Branch %s: %s"%(i+1, self.temperature_branch.item()))
-
-      self.temperature_branches[i] = self.temperature_branch
-
-    self.temperature_branches = [temp_branch.item() for temp_branch in self.temperature_branches]
-    
-    for i in range(self.n_exits):
-
-      error_measure_dict.update({"before_nll_branch_%s"%(i+1): before_temperature_nll_list[i], 
-                                 "before_ece_branch_%s"%(i+1): before_ece_list[i],
-                                 "after_nll_branch_%s"%(i+1): after_temperature_nll_list[i],
-                                 "after_ece_branch_%s"%(i+1): after_ece_list[i],
-                                 "temperature_branch_%s"%(i+1): self.temperature_branches[i]})
-
-    
-    # This saves the parameter to save the temperature parameter for each side branch
-
-    self.save_temperature(error_measure_dict)
-
-    return self
-
-
-def run_TS_opt(model, threshold, max_iter, n_branches_edge, n_branches, device):
+def run_global_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
 
 
 	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
@@ -450,5 +253,55 @@ def run_TS_opt(model, threshold, max_iter, n_branches_edge, n_branches, device):
 	# Instantiate SPSA class to initializes the parameters
 	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
 
+	ts.run(valid_loader)
+
+	return ts.temperature_overall, ts
 
 
+def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
+
+
+	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial = 1.0
+
+	# Instantiate SPSA class to initializes the parameters
+	ts = PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+
+	ts.run(valid_loader)
+
+	return ts.temperature_branches, ts
+
+
+def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold):
+
+	conf_list, correct_list, is_early_exit_list, inference_time_list = [], [], [], []
+
+	starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+
+	calib_model.model.eval()
+
+	with torch.no_grad():
+		for data, target in data_loader:
+
+			data, target = data.to(device), target.to(device)
+
+			starter.record()
+
+			#MODIFICAR LINHA A SEGUIR. PENSAR SE CONF É CONF OU CONF.ITEM()
+			conf, infered_class, is_early_exit = calib_model.forwardCalibrationInference(data, threshold)
+
+			ender.record()
+			torch.cuda.synchronize()
+			inference_time = starter.elapsed_time(ender)
+
+			conf_list.append(conf), correct_list.append(infered_class.eq(target.view_as(infered_class)).sum().item())
+			is_early_exit_list.append(is_early_exit), inference_time_list.append(inference_time)
+
+			del data, target
+			torch.cuda.empty_cache()
+
+	accuracy = float(sum(correct_list))/len(correct_list)
+	avg_inference_time = float(sum(inference_time_list))/len(inference_time_list)
+	ee_prob = float(sum(is_early_exit_list))/len(is_early_exit_list)
+
+	return accuracy, avg_inference_time, ee_prob

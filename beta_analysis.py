@@ -72,7 +72,7 @@ def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath,
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
 
-def runTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, savePath, calib_mode):
+def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n_branches_edge, savePath, calib_mode):
 
 	temp_list = np.ones(n_branches_edge)
 
@@ -80,14 +80,26 @@ def runTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge
 
 	beta = 0
 
-	ts_theta, ts_opt_loss = temperature_scaling.run_TS_opt(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches)
+	ts_theta, calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
-	ts_acc, ts_ee_prob = spsa.accuracy_edge(ts_theta, n_branches_edge, threshold, df_inf_data)
-
-	ts_inf_time, _ = spsa.compute_inference_time(ts_theta, n_branches_edge, max_exits, threshold, df_inf_data)
+	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold)
 
 	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
+
+def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, savePath, calib_mode)
+
+	temp_list = np.ones(n_branches_edge)
+
+	max_exits = args.n_branches + 1
+
+	beta = 0
+
+	ts_theta, calib_model = temperature_scaling.run_per_branch_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
+
+	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold)
+
+	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
 
 def main(args):
@@ -97,11 +109,26 @@ def main(args):
 
 	input_dim, dim = 330, 300
 
-	inf_data_path = os.path.join(".", "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	temp_data_path = os.path.join(".", "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	betaResultsPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+
+	model_save_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+
+
+	model_dict = torch.load(model_path, map_location=device)
+
+	test_idx = model_dict["test"]
+
+	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model.load_state_dict(model_dict["model_state_dict"])
+	ee_model = ee_model.to(device)
+	ee_model.eval()
+
+	#Load Dataset 
+	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
 	threshold_list = [0.7, 0.8, 0.9]
 
@@ -119,7 +146,9 @@ def main(args):
 
 			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
 
-			runTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="TS")
+			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, calib_mode="global_TS")
+
+			runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, calib_mode="per_branch_TS")
 
 
 if (__name__ == "__main__"):

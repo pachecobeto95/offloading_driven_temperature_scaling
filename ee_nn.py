@@ -417,8 +417,6 @@ class Early_Exit_DNN(nn.Module):
 
     return output_list, conf_list, class_list
 
-
-
   def forwardInference(self, x, threshold):
     conf_list, infered_class_list = [], []
 
@@ -509,6 +507,47 @@ class Early_Exit_DNN(nn.Module):
 
     return output_list, conf_list, class_list
 
+
+  def forwardGlobalCalibrationInference(self, x, threshold, temperature_overall):
+
+    conf_list, infered_class_list = [], []
+
+    for i, exitBlock in enumerate(self.exits):
+      x = self.stages[i](x)
+
+      output_branch = exitBlock(x)
+      output_branch = self.global_temperature_scaling(output_branch, temperature_overall)
+
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+
+      if(conf.item() >= threshold):
+        return output_branch, conf.item(), infered_class, True
+
+      else:
+
+        infered_class_list.append(infered_class), conf_list.append(conf.item())
+
+    x = self.stages[-1](x)
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+
+    conf, infered_class = torch.max(self.softmax(output), 1)
+
+    if (conf.item() >= threshold):
+      return output, conf.item(), infered_class, False
+
+    else:
+
+      # If any exit can reach the p_tar value, the output is give by the more confidence output.
+      # If evaluation, it returns max(output), max(conf) and the number of the early exit.
+
+      conf_list.append(conf.item()), infered_class_list.append(infered_class)
+      max_conf = np.argmax(conf_list)
+      return output, conf_list[max_conf], infered_class_list[max_conf], False
+
+
+
   def forwardPerBranchesCalibration(self, x, temp_branches):
     output_list, conf_list, class_list = [], [], []
     n_exits = self.n_branches + 1
@@ -534,27 +573,40 @@ class Early_Exit_DNN(nn.Module):
 
     return output_list, conf_list, class_list
 
-  def forwardAllSamplesCalibration(self, x, temp):
-    output_list, conf_list, class_list = [], [], []
-    n_exits = self.n_branches + 1
+  def forwardPerBranchCalibrationInference(self, x, threshold, temperatures):
+
+    conf_list, infered_class_list = [], []
 
     for i, exitBlock in enumerate(self.exits):
       x = self.stages[i](x)
+
       output_branch = exitBlock(x)
-      output_branch = self.per_branch_temperature_scaling(output_branch, temp, i)
+      output_branch = self.per_branch_temperature_scaling(output_branch, temperatures, i):
 
-      conf_branch, infered_class_branch = torch.max(self.softmax(output_branch), 1)
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
 
-      output_list.append(output_branch), conf_list.append(conf_branch), class_list.append(infered_class_branch)
+      if(conf.item() >= threshold):
+        return output_branch, conf.item(), infered_class, True
+
+      else:
+
+        infered_class_list.append(infered_class), conf_list.append(conf.item())
 
     x = self.stages[-1](x)
-
     x = torch.flatten(x, 1)
 
     output = self.classifier(x)
-    output = self.per_branch_temperature_scaling(output, temp, -1)
+
     conf, infered_class = torch.max(self.softmax(output), 1)
 
-    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+    if (conf.item() >= threshold):
+      return output, conf.item(), infered_class, False
 
-    return output_list, conf_list, class_list
+    else:
+
+      # If any exit can reach the p_tar value, the output is give by the more confidence output.
+      # If evaluation, it returns max(output), max(conf) and the number of the early exit.
+
+      conf_list.append(conf.item()), infered_class_list.append(infered_class)
+      max_conf = np.argmax(conf_list)
+      return output, conf_list[max_conf], infered_class_list[max_conf], False
