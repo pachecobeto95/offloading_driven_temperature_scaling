@@ -279,7 +279,7 @@ def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edg
 	calib_model.model.eval()
 
 	with torch.no_grad():
-		for data, target in data_loader:
+		for data, target in valid_loader:
 
 			data, target = data.to(device), target.to(device)
 
