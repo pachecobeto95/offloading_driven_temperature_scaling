@@ -43,9 +43,6 @@ class ECE(nn.Module):
 		return ece
 
 
-	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
-
-
 class GlobalTemperatureScaling(nn.Module):
 	"""This class implements Global Temperature Scaling for early-exit DNNs"""
 
