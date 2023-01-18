@@ -118,6 +118,8 @@ def main(args):
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
+	dataset_path = config.dataset_path_dict[args.dataset_name]
+	
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 
