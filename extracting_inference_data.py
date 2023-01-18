@@ -20,7 +20,7 @@ def extracting_global_ts_ee_inference_data(test_loader, calib_model, n_branches,
 
 	temperature_overall_list = [temperature_overall for i in range(n_branches)]
 
-	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_overall_list args.n_branches, device, mode="global_ts")
+	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_overall_list, args.n_branches, device, mode="global_ts")
 
 	return df	
 
