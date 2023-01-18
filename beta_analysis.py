@@ -1,17 +1,93 @@
 import os, time, sys, json, os, argparse
-import config, utils, spsa
+import config, utils, spsa, temperature_scaling
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
 
-def read_inference_data(inf_data_path, inf_time_path, threshold):
 
-	df_inf_data = pd.read_csv(inf_data_path)
-	df_inf_time = pd.read_csv(inf_time_path)
 
-	df_inf_time = df_inf_time[df_inf_time.threshold==threshold]
+def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
+	
+	df_temp = pd.read_csv(temp_data_path)
+	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
 
-	return df_inf_data, df_inf_time
+	#temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
+
+	acc_temp, inf_time_temp = df_temp[df_temp.metric == "acc"], df_temp[df_temp.metric == "inf_time"]
+
+	#acc_temp, inf_time_temp = acc_temp[temp_list], inf_time_temp[temp_list]
+
+	opt_acc, opt_inf_time = acc_temp.opt_loss, inf_time_temp.opt_loss
+
+	return opt_acc.mean(), opt_inf_time.mean()
+
+	#return acc_temp.mean().values, inf_time_temp.mean().values
+
+
+
+def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, calib_mode):
+	result = {"beta_acc": beta_acc, "beta_inf_time": beta_inf_time, "ee_prob": ee_prob, "threshold": threshold, "n_branches_edge": n_branches_edge, "beta": beta, 
+	"calib_mode": calib_mode}
+
+	for i in range(max_branches):
+
+		temp_branch = beta_theta[i] if (i < max_branches) else np.nan
+
+		result["temp_branch_%s"%(i+1)] = temp_branch
+
+
+	df = pd.DataFrame([result])
+	df.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
+
+
+def run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, savePath):
+
+	max_exits = args.n_branches + 1
+
+	for beta in beta_list:
+		print("Beta: %s"%(beta))
+
+		beta_theta, beta_opt_loss = spsa.run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
+			args.alpha, args.gamma)
+
+		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
+
+		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data)
+
+		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+
+
+def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath, calib_mode):
+
+	temp_list = np.ones(n_branches_edge)
+
+	max_exits = args.n_branches + 1
+
+	beta = 0
+
+	no_calib_acc, no_calib_ee_prob = spsa.accuracy_edge(temp_list, n_branches_edge, threshold, df_inf_data)
+
+	no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data)
+
+	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
+
+
+def runTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, savePath, calib_mode):
+
+	temp_list = np.ones(n_branches_edge)
+
+	max_exits = args.n_branches + 1
+
+	beta = 0
+
+	ts_theta, ts_opt_loss = temperature_scaling.run_TS_opt(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches)
+
+	ts_acc, ts_ee_prob = spsa.accuracy_edge(ts_theta, n_branches_edge, threshold, df_inf_data)
+
+	ts_inf_time, _ = spsa.compute_inference_time(ts_theta, n_branches_edge, max_exits, threshold, df_inf_data)
+
+	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+
 
 
 def main(args):
@@ -23,32 +99,27 @@ def main(args):
 
 	inf_data_path = os.path.join(".", "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	result_path = os.path.join(".", "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	temp_data_path = os.path.join(".", "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+
+	betaResultsPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.7, 0.8, 0.9]
+
+	beta_list = np.round(np.arange(1, -args.step, -args.step), 2)
 
 	df_inf_data = pd.read_csv(inf_data_path)
 
 	for n_branches_edge in reversed(range(1, args.n_branches+1)):
 
 		for threshold in threshold_list:
-			print("Number of Branches: %s, Threshold: %s"%(n_branches_edge, threshold))
-			#df_inf_data, df_inf_time = read_inference_data(inf_data_path, inf_time_path, threshold)
 
-			theta_opt_acc, opt_acc = spsa.run_SPSA_accuracy(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, 
-				args.c, args.alpha, args.gamma, result_path)
+			opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
 
+			#run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
 
-			theta_inf_time, opt_inf_time = spsa.run_SPSA_inf_time(df_inf_data, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
-				args.alpha, args.gamma, result_path)
+			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
 
-
-			#joint_theta, joint_opt_loss = spsa.run_multi_obj(df_inf_data, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
-			#	args.alpha, args.gamma, result_path)
-
-
-	#theta_opt_inf_time, loss_opt_inf_time = spsa.run_SPSA_inf_time(df_preds, inference_time_branch, args.threshold, args.max_iter, 
-	#	args.n_branches, args.a0, args.c, args.alpha, args.gamma)
+			runTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="TS")
 
 
 if (__name__ == "__main__"):
@@ -130,9 +201,3 @@ if (__name__ == "__main__"):
 	args = parser.parse_args()
 
 	main(args)
-
-
-
-
-
-

@@ -43,11 +43,13 @@ class ECE(nn.Module):
 		return ece
 
 
+	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+
 
 class GlobalTemperatureScaling(nn.Module):
 	"""This class implements Global Temperature Scaling for early-exit DNNs"""
 
-	def __init__(self, model, device, saveTempPath, temp_init, lr=0.001, max_iter=1000):
+	def __init__(self, model, device, temp_init, max_iter, n_branches_edge, threshold, lr=0.001):
 		super(GlobalTemperatureScaling, self).__init__()
     
 		self.model = model #the model to be calibrated
@@ -55,7 +57,8 @@ class GlobalTemperatureScaling(nn.Module):
 		self.temperature_overall = nn.Parameter((temp_init*torch.ones(1)).to(self.device)) #initial temperature to be optimized
 		self.lr = lr #learning rate
 		self.max_iter = max_iter #maximum iteration to the optimization method
-		self.saveTempPath = saveTempPath #Path to save the learned temperature parameters.
+		self.n_branches_edge = n_branches_edge
+		self.threshold = threshold
 
 
 	def temperature_scale(self, logits):
@@ -77,7 +80,7 @@ class GlobalTemperatureScaling(nn.Module):
 		df = pd.DataFrame([result])
 		df.to_csv(self.saveTempPath, mode='a', header=not os.path.exists(self.saveTempPath))
 
-	def set_temperature(self, valid_loader, p_tar):
+	def run(self, valid_loader):
 		"""
 		Tune the tempearature of the model (using the validation set).
 		We're going to set it to optimize NLL.
@@ -97,7 +100,7 @@ class GlobalTemperatureScaling(nn.Module):
 			for data, label in tqdm(valid_loader):
 				data, label = data.to(self.device), label.to(self.device)  
 				#Check the next row to confirm 
-				logits, confs, _, _ = self.model.forwardGlobalTS(data, p_tar)
+				logits, confs, _, _ = self.model.forwardInference(data, self.threshold)
 
 				logits_list.append(logits), labels_list.append(label)
 
@@ -125,7 +128,7 @@ class GlobalTemperatureScaling(nn.Module):
 		#print('Optimal temperature: %.3f' % self.temperature_overall.item())
 		#print('After temperature - NLL: %.3f, ECE: %.3f' % (after_temperature_nll, after_temperature_ece))
 
-		self.save_temperature(p_tar, before_temperature_nll, after_temperature_nll, before_temperature_ece, after_temperature_ece)
+		#self.save_temperature(p_tar, before_temperature_nll, after_temperature_nll, before_temperature_ece, after_temperature_ece)
 		
 		return self
 
@@ -438,6 +441,14 @@ class PerBranchTemperatureScaling(nn.Module):
     return self
 
 
+def run_TS_opt(model, threshold, max_iter, n_branches_edge, n_branches, device):
+
+
+	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial = 1.0
+
+	# Instantiate SPSA class to initializes the parameters
+	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
 
 
 

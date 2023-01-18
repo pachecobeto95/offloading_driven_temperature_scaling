@@ -1,5 +1,5 @@
 from itertools import tee, islice
-import random, sys, torch, os, logging
+import random, sys, torch, os, logging, copy
 import numpy as np
 import config
 import pandas as pd
@@ -111,7 +111,7 @@ class SPSA (object):
 		return c/(k**(self.gamma))
 
 
-	def check_function_tolerante(self, theta, old_theta, k):
+	def check_function_tolerance(self, theta, old_theta, k):
 	
 		j_old, _ = self.compute_loss(old_theta)
 		j_new, _ = self.compute_loss(theta)
@@ -121,7 +121,7 @@ class SPSA (object):
 		return False if(j_delta > self.function_tol) else True
 
 
-	def check_theta_tolerante(self, theta, old_theta, k):
+	def check_theta_tolerance(self, theta, old_theta, k):
 
 		delta_theta = np.abs (theta - old_theta)
 
@@ -134,11 +134,11 @@ class SPSA (object):
 		is_function_step_ok, is_theta_step_ok = True, True
 
 		if (self.function_tol is not None):
-			is_function_step_ok = self.check_function_tolerante(theta, old_theta, k)
+			is_function_step_ok = self.check_function_tolerance(theta, old_theta, k)
 
 
 		if (self.param_tol is not None):
-			is_theta_step_ok = self.check_theta_tolerante(theta, old_theta, k)
+			is_theta_step_ok = self.check_theta_tolerance(theta, old_theta, k)
 
 
 		#print(is_function_step_ok, is_theta_step_ok)
@@ -149,16 +149,17 @@ class SPSA (object):
 
 	def min(self):
 
-		theta = self.theta_initial
+		theta = copy.copy(self.theta_initial)
+		best_theta = copy.copy(theta)
 
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		best_loss = np.inf
+		best_loss, best_ee_prob = self.compute_loss(theta)
 
 		while (k <= self.nr_iter):
 
-			old_theta = theta
+			old_theta = copy.copy(theta)
 
 			#Computes the parameters for each iteration
 			ak = self.compute_ak(a, A, k)
@@ -167,23 +168,30 @@ class SPSA (object):
 			#Estimate Gradient
 			grad_hat = self.estimate_grad(theta, ck)
 
+
 			# update parameters
-			theta -= ak*grad_hat
-			
-			theta, k = self.check_violation_step(theta, old_theta, k)
-			
+			theta -= ak*grad_hat			
+
+			#theta, k = self.check_violation_step(theta, old_theta, k)	
 			theta = np.maximum(theta, self.min_bounds)
 
 			y_k, ee_prob = self.compute_loss(theta)
-			
+
+
 			if (y_k < best_loss):
-				best_theta = theta
+				#print("ENTROU ENTROU")
 				best_loss = y_k
+				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
 
-			#if (k % 1000 ==0):
-			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+			#else:
+				#print("False")
+				#print(best_theta)
 
+
+			k += 1
+		print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+		
 		return best_theta, best_loss 
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
@@ -210,13 +218,23 @@ def measure_inference_time(temp_list, n_branches, threshold, test_loader, model,
 
 def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time):
 
-	acc_current = accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current = compute_inference_time(temp_list, n_branches, max_exits, threshold, df)
+	acc_current, _ = accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df)
 
 	f1 = (acc_current - loss_acc)/loss_acc
 	f2 = (inf_time_current - loss_time)/loss_time	
 
-	return f1+f2
+	return f1+f2, _
+
+
+def beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta):
+
+	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df)
+
+	f = beta*acc_current + (1-beta)*inf_time_current 
+
+	return f, ee_prob
 
 
 def compute_inference_time(temp_list, n_branches, max_exits, threshold, df):
@@ -237,7 +255,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df):
 		#	early_exit_samples = np.ones(current_n_samples, dtype=bool)
 		#else:
 		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs*temp_list[i]
+		calib_confs = confs/temp_list[i]
 		early_exit_samples = calib_confs >= threshold
 
 		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
@@ -313,10 +331,10 @@ def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamm
 
 def run_SPSA_accuracy(df_inf_data, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, savePath):
 
-	theta_initial, min_bounds = np.ones(n_branches_edge+1), np.zeros(n_branches_edge+1)
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches_edge+1, a0, c, alpha, gamma, min_bounds, args=(threshold, df_inf_data))
+	optim = SPSA(accuracy_edge, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, args=(threshold, df_inf_data))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
@@ -341,7 +359,7 @@ def run_SPSA_inf_time(df_inf_data, threshold, max_iter, n_branches_edge, max_bra
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
 
-	theta_opt = 1./np.array(theta_opt)
+	#theta_opt = 1./np.array(theta_opt)
 
 	save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches_edge, max_branches, metric="inf_time")
 
@@ -366,44 +384,52 @@ def run_multi_obj(df_inf_data, loss_acc, loss_time, threshold, max_iter, n_branc
 	return theta_opt, loss_opt
 
 
+def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma):
+
+	max_exits = max_branches + 1
+
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt = optim.min()
+
+	return theta_opt, loss_opt
+
+
+
 def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_branches, metric):
 
-	result_temp_dict = {"threshold": [threshold], "opt_loss": [loss_opt], "n_branches": [n_branches], "metric": [metric], "max_branches": [max_branches]}
+	result_temp_dict = {"threshold": threshold, "opt_loss": loss_opt, "n_branches": n_branches, "metric": metric, "max_branches": max_branches}
 
-	for i in range(n_branches):
-		result_temp_dict["temp_branch_%s"%(i+1)] = [theta_opt[i]]
+	for i in range(max_branches):
 
-	df_temp = pd.DataFrame(result_temp_dict)
+		temp_branch = theta_opt[i] if (i < max_branches) else np.nan
+
+		result_temp_dict["temp_branch_%s"%(i+1)] = temp_branch
+
+	df_temp = pd.DataFrame([result_temp_dict])
 
 	df_temp.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
 
 
-def run_multi_obj_analysis(df_preds, avg_inf_time, threshold, max_iter, n_branches, a0, c, alpha, gamma, beta):
-
-	n_exits = n_branches + 1
-	theta_initial = np.ones(n_exits)
-	min_bounds = np.zeros(n_exits)
-
-	logging.basicConfig(level=logging.DEBUG, filename=config.logFile, filemode="a+", format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
-	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(joint_function_analysis, theta_initial, max_iter, n_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(threshold, df_preds, avg_inf_time, beta))
 
-	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt, f_acc, f_inf_time = optim.min()
 
-	optim.save_temperature_analysis(config.filePath_joint_opt, theta_opt, f_acc, f_inf_time, n_exits, beta)
 
-	return theta_opt, loss_opt
 
-def joint_function_analysis(temp_list, n_branches, threshold, df, inf_time_branch, beta):
 
-	acc_current = beta*accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current = (1-beta)*compute_avg_inference_time(temp_list, n_branches, threshold, df, inf_time_branch)
-	joint_f = acc_current + inf_time_current
 
-	return joint_f, acc_current, inf_time_current
+
+
+
+
+
+
+
 
 
