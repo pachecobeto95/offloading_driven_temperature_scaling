@@ -84,7 +84,8 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 
 	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold)
 
-	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
+	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
 
 def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, savePath, calib_mode):
@@ -150,6 +151,7 @@ def main(args):
 
 			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, calib_mode="global_TS")
 
+			sys.exit()
 			runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, calib_mode="per_branch_TS")
 
 
