@@ -84,8 +84,8 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 
 	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device)
 
-	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
-	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+	#print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
+	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
 
 def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, savePath, device, calib_mode):
@@ -100,10 +100,9 @@ def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, thresho
 
 	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold)
 
-	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
+	#print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
 
-
-	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
 
 def main(args):
@@ -148,16 +147,15 @@ def main(args):
 
 		for threshold in threshold_list:
 
-			#opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
+			opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
 
-			#run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
+			run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
 
-			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
+			runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
 
 			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, device, calib_mode="global_TS")
 
-			#sys.exit()
-			#runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, device, calib_mode="per_branch_TS")
+			runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, device, calib_mode="per_branch_TS")
 
 
 if (__name__ == "__main__"):
