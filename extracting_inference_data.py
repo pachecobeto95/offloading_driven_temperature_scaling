@@ -4,12 +4,16 @@ from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
 
-def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branches_edge, n_branches, device):
+def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branches, device):
 
-	global_ts_model, _ = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+	global_ts_model = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, 0.8)
+	global_ts_model.run(test_loader)
 
-	per_branch_ts_model, _ = temperature_scaling.PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
 
+	per_branch_ts_model = temperature_scaling.PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, 0.8)
+	per_branch_ts_model.run(test_loader)
+
+	
 	return global_ts_model, per_branch_ts_model
 
 
@@ -71,13 +75,12 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, 1.5, args.max_iter, args.n_branches, 0.8)
-	ts.run(test_loader)
+	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(model, test_loader, threshold, args.max_iter, args.n_branches, device)
 
 
 	df_global_ts_inference_data = extracting_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
 
-	df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+	df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, per_branch_ts_model, args.n_branches, device)
 
 
 	df_no_calib = extracting_ee_inference_data(test_loader, model, n_branches, device)
@@ -88,7 +91,7 @@ def main(args):
 	#df_inference_data.to_csv(inf_data_path)
 
 	df_global_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
-	df_per_branch_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
+	#df_per_branch_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
 	df_no_calib.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
 
 
