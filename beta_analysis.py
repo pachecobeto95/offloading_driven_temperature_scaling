@@ -178,9 +178,6 @@ if (__name__ == "__main__"):
 	parser.add_argument('--batch_size_test', type=int, default=config.batch_size_test, 
 		help='Test Batch Size. Default: %s'%(config.batch_size_test))
 
-	# This argument defines the input dimension.
-	parser.add_argument('--input_dim', type=int, default=config.input_dim, 
-		help='Input Dimension. Default: %s'%(config.input_dim))
 
 	# This argument defines the seed for random operations.
 	parser.add_argument('--seed', type=int, default=config.seed, 
@@ -229,7 +226,7 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--model_id', type=int, default=1)	
 
-	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
+	parser.add_argument('--input_dim', type=int, default=330)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
 
