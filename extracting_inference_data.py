@@ -1,40 +1,37 @@
 import os, time, sys, json, os, argparse, torch
-import config, utils, spsa, ee_nn
+import config, utils, spsa, ee_nn, temperature_scaling
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
 
-def calibrating_early_exit_dnns(ee_model, test_loader, device):
+def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branches_edge, n_branches, device):
 
-def run_global_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
+	global_ts_model, _ = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
 
+	per_branch_ts_model, _ = temperature_scaling.PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
 
-	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
-	theta_initial = 1.0
-
-	# Instantiate SPSA class to initializes the parameters
-	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
-
-	ts.run(valid_loader)
-
-	return ts.temperature_overall, ts
-
-
-def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
-
-
-	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
-	theta_initial = 1.0
-
-	# Instantiate SPSA class to initializes the parameters
-	ts = PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
-
-	ts.run(valid_loader)
-
-	return ts.temperature_branches, ts
+	return global_ts_model, per_branch_ts_model
 
 
 
+def run_global_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
+
+	temperature_overall = calib_model.temperature_overall.item()
+
+	temperature_overall_list = [temperature_overall]*n_branches #MODIFICAR
+
+	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_overall_list args.n_branches, device, mode="global_ts")
+
+	return df
+
+
+def run_per_branch_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
+
+	temperature_branches = calib_model.temperature_branches
+
+	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_branches, args.n_branches, device, mode="global_ts")
+
+	return df
 
 
 
@@ -71,10 +68,13 @@ def main(args):
 
 	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, device)
 
-	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
-	df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
+	run_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
 
-	df_inference_data.to_csv(inf_data_path)
+
+	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
+	#df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
+
+	#df_inference_data.to_csv(inf_data_path)
 
 
 

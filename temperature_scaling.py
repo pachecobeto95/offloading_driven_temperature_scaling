@@ -103,7 +103,7 @@ class GlobalTemperatureScaling(nn.Module):
 			for data, label in tqdm(valid_loader):
 				data, label = data.to(self.device), label.to(self.device)  
 				#Check the next row to confirm 
-				logits, confs, _, _ = self.model.forwardInference(data, self.threshold)
+				logits, confs, _, _ = self.model.forwardTraining(data)
 
 				logits_list.append(logits), labels_list.append(label)
 
@@ -137,10 +137,9 @@ class GlobalTemperatureScaling(nn.Module):
 		return self
 
 
-
 class PerBranchTemperatureScaling(nn.Module):
 
-	def __init__(self, model, device, n_branches, temp_init, saveTempPath, lr=0.01, max_iter=1000):
+	def __init__(self, model, device, n_branches, temp_init, threshold, lr=0.01, max_iter=1000):
 		super(PerBranchTemperatureScaling, self).__init__()
 
 		self.model = model
@@ -149,8 +148,8 @@ class PerBranchTemperatureScaling(nn.Module):
 		self.temperature_branches = [nn.Parameter((temp_init*torch.ones(1)).to(self.device)) for i in range(self.n_exits)]
 		self.lr = lr
 		self.max_iter = max_iter
-		self.saveTempPath = saveTempPath
 		self.temp_init = temp_init
+		self.threshold = threshold
 
 	def forwardBranchesCalibration(self, x):
 		return self.model.forwardBranchesCalibration(x, self.temperature_branches)
@@ -173,7 +172,7 @@ class PerBranchTemperatureScaling(nn.Module):
 		df = pd.DataFrame([result])
 		df.to_csv(self.saveTempPath, mode='a', header=not os.path.exists(self.saveTempPath))
 
-	def run(self, valid_loader, p_tar):
+	def run(self, valid_loader):
 
 		nll_criterion = nn.CrossEntropyLoss().to(self.device)
 		ece = ECE()
@@ -184,13 +183,11 @@ class PerBranchTemperatureScaling(nn.Module):
 		before_temp_nll_list, after_temp_nll_list = [], []
 		before_ece_list, after_ece_list = [], []
 
-		error_measure_dict = {"p_tar": p_tar}
-
 		self.model.eval()
 		with torch.no_grad():
 			for (data, target) in tqdm(valid_loader):
 				data, target = data.to(self.device), target.to(self.device)
-				logits, _, inf_class, exit_branch = self.model(data, p_tar, training=False)
+				logits, _, inf_class, exit_branch = self.model.forwardInference(data, self.threshold)
 
 				logits_list[exit_branch].append(logits), labels_list[exit_branch].append(target)
 
@@ -202,7 +199,7 @@ class PerBranchTemperatureScaling(nn.Module):
 				before_ece_list.append(None), after_ece_list.append(None)
 				continue
 
-			self.temperature_branch = nn.Parameter((torch.ones(1)*self.temp_init).to(self.device))
+			self.temperature_branch = nn.Parameter((self.temp_init*torch.ones(1)*self.temp_init).to(self.device))
 			optimizer = optim.LBFGS([self.temperature_branch], lr=self.lr, max_iter=self.max_iter)
 
 			logit_branch = torch.cat(logits_list[i]).to(self.device)
@@ -263,11 +260,13 @@ def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_e
 	theta_initial = 2.0
 
 	# Instantiate SPSA class to initializes the parameters
-	ts = PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+	ts = PerBranchTemperatureScaling(model, device, n_branches_edge, theta_initial, threshold)
 
 	ts.run(valid_loader)
 
 	return ts.temperature_branches, ts
+
+
 
 
 def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device):
