@@ -487,7 +487,6 @@ class Early_Exit_DNN(nn.Module):
       max_conf = np.argmax(conf_list)
       return output, conf_list[max_conf], infered_class_list[max_conf], False
 
-  """
   def forwardInferenceNoCalib(self, x):
     output_list, conf_list, infered_class_list = [], [], []
 
@@ -646,4 +645,3 @@ class Early_Exit_DNN(nn.Module):
       conf_list.append(conf.item()), infered_class_list.append(infered_class)
       max_conf = np.argmax(conf_list)
       return output, conf_list[max_conf], infered_class_list[max_conf], False
-  """
