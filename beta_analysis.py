@@ -87,7 +87,7 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
 
 
-def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, savePath, calib_mode)
+def runPerBranchTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, savePath, calib_mode):
 
 	temp_list = np.ones(n_branches_edge)
 
