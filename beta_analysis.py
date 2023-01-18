@@ -86,27 +86,27 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 
 	print("Global")
 	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
-	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
+	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
 
-def runPerBranchTemperatureScalingInference(args, model, valid_loader, threshold, n_branches_edge, savePath, device, calib_mode):
+#def runPerBranchTemperatureScalingInference(args, model, valid_loader, threshold, n_branches_edge, savePath, device, calib_mode):
 
-	temp_list = np.ones(n_branches_edge)
+#	temp_list = np.ones(n_branches_edge)
 
-	max_exits = args.n_branches + 1
+#	max_exits = args.n_branches + 1
 
-	beta = 0
+#	beta = 0
 
-	ts_theta, calib_model = temperature_scaling.run_per_branch_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
+#	ts_theta, calib_model = temperature_scaling.run_per_branch_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
-	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device)
+#	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device)
 
 
-	print("Per-Branch")
+#	print("Per-Branch")
 
-	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
+#	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
 
-	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
+#	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
 
 def main(args):
@@ -120,7 +120,8 @@ def main(args):
 
 	temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	#betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	globalTsResultsPath = os.path.join(config.DIR_NAME, "global_ts_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))	
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
