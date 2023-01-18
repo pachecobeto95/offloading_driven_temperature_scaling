@@ -149,7 +149,8 @@ def get_confs_predictions(data_path, n_branches):
 	# Returns confidences and predictions into a DataFrame.
 	return df_data
 
-def extracting_ee_inference_data(test_loader, model, n_branches, device):
+
+def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, device, mode):
 	"""
 	This function gathers the processing time to run up to each block layer.
 	Then, this function repeats this procedure for other inputs on test sets.
@@ -175,7 +176,7 @@ def extracting_ee_inference_data(test_loader, model, n_branches, device):
 			data, target = data.to(device), target.to(device)
 
 			# Obtain confs and predictions for each side branch.
-			confs, predictions, inf_time_branches = model(data)
+			confs, predictions, inf_time_branches = model.forwardCalibration(data, temp_list)
 
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 

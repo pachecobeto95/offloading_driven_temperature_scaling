@@ -417,6 +417,41 @@ class Early_Exit_DNN(nn.Module):
 
     return output_list, conf_list, class_list
 
+
+  def temperature_scaling(self, logits, temp):
+    return torch.div(logits, temp)
+
+  def forwardCalibration(self, x, temp_list):
+
+
+    """
+    This method is used to train the early-exit DNN model
+    """
+
+    output_list, conf_list, class_list  = [], [], []
+
+    for i, exitBlock in enumerate(self.exits):
+
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+      output_branch = self.temperature_scaling(output_branch, temp_list[i])
+
+      #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+      
+      output_list.append(output_branch), conf_list.append(conf), class_list.append(infered_class)
+
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+
+    output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+
+    return output_list, conf_list, class_list
+
   def forwardInference(self, x, threshold):
     conf_list, infered_class_list = [], []
 
@@ -452,6 +487,7 @@ class Early_Exit_DNN(nn.Module):
       max_conf = np.argmax(conf_list)
       return output, conf_list[max_conf], infered_class_list[max_conf], False
 
+  """
   def forwardInferenceNoCalib(self, x):
     output_list, conf_list, infered_class_list = [], [], []
 
@@ -610,3 +646,4 @@ class Early_Exit_DNN(nn.Module):
       conf_list.append(conf.item()), infered_class_list.append(infered_class)
       max_conf = np.argmax(conf_list)
       return output, conf_list[max_conf], infered_class_list[max_conf], False
+  """
