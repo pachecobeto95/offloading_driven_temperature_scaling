@@ -270,7 +270,7 @@ def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_e
 	return ts.temperature_branches, ts
 
 
-def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold):
+def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device):
 
 	conf_list, correct_list, is_early_exit_list, inference_time_list = [], [], [], []
 
