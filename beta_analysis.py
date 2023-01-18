@@ -163,6 +163,7 @@ def main(args):
 
 			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, globalTsResultsPath, device, calib_mode="global_TS")
 
+
 if (__name__ == "__main__"):
 	# Input Arguments to configure the early-exit model .
 	parser = argparse.ArgumentParser(description="Learning the Temperature driven for offloading.")
