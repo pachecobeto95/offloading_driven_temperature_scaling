@@ -167,7 +167,7 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 
 	n_exits = n_branches + 1
 	conf_list, correct_list, inference_time_list = [], [], []
-	result_dict = {}
+	result_dict = {"calib_mode": mode}
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
