@@ -205,8 +205,8 @@ class PerBranchTemperatureScaling(nn.Module):
 			logit_branch = torch.cat(logits_list[i]).to(self.device)
 			label_branch = torch.cat(labels_list[i]).to(self.device)
 
-			before_temp_nll_list = nll_criterion(logit_branch, label_branch).item()
-			before_temp_nll_list.append(before_temp_nll_list)
+			before_temp_nll = nll_criterion(logit_branch, label_branch).item()
+			before_temp_nll_list.append(before_temp_nll)
 
 			before_ece = ece(logit_branch, label_branch).item()
 			before_ece_list.append(before_ece)
