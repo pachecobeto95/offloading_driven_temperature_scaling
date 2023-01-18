@@ -123,6 +123,9 @@ def main(args):
 	#betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
 	globalTsResultsPath = os.path.join(config.DIR_NAME, "global_ts_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))	
 
+	noCalibResultsPath = os.path.join(config.DIR_NAME, "no_calib_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))	
+
+
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
@@ -156,7 +159,7 @@ def main(args):
 
 			#run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
 
-			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
+			runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, noCalibResultsPath, calib_mode="no_calib")
 
 			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, globalTsResultsPath, device, calib_mode="global_TS")
 
