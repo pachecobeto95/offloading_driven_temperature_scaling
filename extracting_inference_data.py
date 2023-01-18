@@ -16,13 +16,13 @@ def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branc
 
 def extracting_global_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
 
-	temperature_overall = calib_model.temperature_overall.item()
+	temperature_overall = calib_model.temperature_overall
 
-	temperature_overall_list = [temperature_overall]*n_branches #MODIFICAR
+	temperature_overall_list = [temperature_overall for i in range(n_branches)]
 
 	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_overall_list args.n_branches, device, mode="global_ts")
 
-	return df
+	return df	
 
 
 def extracting_per_branch_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
@@ -56,13 +56,11 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
-
-	threshold_list = [0.7, 0.8, 0.9]
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_TEST.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	model_dict = torch.load(model_path, map_location=device)
 
-	train_idx, val_idx, test_idx = model_dict["train"], model_dict["val"], model_dict["test"]
+	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
@@ -75,15 +73,23 @@ def main(args):
 
 	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, device)
 
-	df_global_ts_inference_data = run_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+	df_global_ts_inference_data = extracting_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
 
-	df_per_branch_ts_inference_data = run_per_branch_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+	df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
 
+
+	df_no_calib = extracting_ee_inference_data(test_loader, model, n_branches, device)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	#df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
 
 	#df_inference_data.to_csv(inf_data_path)
+
+	df_global_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
+	df_per_branch_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
+	df_no_calib.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
+
+
 
 
 
