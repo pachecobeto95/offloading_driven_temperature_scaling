@@ -246,7 +246,7 @@ def run_global_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge,
 
 
 	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
-	theta_initial = 1.0
+	theta_initial = 2.0
 
 	# Instantiate SPSA class to initializes the parameters
 	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
@@ -260,7 +260,7 @@ def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_e
 
 
 	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
-	theta_initial = 1.0
+	theta_initial = 2.0
 
 	# Instantiate SPSA class to initializes the parameters
 	ts = PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)

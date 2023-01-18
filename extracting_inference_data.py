@@ -4,6 +4,38 @@ from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
 
+def calibrating_early_exit_dnns(ee_model, test_loader, device):
+
+def run_global_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
+
+
+	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial = 1.0
+
+	# Instantiate SPSA class to initializes the parameters
+	ts = GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+
+	ts.run(valid_loader)
+
+	return ts.temperature_overall, ts
+
+
+def run_per_branch_TS_opt(model, valid_loader, threshold, max_iter, n_branches_edge, n_branches, device):
+
+
+	#theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial = 1.0
+
+	# Instantiate SPSA class to initializes the parameters
+	ts = PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, threshold)
+
+	ts.run(valid_loader)
+
+	return ts.temperature_branches, ts
+
+
+
+
 
 
 def main(args):
@@ -28,6 +60,7 @@ def main(args):
 
 	train_idx, val_idx, test_idx = model_dict["train"], model_dict["val"], model_dict["test"]
 
+	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
 	ee_model.load_state_dict(model_dict["model_state_dict"])
 	ee_model = 	ee_model.to(device)
@@ -36,8 +69,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	#Load Early-exit DNN model.
-	#ee_model = utils.load_ee_model(args, model_path, n_classes, dim, device)
+	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, device)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)

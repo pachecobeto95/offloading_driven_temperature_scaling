@@ -147,11 +147,11 @@ def main(args):
 
 		for threshold in threshold_list:
 
-			opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
+			#opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
 
-			run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
+			#run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
 
-			runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
+			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
 
 			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, device, calib_mode="global_TS")
 
