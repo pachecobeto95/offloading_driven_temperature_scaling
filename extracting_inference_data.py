@@ -6,11 +6,11 @@ import pandas as pd
 
 def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branches, device):
 
-	global_ts_model = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, 0.8)
+	global_ts_model = temperature_scaling.GlobalTemperatureScaling(model, device, 1.5, max_iter, n_branches_edge, 0.8)
 	global_ts_model.run(test_loader)
 
 
-	per_branch_ts_model = temperature_scaling.PerBranchTemperatureScaling(model, device, theta_initial, max_iter, n_branches_edge, 0.8)
+	per_branch_ts_model = temperature_scaling.PerBranchTemperatureScaling(model, device, 1.5, max_iter, n_branches_edge, 0.8)
 	per_branch_ts_model.run(test_loader)
 
 	
