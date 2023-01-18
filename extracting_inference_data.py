@@ -14,7 +14,7 @@ def calibrating_early_exit_dnns(model, test_loader, threshold, max_iter, n_branc
 
 
 
-def run_global_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
+def extracting_global_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
 
 	temperature_overall = calib_model.temperature_overall.item()
 
@@ -25,14 +25,21 @@ def run_global_ts_ee_inference_data(test_loader, calib_model, n_branches, device
 	return df
 
 
-def run_per_branch_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
+def extracting_per_branch_ts_ee_inference_data(test_loader, calib_model, n_branches, device):
 
 	temperature_branches = calib_model.temperature_branches
 
-	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_branches, args.n_branches, device, mode="global_ts")
+	df = utils.extracting_ee_inference_data(test_loader, calib_model, temperature_branches, args.n_branches, device, mode="per_branch_ts")
 
 	return df
 
+def extracting_ee_inference_data(test_loader, model, n_branches, device):
+
+	no_calib_temperature = np.ones(n_branches)
+
+	df = utils.extracting_ee_inference_data(test_loader, model, no_calib_temperature, args.n_branches, device, mode="no_calib")
+
+	return df
 
 
 def main(args):
@@ -68,7 +75,9 @@ def main(args):
 
 	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, device)
 
-	run_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+	df_global_ts_inference_data = run_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+
+	df_per_branch_ts_inference_data = run_per_branch_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
 
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
