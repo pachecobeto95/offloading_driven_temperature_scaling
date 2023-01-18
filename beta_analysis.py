@@ -229,6 +229,11 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--model_id', type=int, default=1)	
 
+	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
+
+	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
+
+
 	args = parser.parse_args()
 
 	main(args)
