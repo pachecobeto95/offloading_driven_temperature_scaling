@@ -286,7 +286,7 @@ def run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edg
 			starter.record()
 
 			#MODIFICAR LINHA A SEGUIR. PENSAR SE CONF É CONF OU CONF.ITEM()
-			conf, infered_class, is_early_exit = calib_model.forwardCalibrationInference(data, threshold)
+			_, conf, infered_class, is_early_exit = calib_model.forwardCalibrationInference(data, threshold)
 
 			ender.record()
 			torch.cuda.synchronize()
