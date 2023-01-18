@@ -115,7 +115,7 @@ def main(args):
 
 	betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	model_save_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
 
 	model_dict = torch.load(model_path, map_location=device)
