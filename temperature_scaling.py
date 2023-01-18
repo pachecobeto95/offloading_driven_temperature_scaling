@@ -151,6 +151,10 @@ class PerBranchTemperatureScaling(nn.Module):
 		self.temp_init = temp_init
 		self.threshold = threshold
 
+	def forwardCalibrationInference(self, x, threshold):
+		return self.model.forwardPerBranchCalibrationInference(x, threshold, self.temperature_branches)
+
+
 	def forwardBranchesCalibration(self, x):
 		return self.model.forwardBranchesCalibration(x, self.temperature_branches)
 
