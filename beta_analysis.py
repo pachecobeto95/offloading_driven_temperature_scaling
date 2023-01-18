@@ -117,6 +117,8 @@ def main(args):
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_model_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
+	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
+
 
 	model_dict = torch.load(model_path, map_location=device)
 
