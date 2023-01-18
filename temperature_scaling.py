@@ -103,7 +103,7 @@ class GlobalTemperatureScaling(nn.Module):
 			for data, label in tqdm(valid_loader):
 				data, label = data.to(self.device), label.to(self.device)  
 				#Check the next row to confirm 
-				logits, confs, _, _ = self.model.forwardTraining(data)
+				logits, confs, _ = self.model.forwardTraining(data)
 
 				logits_list.append(logits), labels_list.append(label)
 
