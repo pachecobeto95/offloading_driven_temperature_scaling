@@ -581,7 +581,7 @@ class Early_Exit_DNN(nn.Module):
       x = self.stages[i](x)
 
       output_branch = exitBlock(x)
-      output_branch = self.per_branch_temperature_scaling(output_branch, temperatures, i):
+      output_branch = self.per_branch_temperature_scaling(output_branch, temperatures, i)
 
       conf, infered_class = torch.max(self.softmax(output_branch), 1)
 
