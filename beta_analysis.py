@@ -82,7 +82,7 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 
 	ts_theta, calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
-	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold)
+	ts_acc, ts_inf_time, ts_ee_prob = temperature_scaling.run_early_exit_inference(calib_model, valid_loader, ts_theta, n_branches_edge, threshold, device)
 
 	print(ts_theta, ts_acc, ts_inf_time, ts_ee_prob)
 	#save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
