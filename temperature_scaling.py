@@ -11,6 +11,7 @@ import pandas as pd
 from torch import Tensor
 import functools
 import torch.nn.functional as F
+from tqdm import tqdm
 #torch.multiprocessing.set_sharing_strategy('file_system')
 
 class ECE(nn.Module):
