@@ -1,4 +1,4 @@
-import os, time, sys, json, os, argparse
+import os, time, sys, json, os, argparse, torch
 import config, utils, spsa, temperature_scaling
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
