@@ -75,7 +75,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, threshold, args.max_iter, args.n_branches, device)
+	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
 
 
 	df_global_ts_inference_data = extracting_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
