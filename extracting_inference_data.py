@@ -71,7 +71,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, 1.5, args.max_iter, args.n_branches, 0.8)
+	global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, 1.5, args.max_iter, args.n_branches, 0.8)
 	ts.run(test_loader)
 
 
