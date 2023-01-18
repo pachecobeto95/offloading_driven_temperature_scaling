@@ -158,7 +158,7 @@ def main(args):
 
 			#runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, betaResultsPath, calib_mode="no_calib")
 
-			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, betaResultsPath, device, calib_mode="global_TS")
+			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, globalTsResultsPath, device, calib_mode="global_TS")
 
 if (__name__ == "__main__"):
 	# Input Arguments to configure the early-exit model .
