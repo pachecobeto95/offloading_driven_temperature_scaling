@@ -90,6 +90,8 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data,
 
 	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
 
+	print(temperature_overall)
+
 
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
