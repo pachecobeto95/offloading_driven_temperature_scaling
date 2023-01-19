@@ -74,7 +74,7 @@ def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath,
 
 
 
-def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n_branches_edge, savePath, device, calib_mode):
+def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data, threshold, n_branches_edge, savePath, device, calib_mode):
 
 	max_exits = args.n_branches + 1
 
@@ -176,7 +176,7 @@ def main(args):
 
 			runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, calib_mode="no_calib")
 
-			runGlobalTemperatureScalingInference(args, ee_model, test_loader, threshold, n_branches_edge, alternativeResultsPath, device, calib_mode="global_TS")
+			runGlobalTemperatureScalingInference(args, ee_model, test_loader, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, device, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
