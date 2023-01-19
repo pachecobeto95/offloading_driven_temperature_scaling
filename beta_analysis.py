@@ -83,10 +83,10 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 	beta = 0
 	theta_initial = 1.5
 
-	calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
+	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
 	# Instantiate SPSA class to initializes the parameters
-	global_ts = GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+	global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
 
 	global_ts.run(valid_loader)
 
