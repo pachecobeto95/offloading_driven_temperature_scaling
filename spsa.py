@@ -227,17 +227,17 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 	return f1+f2, _
 
 
-def beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta):
+def beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead)
 
 	f = beta*acc_current + (1-beta)*inf_time_current 
 
 	return f, ee_prob
 
 
-def compute_inference_time(temp_list, n_branches, max_exits, threshold, df):
+def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead):
 
 	avg_inference_time = 0
 	n_samples = len(df)
@@ -268,7 +268,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df):
 
 
 	inf_time_backbone = df["inferente_time_branch_%s"%(max_exits)].mean()
-	avg_inference_time += len(remaining_data)*inf_time_backbone
+	avg_inference_time += len(remaining_data)*(inf_time_backbone+overhead)
 
 
 	avg_inference_time = avg_inference_time/float(n_samples)
@@ -384,7 +384,7 @@ def run_multi_obj(df_inf_data, loss_acc, loss_time, threshold, max_iter, n_branc
 	return theta_opt, loss_opt
 
 
-def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma):
+def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
 
 	max_exits = max_branches + 1
 
@@ -392,7 +392,7 @@ def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, 
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta))
+		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta, overhead))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()

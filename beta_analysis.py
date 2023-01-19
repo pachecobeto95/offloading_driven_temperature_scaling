@@ -24,6 +24,19 @@ def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge
 	#return acc_temp.mean().values, inf_time_temp.mean().values
 
 
+def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge):
+
+	df_temp = pd.read_csv(temp_data_path)
+	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
+
+	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
+
+	
+	return df_temp[temp_list].values[0]
+
+
+
+
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, calib_mode):
 	result = {"beta_acc": beta_acc, "beta_inf_time": beta_inf_time, "ee_prob": ee_prob, "threshold": threshold, "n_branches_edge": n_branches_edge, "beta": beta, 
@@ -40,7 +53,7 @@ def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, th
 	df.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
 
 
-def run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, savePath):
+def run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, savePath, overhead, calib_mode):
 
 	max_exits = args.n_branches + 1
 
@@ -48,16 +61,16 @@ def run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_bra
 		print("Beta: %s"%(beta))
 
 		beta_theta, beta_opt_loss = spsa.run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, args.a0, args.c, 
-			args.alpha, args.gamma)
+			args.alpha, args.gamma, overhead)
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
 
-		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data)
+		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, overhead)
 
-		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta)
+		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
 
-def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath, calib_mode):
+def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath, overhead, calib_mode):
 
 	temp_list = np.ones(n_branches_edge)
 
@@ -67,37 +80,34 @@ def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath,
 
 	no_calib_acc, no_calib_ee_prob = spsa.accuracy_edge(temp_list, n_branches_edge, threshold, df_inf_data)
 
-	no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data)
+	no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, overhead)
 
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
-
-
-
-def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data, threshold, n_branches_edge, savePath, device, calib_mode):
+#def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data, threshold, n_branches_edge, savePath, device, temperature_overall, overhead, calib_mode):
+def runGlobalTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, savePath, temperature_overall, overhead, calib_mode):
 
 	max_exits = args.n_branches + 1
 
 	beta = 0
-	theta_initial = 1.2
+	#theta_initial = 1.2
 
 	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
 	# Instantiate SPSA class to initializes the parameters
-	global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+	#global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
 
-	global_ts.run(valid_loader)
+	#global_ts.run(valid_loader)
 
-	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
+	#temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
 
-	print(temperature_overall)
-
+	#print(temperature_overall)
 
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
-	global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data)
+	global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, overhead)
 
-	print(global_ts_acc, global_ts_inf_time, global_ts_ee_prob)
+	#print(global_ts_acc, global_ts_inf_time, global_ts_ee_prob)
 
 
 	save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
@@ -134,28 +144,30 @@ def main(args):
 
 	temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
+	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	alternativeResultsPath = os.path.join(config.DIR_NAME, "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
+	betaResultsPath = os.path.join(config.DIR_NAME, "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+	alternativeResultsPath = os.path.join(config.DIR_NAME, "alternative_method_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	dataset_path = config.dataset_path_dict[args.dataset_name]
+	#model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
+
+	#dataset_path = config.dataset_path_dict[args.dataset_name]
 	
-	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
+	#device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 
-	model_dict = torch.load(model_path, map_location=device)
+	#model_dict = torch.load(model_path, map_location=device)
 
-	test_idx = model_dict["test"]
+	#test_idx = model_dict["test"]
 
-	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
-	ee_model.load_state_dict(model_dict["model_state_dict"])
-	ee_model = ee_model.to(device)
-	ee_model.eval()
+	#ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	#ee_model.load_state_dict(model_dict["model_state_dict"])
+	#ee_model = ee_model.to(device)
+	#ee_model.eval()
 
 	#Load Dataset 
-	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+	#test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
 	threshold_list = [0.7, 0.8, 0.9]
 
@@ -163,17 +175,26 @@ def main(args):
 
 	df_inf_data = pd.read_csv(inf_data_path)
 
-	for n_branches_edge in reversed(range(1, args.n_branches+1)):
+	overhead_list = [5, 10, 15, 20]
 
-		for threshold in threshold_list:
+	for overhead in overhead_list:
 
-			#opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)			
 
-			#run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, calib_mode="beta_calib")			
+		for n_branches_edge in reversed(range(1, args.n_branches+1)):
 
-			runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, calib_mode="no_calib")
+			for threshold in threshold_list:
+				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-			runGlobalTemperatureScalingInference(args, ee_model, test_loader, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, device, calib_mode="global_TS")
+				opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)
+
+				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+
+				run_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, betaResultsPath, overhead, calib_mode="beta_calib")			
+
+				runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, overhead, calib_mode="no_calib")
+
+				runGlobalTemperatureScalingInference(args, df_inf_data, threshold, n_branches_edge, alternativeResultsPath, temperature_global_list, 
+					overhead, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
