@@ -100,11 +100,6 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data,
 	print(global_ts_acc, global_ts_inf_time, global_ts_ee_prob)
 
 
-
-
-	sys.exit()
-
-
 	save_beta_results(savePath, ts_theta, ts_acc, ts_inf_time, ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, calib_mode)
 
 
