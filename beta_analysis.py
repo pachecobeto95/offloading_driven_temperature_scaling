@@ -79,7 +79,7 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data,
 	max_exits = args.n_branches + 1
 
 	beta = 0
-	theta_initial = 1.0
+	theta_initial = 0.5
 
 	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
