@@ -76,8 +76,6 @@ def runNoCalibInference(args, df_inf_data, threshold, n_branches_edge, savePath,
 
 def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n_branches_edge, savePath, device, calib_mode):
 
-	temp_list = np.ones(n_branches_edge)
-
 	max_exits = args.n_branches + 1
 
 	beta = 0
@@ -90,17 +88,14 @@ def runGlobalTemperatureScalingInference(args, model, valid_loader, threshold, n
 
 	global_ts.run(valid_loader)
 
-	temperature_overall = global_ts.temperature_overall
-
-	print(temperature_overall)
-	sys.exit()
+	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
 
 
-	no_calib_acc, no_calib_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
+	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
-	no_calib_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data)
+	global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data)
 
-
+	print(global_ts_acc, global_ts_inf_time, global_ts_ee_prob)
 
 
 
