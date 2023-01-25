@@ -175,7 +175,7 @@ def main(args):
 
 	df_inf_data = pd.read_csv(inf_data_path)
 
-	overhead_list = [5, 10, 15, 20]
+	overhead_list = [0, 5, 10, 15, 20]
 
 	for overhead in overhead_list:
 
