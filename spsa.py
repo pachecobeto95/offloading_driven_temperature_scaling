@@ -172,7 +172,7 @@ class SPSA (object):
 			# update parameters
 			theta -= ak*grad_hat			
 
-			theta, k = self.check_violation_step(theta, old_theta, k)	
+			#theta, k = self.check_violation_step(theta, old_theta, k)	
 			theta = np.maximum(theta, self.min_bounds)
 
 			y_k, ee_prob = self.compute_loss(theta)
@@ -183,7 +183,7 @@ class SPSA (object):
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
 
-			#k += 1
+			k += 1
 			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		
 		return best_theta, best_loss 
