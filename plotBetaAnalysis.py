@@ -4,7 +4,7 @@ import pandas as pd
 import os, sys, config, argparse
 
 
-def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_edge, plotPath):
+def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_edge, overhead, plotPath):
 
 
 	fig, ax = plt.subplots()
@@ -13,23 +13,24 @@ def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_ed
 	acc_no_calib, inf_time_no_calib = -df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = -df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
-	plt.scatter(inf_time_beta, acc_beta, color="blue", marker="o", label="SPSA")
-	plt.scatter(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
-	plt.scatter(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
+	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", label="SPSA")
+	plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
+	plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
 
 	plt.xlabel("Inference Time (ms)", fontsize = args.fontsize)
 	plt.ylabel("Accuracy at the Edge", fontsize = args.fontsize)
-	plt.title("Number of Branches: %s, Threshold: %s"%(n_branches_edge, threshold), fontsize = args.fontsize)
 	plt.legend(frameon=False, fontsize=args.fontsize)
 	plt.tight_layout()
 	plt.savefig(plotPath+".pdf")
+	plt.title("Number of Branches: %s, Threshold: %s, Overhead: %s"%(n_branches_edge, threshold, overhead), fontsize = args.fontsize-2)
+	plt.tight_layout()
 	plt.savefig(plotPath+".jpg")
 
 
 def main(args):
 
-	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
-	alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
+	#alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	plotDir = os.path.join(".", "plots", "beta_analysis")
 
@@ -37,21 +38,27 @@ def main(args):
 		os.makedirs(plotDir)
 
 	threshold_list = [0.7, 0.8, 0.9]
+	overhead_list = [0, 5, 10, 15, 20]
 
 	df = pd.read_csv(resultPath)
-	df_alternative = pd.read_csv(alternativeResultPath)
 
-	for n_branches_edge in reversed(range(1, args.n_branches+1)):
+	for overhead in overhead_list:
 
-		for threshold in threshold_list:
-			df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge)]
-			df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
+		for n_branches_edge in reversed(range(1, args.n_branches+1)):
 
-			df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
+			for threshold in threshold_list:
+				df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge) & (df.overhead==overhead)]
+				#df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
 
-			plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_test"%(n_branches_edge, threshold) )
+				#df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
-			plotBetaTradeOff(args, df_inf_data, df_no_calib, df_ts, threshold, n_branches_edge, plotPath)
+				df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
+
+				print(df_inf_data.calib_mode.unique())
+
+				plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s"%(n_branches_edge, threshold, overhead) )
+
+				plotBetaTradeOff(args, df_spsa, df_no_calib, df_ts, threshold, n_branches_edge, overhead, plotPath)
 
 
 
