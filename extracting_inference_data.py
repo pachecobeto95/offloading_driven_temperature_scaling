@@ -83,7 +83,7 @@ def main(args):
 	#df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, per_branch_ts_model, args.n_branches, device)
 
 
-	df_no_calib = extracting_ee_inference_data(test_loader, model, n_branches, device)
+	df_no_calib = extracting_ee_inference_data(test_loader, ee_model, n_branches, device)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	#df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
