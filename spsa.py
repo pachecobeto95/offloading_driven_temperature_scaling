@@ -353,12 +353,13 @@ def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
-	print(n_branches)
+	print(df.columns)
+	sys.exit()
 
 	n_samples = len(df)
 
-	confs = df["conf_branch_%s"%(n_branches+1)]
-	calib_confs = confs/temp_list[n_branches]
+	confs = df["conf_branch_%s"%(n_branches)]
+	calib_confs = confs/temp_list[n_branches-1]
 	early_exit_samples = calib_confs >= threshold
 
 	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches+1)].count()
