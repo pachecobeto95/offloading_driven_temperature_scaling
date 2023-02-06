@@ -221,6 +221,18 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 	return f1+f2, _
 
 
+def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
+
+	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead)
+
+	f = beta*acc_current + (1-beta)*inf_time_current 
+
+	return f, ee_prob
+
+
+
+
 def beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
@@ -270,6 +282,84 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, over
 
 	return avg_inference_time, early_classification_prob
 
+
+
+def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
+
+
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	n_samples = len(df)
+
+	for i in range(n_branches):
+		num = compute_prob_success_branch(temp_list, i, threshold, df)
+	
+	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
+
+	acc = num/den
+
+	print("Acc: %s"%(acc))
+
+	return acc
+
+def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
+
+
+	n_samples = len(df)
+
+	kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
+
+	if(idx_branch == 0):
+		confs = df["conf_branch_%s"%(idx_branch+1)].values
+		#data_conf = confs/temp_list[idx_branch]
+
+	else:
+		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
+	
+	data_conf = confs/temp_list[idx_branch]
+
+	kde.fit(data_conf[:, None])
+
+	conf_d = np.linspace(threshold, 1, n_samples)
+
+	pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
+
+	expected_correct = compute_P_l(df, conf_d, idx_branch)
+
+	prob_success_branch = np.sum(expected_correct*pdf_values)
+
+	return prob_success_branch
+
+
+def compute_P_l(df, confs, idx_branch, delta_step=0.01):
+
+	n_samples = len(df)
+	expected_correct_list = []
+
+	for conf in confs:
+		data = df[(df["conf_branch_%s"%(idx_branch+1)]  > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
+
+		correct = df["correct_branch_%s"%(idx_branch+1)].sum()
+
+		expected_correct = correct/n_samples
+
+		expected_correct_list.append(expected_correct)
+
+	return np.array(expected_correct_list)
+
+
+def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
+
+	n_samples = len(df)
+
+	confs = df["conf_branch_%s"%(n_branches+1)]
+	calib_confs = confs/temp_list[i]
+	early_exit_samples = calib_confs >= threshold
+
+	numexits = df[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+
+	prob = numexits/n_samples
+
+	return prob
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 
@@ -386,6 +476,21 @@ def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, 
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta, overhead))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt = optim.min()
+
+	return theta_opt, loss_opt
+
+def run_theoretical_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, n_branches, a0, c, alpha, gamma, overhead):
+
+	max_exits = max_branches + 1
+
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
 		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta, overhead))
 
 	# Run SPSA to minimize the objective function
