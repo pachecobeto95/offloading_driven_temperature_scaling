@@ -321,7 +321,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	data_conf = confs/temp_list[idx_branch]
 
-	print(data_conf.values)
+	print(data_conf)
 
 	#kde.fit(data_conf[:, None])
 
