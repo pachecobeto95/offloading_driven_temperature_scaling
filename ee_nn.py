@@ -465,7 +465,7 @@ class Early_Exit_DNN(nn.Module):
     cumulative_inf_time += curr_time
 
     #output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
-    conf_list.append(conf), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
 
     return conf_list, class_list, inference_time_list
 
