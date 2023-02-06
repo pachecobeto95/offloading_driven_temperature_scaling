@@ -351,6 +351,8 @@ def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
+		print(data["correct_branch_%s"%(idx_branch+1)])
+
 		expected_correct = correct/len(data["correct_branch_%s"%(idx_branch+1)])
 
 		expected_correct_list.append(expected_correct)
