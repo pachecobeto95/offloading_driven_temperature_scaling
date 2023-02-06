@@ -334,6 +334,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	expected_correct = compute_P_l(df, conf_d, idx_branch)
 
+	sys.exit()
+
 	print(expected_correct, pdf_values)
 
 
