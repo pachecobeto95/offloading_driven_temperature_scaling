@@ -226,7 +226,7 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
 
 	print(n_branches, max_exits)
-	
+
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead)
 
@@ -352,6 +352,8 @@ def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
+
+	print(n_branches)
 
 	n_samples = len(df)
 
