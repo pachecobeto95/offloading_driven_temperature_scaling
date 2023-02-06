@@ -343,7 +343,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 
-	n_samples = len(df)
 	expected_correct_list = []
 
 	for conf in confs:
@@ -351,9 +350,9 @@ def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
-		print(len(data["correct_branch_%s"%(idx_branch+1)].values))
+		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
-		expected_correct = correct/len(data["correct_branch_%s"%(idx_branch+1)])
+		expected_correct = correct/n_samples if (n_samples>0) else 0
 
 		expected_correct_list.append(expected_correct)
 
