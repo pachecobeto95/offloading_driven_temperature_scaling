@@ -167,7 +167,8 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 
 	n_exits = n_branches + 1
 	conf_list, correct_list, inference_time_list = [], [], []
-	result_dict = {"calib_mode": mode}
+	result_dict = {}
+
 	model.eval()
 	with torch.no_grad():
 		for i, (data, target) in enumerate(test_loader, 1):
@@ -187,6 +188,8 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 	accuracy_branches = [sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)]
 
 	print("Accuracy: %s"%(accuracy_branches))
+
+	#result_dict = {"calib_mode": mode*}
 
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
@@ -209,7 +212,7 @@ def extracting_ee_inference_time(model, test_loader, n_branches, threshold_list,
 		df_inf_time_branches = collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device)
 		
 		df_inf_time = pd.concat([df_inf_time, df_inf_time_branches], ignore_index=True)
-		
+
 	return df_inf_time
 
 
