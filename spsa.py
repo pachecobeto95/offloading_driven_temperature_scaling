@@ -323,7 +323,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	kde.fit(data_conf[:, None])
 
-	conf_d = np.linspace(threshold, 1, 10)
+	conf_d = np.linspace(threshold, 1, n_samples)
 
 	pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
 
@@ -341,13 +341,12 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	return prob_success_branch
 
 
-def compute_P_l(df, confs, idx_branch, delta_step=0.01):
+def compute_P_l(df, confs, idx_branch, delta_step=0.001):
 
 	expected_correct_list = []
 
 	for conf in confs:
-		#data = df[(df["conf_branch_%s"%(idx_branch+1)]  > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
-		data = df[(df["conf_branch_%s"%(idx_branch+1)]  == conf)]
+		data = df[(df["conf_branch_%s"%(idx_branch+1)]  > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
