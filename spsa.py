@@ -348,7 +348,7 @@ def compute_P_l(df, confs, idx_branch, delta_step=0.01):
 	for conf in confs:
 		data = df[(df["conf_branch_%s"%(idx_branch+1)]  > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
-		correct = df["correct_branch_%s"%(idx_branch+1)].sum()
+		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
 		expected_correct = correct/n_samples
 
