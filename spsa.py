@@ -327,7 +327,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	conf_d = np.linspace(threshold, 1, 5)
 
-	density = sum(norm(xi).pdf(conf_d) for xi in x)
+	density = sum(norm(xi).pdf(conf_d) for xi in data_conf)
 	print(density)
 
 	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
