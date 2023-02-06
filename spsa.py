@@ -354,10 +354,10 @@ def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 
 	confs = df["conf_branch_%s"%(n_branches+1)]
-	calib_confs = confs/temp_list[i]
+	calib_confs = confs/temp_list[n_branches]
 	early_exit_samples = calib_confs >= threshold
 
-	numexits = df[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches+1)].count()
 
 	prob = numexits/n_samples
 
