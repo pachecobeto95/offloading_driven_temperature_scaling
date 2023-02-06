@@ -4,7 +4,7 @@ import numpy as np
 import config
 import pandas as pd
 from sklearn.neighbors import KernelDensity
-
+from scipy.stats import norm
 
 class Bernoulli(object):
 	'''
@@ -321,12 +321,16 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	data_conf = confs/temp_list[idx_branch]
 
-	kde.fit(data_conf[:, None])
 
-	conf_d = np.linspace(threshold, 1, n_samples)
+
+	#kde.fit(data_conf[:, None])
+
+	conf_d = np.linspace(threshold, 1, 5)
+
+	density = sum(norm(xi).pdf(conf_d) for xi in x)
+	print(density)
 
 	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
-	pdf_values = kde.score_samples(conf_d[:, None])
 
 	expected_correct = compute_P_l(df, conf_d, idx_branch)
 
