@@ -209,8 +209,7 @@ def extracting_ee_inference_time(model, test_loader, n_branches, threshold_list,
 		df_inf_time_branches = collect_avg_inference_time_branch(model, test_loader, n_branches, threshold, device)
 		
 		df_inf_time = pd.concat([df_inf_time, df_inf_time_branches], ignore_index=True)
-+
- 
+		
 	return df_inf_time
 
 
