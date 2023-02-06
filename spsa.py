@@ -3,6 +3,8 @@ import random, sys, torch, os, logging, copy
 import numpy as np
 import config
 import pandas as pd
+from sklearn.neighbors import KernelDensity
+
 
 class Bernoulli(object):
 	'''
