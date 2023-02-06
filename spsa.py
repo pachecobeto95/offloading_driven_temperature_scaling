@@ -325,7 +325,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	conf_d = np.linspace(threshold, 1, n_samples)
 
-	pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
+	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
+	pdf_values = kde.score_samples(conf_d[:, None])
 
 	expected_correct = compute_P_l(df, conf_d, idx_branch)
 
