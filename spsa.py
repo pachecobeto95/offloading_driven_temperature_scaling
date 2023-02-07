@@ -4,7 +4,7 @@ import numpy as np
 import config
 import pandas as pd
 from sklearn.neighbors import KernelDensity
-from scipy.stats import norm
+from scipy.stats import norm, gaussian_kde
 
 class Bernoulli(object):
 	'''
@@ -288,8 +288,6 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, over
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
-	print(temp_list, n_branches, threshold)
-	sys.exit()
 
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
@@ -312,7 +310,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	n_samples = len(df)
 
-	kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
+	#kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
 
 	if(idx_branch == 0):
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
@@ -323,26 +321,26 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	data_conf = confs/temp_list[idx_branch]
 
-	print(data_conf)
-	print(temp_list[idx_branch])
 
-	#kde.fit(data_conf[:, None])
+	kde = gaussian_kde(data_conf)
 
+	#x_d = np.linspace(0, 1, 100)
 	conf_d = np.linspace(threshold, 1, 5)
 
-	density = sum(norm(xi).pdf(conf_d) for xi in data_conf)
-	print(density)
+	#pdf = np.exp(kde.score_samples(x_d[:, None]))
+	pdf = kde.evaluate(conf_d)
+	#print(pdf)
+
+	#kde.fit(data_conf[:, None])
 
 	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
 
 	expected_correct = compute_P_l(df, conf_d, idx_branch)
 
-	sys.exit()
+	product = expected_correct*pdf_values
 
-	print(expected_correct, pdf_values)
-
-
-	prob_success_branch = np.sum(expected_correct*pdf_values)
+	#Integrate
+	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
 	print(prob_success_branch)
 	sys.exit()
 	#sys.exit()
