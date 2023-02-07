@@ -313,14 +313,19 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	#kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
 
 	if(idx_branch == 0):
+		print("ok")
+		sys.exit()
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
 		#data_conf = confs/temp_list[idx_branch]
 
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
-	data_conf = confs/temp_list[idx_branch]
+	
 
+
+
+	data_conf = confs/temp_list[idx_branch]
 
 	kde = gaussian_kde(data_conf)
 
