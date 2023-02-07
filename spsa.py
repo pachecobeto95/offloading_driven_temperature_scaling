@@ -51,7 +51,7 @@ class SPSA (object):
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 2e-1 # a small number
+		self.c = 3e-1 # a small number
 		#self.c = 1. # a small number
 		self.min_bounds = min_bounds
 		self.args = args
