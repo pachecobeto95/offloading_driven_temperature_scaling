@@ -335,7 +335,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
 
-	expected_correct = compute_P_l(df, conf_d, idx_branch, temp_list)
+	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 
 	product = expected_correct*pdf_values
 
@@ -348,11 +348,11 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	return prob_success_branch
 
 
-def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
+def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.001):
 
-	expected_correct_list = []
+	expected_correct_list, pdf_list = [], []
 
-	for conf in confs:
+	for i, conf in enumerate(confs):
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
 		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
@@ -362,11 +362,11 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 		#expected_correct = correct/n_samples if (n_samples>0) else 0
 		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
-		if (expected_correct is not np.nan):
-		#print(expected_correct, type(expected_correct), expected_correct is np.nan)
-			expected_correct_list.append(expected_correct)
 
-	return np.array(expected_correct_list)
+		if (expected_correct is not np.nan):
+			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
+
+	return np.array(expected_correct_list), np.array(pdf_list)
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
