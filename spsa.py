@@ -337,9 +337,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	expected_correct = compute_P_l(df, conf_d, idx_branch, temp_list)
 
-	print(expected_correct)
-	sys.exit()
-
 	product = expected_correct*pdf_values
 
 	#Integrate
@@ -367,12 +364,8 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
 		if (expected_correct is not np.nan):
 		#print(expected_correct, type(expected_correct), expected_correct is np.nan)
-
 			expected_correct_list.append(expected_correct)
 
-
-	print(expected_correct_list)
-	sys.exit()
 	return np.array(expected_correct_list)
 
 
