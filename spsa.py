@@ -293,7 +293,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 	num = 0
 
-	for i in range(n_branches):
+	for i in range(n_branches+1):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
@@ -325,7 +325,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	kde = gaussian_kde(data_conf)
 
 	#x_d = np.linspace(0, 1, 100)
-	conf_d = np.linspace(threshold, 1, 500)
+	conf_d = np.linspace(threshold, 1, 200)
 
 	#pdf = np.exp(kde.score_samples(x_d[:, None]))
 	pdf_values = kde.evaluate(conf_d)
