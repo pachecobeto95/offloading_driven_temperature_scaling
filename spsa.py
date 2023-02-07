@@ -75,7 +75,7 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = 0.05*((A+1)**self.alpha)/magnitude_g0
+		a = 0.1*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
@@ -354,8 +354,8 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.001):
 	expected_correct_list, pdf_list = [], []
 
 	for i, conf in enumerate(confs):
-		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
-		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
+		data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
+		#data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
 		#correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
