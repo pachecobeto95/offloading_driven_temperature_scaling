@@ -341,8 +341,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#Integrate
 	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
-	print(prob_success_branch)
-	sys.exit()
+	#print(prob_success_branch)
 	#sys.exit()
 
 
