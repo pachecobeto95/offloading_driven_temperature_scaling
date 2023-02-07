@@ -166,7 +166,7 @@ class SPSA (object):
 
 			#Computes the parameters for each iteration
 			ak = self.compute_ak(a, A, k)
-			ck = self.compute_ck(c, k)
+			ck = 2*self.compute_ck(c, k)
 
 			#Estimate Gradient
 			grad_hat = self.estimate_grad(theta, ck)
