@@ -13,6 +13,8 @@ def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_ed
 	acc_no_calib, inf_time_no_calib = -df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = -df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
+	print(acc_ts)
+	sys.exit()
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", label="SPSA")
 	plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
 	plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
@@ -53,8 +55,6 @@ def main(args):
 				#df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
 				df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-
-				print(df_inf_data.calib_mode.unique())
 
 				plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s"%(n_branches_edge, threshold, overhead) )
 

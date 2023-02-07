@@ -44,11 +44,10 @@ def run_theoretical_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, thre
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
 
-		print(beta_acc, beta_ee_prob)
-		sys.exit()
+
 		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, overhead)
 
-		#save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 
 
@@ -66,7 +65,7 @@ def main(args):
 
 	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.8, 0.9]
+	threshold_list = [0.7, 0.8, 0.9]
 
 	beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
 
