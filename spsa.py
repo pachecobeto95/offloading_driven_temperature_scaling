@@ -166,7 +166,7 @@ class SPSA (object):
 
 			#Computes the parameters for each iteration
 			ak = self.compute_ak(a, A, k)
-			ck = 2*self.compute_ck(c, k)
+			ck = self.compute_ck(c, k)
 
 			#Estimate Gradient
 			grad_hat = self.estimate_grad(theta, ck)
@@ -326,7 +326,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	kde = gaussian_kde(data_conf)
 
 	#x_d = np.linspace(0, 1, 100)
-	conf_d = np.linspace(threshold, 1, 200)
+	conf_d = np.linspace(threshold, 1, 10)
 
 	#pdf = np.exp(kde.score_samples(x_d[:, None]))
 	pdf_values = kde.evaluate(conf_d)
