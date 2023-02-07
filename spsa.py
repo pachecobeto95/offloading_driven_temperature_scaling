@@ -173,7 +173,7 @@ class SPSA (object):
 
 
 			# update parameters
-			theta -= 10*ak*grad_hat			
+			theta -= ak*grad_hat			
 
 			#theta, k = self.check_violation_step(theta, old_theta, k)	
 			theta = np.maximum(theta, self.min_bounds)
