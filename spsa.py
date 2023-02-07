@@ -51,7 +51,7 @@ class SPSA (object):
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 10 # a small number
+		self.c = 0.1 # a small number
 		#self.c = 1. # a small number
 		self.min_bounds = min_bounds
 		self.args = args
@@ -75,7 +75,7 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = 0.1*((A+1)**self.alpha)/magnitude_g0
+		a = 1*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
