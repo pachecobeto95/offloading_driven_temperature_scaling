@@ -298,9 +298,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
-	print(num, den)
+	#print(num, den)
 
-	#acc = num/den
+	acc = num/den
 
 	print("Acc: %s"%(acc))
 
@@ -368,6 +368,8 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
+
+	print(temp_list[n_branches-1])
 
 	n_samples = len(df)
 
