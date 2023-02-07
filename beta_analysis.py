@@ -142,7 +142,7 @@ def main(args):
 
 	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	#temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
