@@ -371,6 +371,7 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 			expected_correct_list.append(expected_correct)
 
 
+	print(expected_correct_list)
 	sys.exit()
 	return np.array(expected_correct_list)
 
