@@ -356,12 +356,13 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
 		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
-		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
+		#correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
-		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
+		#n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
-		expected_correct = correct/n_samples if (n_samples>0) else 0
-
+		#expected_correct = correct/n_samples if (n_samples>0) else 0
+		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
+		
 		expected_correct_list.append(expected_correct)
 
 	return np.array(expected_correct_list)
