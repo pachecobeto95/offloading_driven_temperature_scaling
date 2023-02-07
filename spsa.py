@@ -365,9 +365,10 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 		#expected_correct = correct/n_samples if (n_samples>0) else 0
 		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
-		print(expected_correct, type(expected_correct), expected_correct is np.nan)
+		if (expected_correct is not np.nan):
+		#print(expected_correct, type(expected_correct), expected_correct is np.nan)
 
-		expected_correct_list.append(expected_correct)
+			expected_correct_list.append(expected_correct)
 
 
 	sys.exit()
