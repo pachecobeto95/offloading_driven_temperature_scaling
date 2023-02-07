@@ -291,9 +291,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
+	num = 0
 
 	for i in range(n_branches):
-		num = compute_prob_success_branch(temp_list, i, threshold, df)
+		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
@@ -506,7 +507,7 @@ def run_theoretical_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold
 
 	max_exits = max_branches + 1
 
-	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial, min_bounds = 1.5*np.ones(n_branches_edge), np.zeros(n_branches_edge)
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
