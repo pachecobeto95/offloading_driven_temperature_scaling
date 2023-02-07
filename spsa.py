@@ -334,7 +334,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
 
-	expected_correct = compute_P_l(df, conf_d, idx_branch)
+	expected_correct = compute_P_l(df, conf_d, idx_branch, temp_list)
 
 	product = expected_correct*pdf_values
 
@@ -347,12 +347,12 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	return prob_success_branch
 
 
-def compute_P_l(df, confs, idx_branch, delta_step=0.001):
+def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 	expected_correct_list = []
 
 	for conf in confs:
-		data = df[(df["conf_branch_%s"%(idx_branch+1)]  > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
+		data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
