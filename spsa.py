@@ -288,12 +288,11 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, over
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
-
-	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	#numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
 	num = 0
 
-	for i in range(n_branches+1):
+	for i in range(n_branches):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
