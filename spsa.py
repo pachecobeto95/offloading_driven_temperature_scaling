@@ -298,7 +298,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
-	print(num, den)
+	#print(num, den)
 
 	acc = num/den if (den>0) else 0
 
@@ -362,6 +362,7 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 		#expected_correct = correct/n_samples if (n_samples>0) else 0
 		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
+		print(expected_correct)
 		
 		expected_correct_list.append(expected_correct)
 
@@ -370,7 +371,7 @@ def compute_P_l(df, confs, idx_branch, temp_list, delta_step=0.001):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
-	print(temp_list[n_branches-1])
+	#print(temp_list[n_branches-1])
 
 	n_samples = len(df)
 
