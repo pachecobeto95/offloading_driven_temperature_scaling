@@ -250,45 +250,65 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 	avg_inference_time = 0
 	n_samples = len(df)
-	remaining_data = df
+	#remaining_data = df
 
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 	numexits = np.zeros(n_branches)
 
-	for i in range(n_branches):
+	confs = df["conf_branch_1"]
+	calib_confs = confs/temp_list[0]
+	early_exit_samples = calib_confs >= threshold
 
-		current_n_samples = len(remaining_data)
+	n_exit_edge = df[early_exit_samples]["conf_branch_1"].count()
+	n_exit_cloud = n_samples - n_exit_edge
+	
+	inf_time_branch_device = df_device["inferente_time_branch_1"].mean()
+
+	inf_time_branch_cloud = df["inferente_time_branch_2"].mean() - df["inferente_time_branch_1"].mean()
+
+	avg_inference_time += inf_time_branch_device
+
+	avg_inference_time += n_exit_cloud*(overhead+inf_time_branch_cloud)
+
+	avg_inference_time = avg_inference_time/float(n_samples)
+
+	return avg_inference_time, early_classification_prob
+
+
+	#for i in range(n_branches):
+
+	#	current_n_samples = len(remaining_data)
 
 		#if (i == n_branches):
 		#	early_exit_samples = np.ones(current_n_samples, dtype=bool)
 		#else:
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
+	#	confs = remaining_data["conf_branch_%s"%(i+1)]
+	#	calib_confs = confs/temp_list[i]
+	#	early_exit_samples = calib_confs >= threshold
 
-		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+	#	numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 
-		inf_time_branch = df_device["inferente_time_branch_%s"%(i+1)].mean()
+	#	inf_time_branch = df_device["inferente_time_branch_%s"%(i+1)].mean()
 
 		#print(inf_time_branch)
 
-		avg_inference_time += numexits[i]*inf_time_branch
+	#	avg_inference_time += numexits[i]*inf_time_branch
 
-		remaining_data = remaining_data[~early_exit_samples]
+	#	remaining_data = remaining_data[~early_exit_samples]
 
 
-	inf_time_backbone = df["inferente_time_branch_%s"%(max_exits)].mean()
+	#inf_time_backbone = df["inferente_time_branch_%s"%(max_exits)].mean()
 	#print(inf_time_backbone)
-	avg_inference_time += len(remaining_data)*(inf_time_backbone+overhead)
+	#avg_inference_time += len(remaining_data)*(inf_time_backbone+overhead)
 	#sys.exit()
 
-	avg_inference_time = avg_inference_time/float(n_samples)
+	#avg_inference_time = avg_inference_time/float(n_samples)
 
-	early_classification_prob = sum(numexits)/n_samples
-	print(avg_inference_time, early_classification_prob)
+	#early_classification_prob = sum(numexits)/n_samples
+	#print(avg_inference_time, early_classification_prob)
 
-	return avg_inference_time, early_classification_prob
+	#return avg_inference_time, early_classification_prob
 
 
 
