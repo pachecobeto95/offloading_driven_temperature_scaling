@@ -284,7 +284,9 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	#sys.exit()
 
 	avg_inference_time = avg_inference_time/float(n_samples)
+
 	early_classification_prob = sum(numexits)/n_samples
+	print(avg_inference_time, early_classification_prob)
 
 	return avg_inference_time, early_classification_prob
 
