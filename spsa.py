@@ -267,7 +267,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 	inf_time_branch_cloud = df["inferente_time_branch_2"].mean() - df["inferente_time_branch_1"].mean()
 
-	avg_inference_time += inf_time_branch_device
+	avg_inference_time += n_samples*inf_time_branch_device
 
 	avg_inference_time += n_exit_cloud*(overhead+inf_time_branch_cloud)
 
