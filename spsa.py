@@ -274,6 +274,8 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = n_exit_edge/float(n_samples)
 
+	print(avg_inference_time, early_classification_prob)
+
 	return avg_inference_time, early_classification_prob
 
 
