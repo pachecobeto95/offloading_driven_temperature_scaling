@@ -32,14 +32,14 @@ def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, th
 	df.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
 
 
-def run_theoretical_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, savePath, overhead, calib_mode):
+def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, savePath, overhead, calib_mode):
 
 	max_exits = args.n_branches + 1
 
 	for beta in beta_list:
 		print("Beta: %s"%(beta))
 
-		beta_theta, beta_opt_loss = spsa.run_theoretical_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, 
+		beta_theta, beta_opt_loss = spsa.run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, args.max_iter, n_branches_edge, args.n_branches, 
 			args.a0, args.c, args.alpha, args.gamma, overhead)
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
@@ -61,6 +61,8 @@ def main(args):
 
 	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
+	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_in_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
+
 	temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -70,6 +72,8 @@ def main(args):
 	beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
 
 	df_inf_data = pd.read_csv(inf_data_path)
+
+	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
 	overhead_list = [0, 5, 10, 15, 20]
 
@@ -83,7 +87,7 @@ def main(args):
 
 				opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)
 
-				run_theoretical_beta_analysis(args, df_inf_data, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
+				run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
 
 if (__name__ == "__main__"):

@@ -225,10 +225,10 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 	return f1+f2, _
 
 
-def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
+def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	f = beta*acc_current + (1-beta)*inf_time_current 
 
@@ -237,17 +237,17 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, l
 
 
 
-def beta_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, loss_time, beta, overhead):
+def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
-	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead)
+	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	f = beta*acc_current + (1-beta)*inf_time_current 
 
 	return f, ee_prob
 
 
-def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, overhead):
+def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
 
 	avg_inference_time = 0
 	n_samples = len(df)
@@ -270,7 +270,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, over
 
 		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 
-		inf_time_branch = df["inferente_time_branch_%s"%(i+1)].mean()
+		inf_time_branch = df_device["inferente_time_branch_%s"%(i+1)].mean()
 
 		avg_inference_time += numexits[i]*inf_time_branch
 
@@ -493,7 +493,7 @@ def run_multi_obj(df_inf_data, loss_acc, loss_time, threshold, max_iter, n_branc
 	return theta_opt, loss_opt
 
 
-def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
+def run_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
 
 	max_exits = max_branches + 1
 
@@ -501,14 +501,14 @@ def run_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, 
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta, overhead))
+		args=(max_exits, threshold, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, beta, overhead))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
 
 	return theta_opt, loss_opt
 
-def run_theoretical_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
+def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
 
 	max_exits = max_branches + 1
 
@@ -516,7 +516,7 @@ def run_theoretical_beta_opt(df_inf_data, beta, opt_acc, opt_inf_time, threshold
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, opt_acc, opt_inf_time, beta, overhead))
+		args=(max_exits, threshold, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, beta, overhead))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
