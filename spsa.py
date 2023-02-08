@@ -187,8 +187,7 @@ class SPSA (object):
 				best_ee_prob = ee_prob
 
 			k += 1
-			print(y_k, theta)
-			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+		print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		
 		return best_theta, best_loss 
 
