@@ -51,7 +51,7 @@ class SPSA (object):
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 0.1 # a small number
+		self.c = 1e-1 # a small number
 		#self.c = 1. # a small number
 		self.min_bounds = min_bounds
 		self.args = args
@@ -272,14 +272,17 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 		inf_time_branch = df_device["inferente_time_branch_%s"%(i+1)].mean()
 
+		print(inf_time_branch)
+
 		avg_inference_time += numexits[i]*inf_time_branch
 
 		remaining_data = remaining_data[~early_exit_samples]
 
 
 	inf_time_backbone = df["inferente_time_branch_%s"%(max_exits)].mean()
+	print(inf_time_backbone)
 	avg_inference_time += len(remaining_data)*(inf_time_backbone+overhead)
-
+	sys.exit()
 
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(numexits)/n_samples
