@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import os, sys, config, argparse
+import os, sys, argparse
 
 
 def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_edge, overhead, plotPath):
@@ -35,8 +35,9 @@ def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_ed
 
 def main(args):
 
+
 	#resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
-	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
 
@@ -45,13 +46,13 @@ def main(args):
 	if(not os.path.exists(plotDir)):
 		os.makedirs(plotDir)
 
-	#threshold_list = [0.7, 0.8, 0.9]
-	#overhead_list = [0, 5, 10, 15, 20]
-	threshold_list = [0.8]
-	overhead_list = [10]
+	threshold_list = [0.7, 0.8, 0.9]
+	overhead_list = [0, 5, 10, 15, 20, 30]
 
 	df = pd.read_csv(resultPath)
 	#df_device = pd.read_csv(resultDevicePath)
+	print(df.calib_mode.unique())
+	sys.exit()
 
 	for overhead in overhead_list:
 
@@ -80,8 +81,9 @@ if (__name__ == "__main__"):
 	parser = argparse.ArgumentParser(description='Plots the Cumulative Regret Versus Time Horizon for several contexts.')
 	parser.add_argument('--model_id', type=int, help='Model Id.')
 	parser.add_argument('--n_branches', type=int, help='Number of exit exits.')
-	parser.add_argument('--model_name', type=str, default=config.model_name, help='Model name.')
+	parser.add_argument('--model_name', type=str, help='Model name.')
 	parser.add_argument('--fontsize', type=int, default=18, help='Font Size.')
+	#parser.add_argument('--mode', type=str, help='Theoretical or Experimental Data.')
 
 	args = parser.parse_args()
 	main(args)
