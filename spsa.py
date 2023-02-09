@@ -258,7 +258,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 	confs = df["conf_branch_1"]
 	print(temp_list[0])
-	calib_confs = confs/temp_list[0]
+	calib_confs = confs*temp_list[0]
 	early_exit_samples = calib_confs >= threshold
 
 	n_exit_edge = df[early_exit_samples]["conf_branch_1"].count()
