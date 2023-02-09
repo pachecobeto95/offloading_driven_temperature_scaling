@@ -13,40 +13,45 @@ def plotBetaTradeOff(args, df_beta, df_no_calib, df_ts, threshold, n_branches_ed
 	acc_no_calib, inf_time_no_calib = -df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = -df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
-	print(inf_time_beta, acc_beta)
+	print(acc_beta)
+	print(acc_no_calib)
+	print(acc_ts)
 
-	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", label="SPSA")
-	#plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
-	#plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
+	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", label="Our")
+	plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
+	plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
 
 	plt.xlabel("Inference Time (ms)", fontsize = args.fontsize)
-	plt.ylabel("Accuracy at the Edge", fontsize = args.fontsize)
+	plt.ylabel("On-device Accuracy", fontsize = args.fontsize)
 	plt.legend(frameon=False, fontsize=args.fontsize)
+	plt.xticks(fontsize=args.fontsize)
+	plt.yticks(fontsize=args.fontsize)
 	plt.tight_layout()
 	plt.savefig(plotPath+".pdf")
 	plt.title("Number of Branches: %s, Threshold: %s, Overhead: %s"%(n_branches_edge, threshold, overhead), fontsize = args.fontsize-2)
-	plt.tight_layout()
-	plt.savefig(plotPath+".jpg")
-	#sys.exit()
+	#plt.tight_layout()
+	#plt.savefig(plotPath+".jpg")
 
 
 def main(args):
 
-	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
-	resultDevicePath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
+	#resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_final.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	plotDir = os.path.join(".", "plots", "beta_analysis")
+	plotDir = os.path.join(".", "plots", "beta_analysis", "pdf")
 
 	if(not os.path.exists(plotDir)):
 		os.makedirs(plotDir)
 
-	threshold_list = [0.7, 0.8, 0.9]
-	overhead_list = [0, 5, 10, 15, 20]
+	#threshold_list = [0.7, 0.8, 0.9]
+	#overhead_list = [0, 5, 10, 15, 20]
+	threshold_list = [0.8]
+	overhead_list = [10]
 
 	df = pd.read_csv(resultPath)
-	df_device = pd.read_csv(resultDevicePath)
+	#df_device = pd.read_csv(resultDevicePath)
 
 	for overhead in overhead_list:
 
@@ -54,16 +59,14 @@ def main(args):
 
 			for threshold in threshold_list:
 				df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge) & (df.overhead==overhead)]
-				df_inf_data_device = df_device[(df_device.threshold==threshold) & (df_device.n_branches_edge==n_branches_edge) & (df_device.overhead==overhead)]
+				#df_inf_data_device = df_device[(df_device.threshold==threshold) & (df_device.n_branches_edge==n_branches_edge) & (df_device.overhead==overhead)]
 
 				#df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
 
 				#df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
 				#df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-				df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-				df_spsa = df_inf_data_device[df_inf_data_device.calib_mode=="beta_calib"]
-
+				df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
 
 				plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(n_branches_edge, threshold, overhead) )
 
