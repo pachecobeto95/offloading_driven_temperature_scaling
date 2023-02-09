@@ -123,7 +123,7 @@ def main(args):
 
 	threshold_list = [0.7, 0.8, 0.9]
 
-	beta_list = np.round(np.arange(1, 0, -0.01), 2)
+	beta_list = np.round(np.arange(1, 0.4, -0.01), 2)
 	print(beta_list)
 	sys.exit()
 
