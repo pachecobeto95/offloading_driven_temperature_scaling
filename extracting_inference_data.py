@@ -60,7 +60,7 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	model_dict = torch.load(model_path, map_location=device)
 
@@ -73,7 +73,7 @@ def main(args):
 	ee_model.eval()
 
 	#Load Dataset 
-	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+	test_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
 	#global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
 
