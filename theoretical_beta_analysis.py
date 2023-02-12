@@ -128,7 +128,7 @@ def main(args):
 
 	threshold_list = [0.7, 0.8, 0.9]
 
-	beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
+	beta_list = np.round(np.arange(1, -0.01, -0.05), 2)
 
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_val_inf_data = pd.read_csv(val_inf_data_path)
