@@ -257,7 +257,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	numexits = np.zeros(n_branches)
 
 	confs = df["conf_branch_1"]
-	print(temp_list[0])
+	
 	calib_confs = confs*temp_list[0]
 	early_exit_samples = calib_confs >= threshold
 
@@ -385,12 +385,12 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.001):
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
 		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
-		#correct = data["correct_branch_%s"%(idx_branch+1)].sum()
+		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
-		#n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
+		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
-		#expected_correct = correct/n_samples if (n_samples>0) else 0
-		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
+		expected_correct = correct/n_samples if (n_samples>0) else 0
+		#expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
 
 		if (expected_correct is not np.nan):
 			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
