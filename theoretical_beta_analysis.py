@@ -58,6 +58,9 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc
 
 		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
+		print("Test")
+		print("Acc: %s, Inf Time: %s"%(beta_acc, beta_inf_time))
+
 		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 
