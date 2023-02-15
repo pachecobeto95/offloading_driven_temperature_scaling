@@ -98,6 +98,8 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
+	global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
 	save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 
@@ -125,7 +127,7 @@ def main(args):
 
 	beta_list = np.round(np.arange(1, -0.01, -0.1), 2)
 
-	beta_list = [0, 0.1, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+	#beta_list = [0, 0.1, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_val_inf_data = pd.read_csv(val_inf_data_path)
