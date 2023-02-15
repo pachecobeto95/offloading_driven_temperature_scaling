@@ -257,7 +257,7 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	numexits = np.zeros(n_branches)
 
 	confs = df["conf_branch_1"]
-	print(temp_list[0])
+
 	calib_confs = confs/temp_list[0]
 	early_exit_samples = calib_confs >= threshold
 
@@ -349,8 +349,10 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
+	print(temp_list[idx_branch])
 	data_conf = confs/temp_list[idx_branch]
-
+	data_conf = data_conf[np.isfinite(data_conf) ]
+	
 	kde = gaussian_kde(data_conf)
 
 	#x_d = np.linspace(0, 1, 100)
