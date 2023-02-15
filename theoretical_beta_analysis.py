@@ -125,7 +125,7 @@ def main(args):
 
 	threshold_list = [0.8, 0.9]
 
-	beta_list = np.round(np.arange(1, -0.01, -0.1), 2)
+	beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
 
 	#beta_list = [0, 0.1, 0.2, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
 
