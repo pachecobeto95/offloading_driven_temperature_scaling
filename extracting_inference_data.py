@@ -62,6 +62,7 @@ def main(args):
 
 	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
 
+
 	model_dict = torch.load(model_path, map_location=device)
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
@@ -75,10 +76,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
-	#global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
-
-
-	#df_global_ts_inference_data = extracting_global_ts_ee_inference_data(test_loader, global_ts_model, args.n_branches, device)
+	global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
 
 	#df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, per_branch_ts_model, args.n_branches, device)
 
