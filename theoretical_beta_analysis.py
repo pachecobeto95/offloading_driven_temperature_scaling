@@ -125,7 +125,7 @@ def main(args):
 
 	beta_list = np.round(np.arange(1, -0.01, -0.1), 2)
 
-	#beta_list = [0]
+	beta_list = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0]
 
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_val_inf_data = pd.read_csv(val_inf_data_path)
