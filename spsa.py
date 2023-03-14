@@ -50,7 +50,7 @@ class SPSA (object):
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
-		self.gamma = 0.01
+		self.gamma = 0.001
 		self.c = 0.0001 # a small number
 		#self.c = 1. # a small number
 		self.min_bounds = min_bounds
