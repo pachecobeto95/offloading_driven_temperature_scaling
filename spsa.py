@@ -365,9 +365,9 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	#print(temp_list[idx_branch])
 	#temp_list[idx_branch] = temp_list[idx_branch] + 0.001 if (temp_list[idx_branch]==0) else temp_list[idx_branch]
-	print(temp_list[idx_branch])
 	data_conf = confs*temp_list[idx_branch] 
 	#data_conf = data_conf[np.isfinite(data_conf) ]
+	print(temp_list[idx_branch], data_conf.mean())
 	
 	kde = gaussian_kde(data_conf)
 
