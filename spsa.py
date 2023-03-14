@@ -102,7 +102,7 @@ class SPSA (object):
 			y_minus, _ = self.compute_loss(theta_minus)
 
 			theta_list.append(theta_plus), theta_list.append(theta_minus)
-			y_list.append(y_plus), opt_iter_y_list.append(y_minus) 
+			y_list.append(y_plus), y_list.append(y_minus) 
 
 			delta_y_pred = y_plus - y_minus
 
