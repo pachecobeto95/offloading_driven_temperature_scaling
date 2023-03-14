@@ -196,12 +196,12 @@ def main(args):
 
 				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
-				#run_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
+				run_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
-				runNoCalibInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+				#runNoCalibInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
-					overhead, calib_mode="global_TS")
+				#runGlobalTemperatureScalingInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
+				#	overhead, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
