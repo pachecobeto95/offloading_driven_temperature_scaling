@@ -86,6 +86,8 @@ class SPSA (object):
 
 		grad_hat = 0.0
 
+		y_list, theta_list = [], []
+
 		for i in range(self.ens_size):
 
 			# bernoulli-like distribution
@@ -99,13 +101,19 @@ class SPSA (object):
 			y_plus, _ = self.compute_loss(theta_plus) 
 			y_minus, _ = self.compute_loss(theta_minus)
 
+			theta_list.append(theta_plus), theta_list.append(theta_minus)
+			y_list.append(y_plus), opt_iter_y_list.append(y_minus) 
+
 			delta_y_pred = y_plus - y_minus
 
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
 		avg_grad_hat = grad_hat/float(self.ens_size)
 
-		return avg_grad_hat
+		idx_min = np.argmin(y_list)
+		theta, y = theta_list[idx_min], y_list[idx_min]
+
+		return avg_grad_hat, theta, y
 
 	def compute_ak(self, a, A, k):
 		return a/((k+A)**(self.alpha))
@@ -169,7 +177,7 @@ class SPSA (object):
 			ck = self.compute_ck(c, k)
 
 			#Estimate Gradient
-			grad_hat = self.estimate_grad(theta, ck)
+			grad_hat, theta_t, y_t = self.estimate_grad(theta, ck)
 
 
 			# update parameters
@@ -180,7 +188,11 @@ class SPSA (object):
 
 			y_k, ee_prob = self.compute_loss(theta)
 
-			print("evaluation: %s"%y_k)
+			idx_k = np.argmin([y_t, y_k])
+			y_k = [y_t, y_k][idx_k]
+			theta = [theta_t, theta][idx_k]
+
+			#print("evaluation: %s"%y_k)
 
 			if (y_k < best_loss):
 				best_loss = y_k
