@@ -84,7 +84,7 @@ def main(args):
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="theoretical")
+				run_theoretical_beta_analysis(args, df_inf_data, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="theoretical")
 				run_beta_analysis(args, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="experimental")
 
 
