@@ -351,13 +351,13 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	#print(temp_list[idx_branch])
 	temp_list[idx_branch] = temp_list[idx_branch] + 0.001 if (temp_list[idx_branch]==0) else temp_list[idx_branch]
-	data_conf = confs/temp_list[idx_branch] 
+	data_conf = confs*temp_list[idx_branch] 
 	#data_conf = data_conf[np.isfinite(data_conf) ]
 	
 	kde = gaussian_kde(data_conf)
 
 	#x_d = np.linspace(0, 1, 100)
-	conf_d = np.linspace(threshold, 1, 10)
+	conf_d = np.linspace(threshold, 1, 100)
 
 	#pdf = np.exp(kde.score_samples(x_d[:, None]))
 	pdf_values = kde.evaluate(conf_d)
