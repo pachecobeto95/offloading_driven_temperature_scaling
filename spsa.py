@@ -365,7 +365,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	#print(temp_list[idx_branch])
 	#temp_list[idx_branch] = temp_list[idx_branch] + 0.001 if (temp_list[idx_branch]==0) else temp_list[idx_branch]
-	data_conf = confs/temp_list[idx_branch] 
+	data_conf = confs*temp_list[idx_branch] 
 	#data_conf = data_conf[np.isfinite(data_conf) ]
 	print(temp_list[idx_branch], data_conf.mean())
 	
@@ -394,7 +394,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	return prob_success_branch
 
 
-def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
+def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.001):
 
 	expected_correct_list, pdf_list = [], []
 
