@@ -70,7 +70,9 @@ class SPSA (object):
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
-		magnitude_g0 = np.abs(self.estimate_grad(self.theta_initial, self.c).mean())
+		
+		grad, _, _ = self.estimate_grad(self.theta_initial, self.c)
+		magnitude_g0 = np.abs(grad.mean())
 
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
