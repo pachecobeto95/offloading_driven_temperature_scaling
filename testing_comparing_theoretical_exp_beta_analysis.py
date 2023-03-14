@@ -68,7 +68,7 @@ def main(args):
 
 	resultsPath = os.path.join(config.DIR_NAME, "comparing_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.8, 0.9]
+	threshold_list = [0.8]
 
 	beta_list = [1]
 
