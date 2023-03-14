@@ -180,6 +180,7 @@ class SPSA (object):
 
 			y_k, ee_prob = self.compute_loss(theta)
 
+			print("evaluation: %s"%y_k)
 
 			if (y_k < best_loss):
 				best_loss = y_k
@@ -327,7 +328,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
-	print(num, den)
+	#print(num, den)
 
 	acc = num/den if (den>0) else 0
 
