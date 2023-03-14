@@ -70,7 +70,7 @@ def main(args):
 
 	threshold_list = [0.8, 0.9]
 
-	beta_list = [0]
+	beta_list = [1]
 
 	df_inf_data = pd.read_csv(inf_data_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
