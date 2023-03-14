@@ -180,7 +180,6 @@ class SPSA (object):
 			#Estimate Gradient
 			grad_hat, theta_t, y_t = self.estimate_grad(theta, ck)
 
-
 			# update parameters
 			theta -= ak*grad_hat			
 
@@ -200,7 +199,7 @@ class SPSA (object):
 				best_ee_prob = ee_prob
 
 			k += 1
-			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+		#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		
 		return best_theta, best_loss 
 
@@ -334,7 +333,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc = num/den if (den>0) else 0
 
-	print("Acc: %s"%(acc))
+	#print("Acc: %s"%(acc))
 
 	return - acc, den
 
