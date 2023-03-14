@@ -52,7 +52,6 @@ class SPSA (object):
 		self.alpha = alpha
 		self.gamma = gamma
 		self.c = 0.1 # a small number
-		#self.c = 1. # a small number
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
@@ -190,11 +189,10 @@ class SPSA (object):
 
 			y_k, ee_prob = self.compute_loss(theta)
 
-			idx_k = np.argmin([y_t, y_k])
-			y_k = [y_t, y_k][idx_k]
-			theta = [theta_t, theta][idx_k]
+			y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
 
-			#print("evaluation: %s"%y_k)
+			idx_k = np.argmin(y_alt_list)
+			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
 
 			if (y_k < best_loss):
 				best_loss = y_k
@@ -249,8 +247,6 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	return f, ee_prob
 
 
-
-
 def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
@@ -266,7 +262,6 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	avg_inference_time = 0
 	n_samples = len(df)
 	#remaining_data = df
-
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
 	numexits = np.zeros(n_branches)
@@ -289,8 +284,6 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = n_exit_edge/float(n_samples)
-
-	#print(avg_inference_time, early_classification_prob)
 
 	return avg_inference_time, early_classification_prob
 
@@ -329,11 +322,8 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 	#return avg_inference_time, early_classification_prob
 
-
-
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
-	#numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
 	num = 0
 
@@ -341,8 +331,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
-
-	#print(num, den)
 
 	acc = num/den if (den>0) else 0
 
@@ -352,10 +340,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
-
 	n_samples = len(df)
-
-	#kde = KernelDensity(bandwidth=1.0, kernel='gaussian')
 
 	if(idx_branch == 0):
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
@@ -363,24 +348,13 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
-	#print(temp_list[idx_branch])
-	#temp_list[idx_branch] = temp_list[idx_branch] + 0.001 if (temp_list[idx_branch]==0) else temp_list[idx_branch]
 	data_conf = confs*temp_list[idx_branch] 
-	#data_conf = data_conf[np.isfinite(data_conf) ]
-	print(temp_list[idx_branch], data_conf.mean())
-	
+
 	kde = gaussian_kde(data_conf)
 
-	#x_d = np.linspace(0, 1, 100)
 	conf_d = np.linspace(threshold, 1, 100)
 
-	#pdf = np.exp(kde.score_samples(x_d[:, None]))
 	pdf_values = kde.evaluate(conf_d)
-	#print(pdf)
-
-	#kde.fit(data_conf[:, None])
-
-	#pdf_values = np.exp(kde.score_samples(conf_d[:, None]))
 
 	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 
@@ -388,8 +362,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#Integrate
 	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
-	#print(prob_success_branch)
-	#sys.exit()
 
 	return prob_success_branch
 
@@ -416,8 +388,6 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
-
-	#print(temp_list[n_branches-1])
 
 	n_samples = len(df)
 
@@ -465,7 +435,6 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	#print("Early - Exit Prob: %s"%(sum(numexits)/n_samples))
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits)/n_samples
 
@@ -568,8 +537,6 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt
 
 	return theta_opt, loss_opt
 
-
-
 def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_branches, metric):
 
 	result_temp_dict = {"threshold": threshold, "opt_loss": loss_opt, "n_branches": n_branches, "metric": metric, "max_branches": max_branches}
@@ -583,22 +550,3 @@ def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_b
 	df_temp = pd.DataFrame([result_temp_dict])
 
 	df_temp.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
