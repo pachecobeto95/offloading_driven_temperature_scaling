@@ -37,20 +37,20 @@ def main(args):
 
 
 	#resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead.csv"%(args.model_name, args.n_branches, args.model_id))
-	resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
+	#resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultPath = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_FINAL.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	plotDir = os.path.join(".", "plots", "beta_analysis", "pdf")
+	plotDir = os.path.join(".", "plots")
 
 	if(not os.path.exists(plotDir)):
 		os.makedirs(plotDir)
 
-	threshold_list = [0.7, 0.8, 0.9]
-	overhead_list = [0, 5, 10, 15, 20, 30]
+	threshold_list = [0.8]
+	overhead_list = [0, 5, 10, 15]
 
 	df = pd.read_csv(resultPath)
-	#df_device = pd.read_csv(resultDevicePath)
 	print(df.calib_mode.unique())
 	sys.exit()
 
