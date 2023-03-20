@@ -131,8 +131,8 @@ def main(args):
 
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
-	#overhead_list = [0, 5, 10, 15, 20, 30]
-	overhead_list = [20, 30]
+	overhead_list = [0, 5, 10, 15, 20, 30]
+	#overhead_list = [20, 30]
 
 	for overhead in overhead_list:
 
@@ -146,12 +146,12 @@ def main(args):
 
 				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
-				run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
+				#run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, opt_acc, opt_inf_time, threshold, n_branches_edge, beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
-				#runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+				runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				#runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
-				#	overhead, calib_mode="global_TS")
+				runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
+					overhead, calib_mode="global_TS")
 
 
 
