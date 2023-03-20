@@ -51,7 +51,6 @@ def main(args):
 	overhead_list = [0, 5, 10, 15]
 
 	df = pd.read_csv(resultPath)
-	df_alternative = pd.read_csv(alternativeResultPath) 
 
 	for overhead in overhead_list:
 
@@ -66,7 +65,7 @@ def main(args):
 				df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
 				#df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-				df_spsa = df_inf_data[df_inf_data.calib_mode=="beta_calib"]
+				df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
 
 				plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(n_branches_edge, threshold, overhead) )
 
