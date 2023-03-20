@@ -40,7 +40,7 @@ def main(args):
 	#resultPath = os.path.join(".", "beta_analysis_%s_%s_branches_%s_with_overhead_with_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 	resultPath = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_FINAL.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	#alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
+	alternativeResultPath = os.path.join(".", "alternative_method_%s_%s_branches_%s_final_test.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	plotDir = os.path.join(".", "plots")
 
@@ -51,6 +51,7 @@ def main(args):
 	overhead_list = [0, 5, 10, 15]
 
 	df = pd.read_csv(resultPath)
+	df_alternative = pd.read_csv(alternativeResultPath) 
 
 	for overhead in overhead_list:
 
@@ -60,12 +61,12 @@ def main(args):
 				df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge) & (df.overhead==overhead)]
 				#df_inf_data_device = df_device[(df_device.threshold==threshold) & (df_device.n_branches_edge==n_branches_edge) & (df_device.overhead==overhead)]
 
-				#df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
+				df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
 
-				#df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
+				df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
 				#df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-				df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
+				df_spsa = df_inf_data[df_inf_data.calib_mode=="beta_calib"]
 
 				plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(n_branches_edge, threshold, overhead) )
 
