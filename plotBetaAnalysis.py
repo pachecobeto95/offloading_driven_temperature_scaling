@@ -51,8 +51,6 @@ def main(args):
 	overhead_list = [0, 5, 10, 15]
 
 	df = pd.read_csv(resultPath)
-	print(df.calib_mode.unique())
-	sys.exit()
 
 	for overhead in overhead_list:
 
