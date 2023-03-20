@@ -60,7 +60,7 @@ def main(args):
 				df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge) & (df.overhead==overhead)]
 				#df_inf_data_device = df_device[(df_device.threshold==threshold) & (df_device.n_branches_edge==n_branches_edge) & (df_device.overhead==overhead)]
 
-				df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
+				#df_alt_inf_data = df_alternative[(df_alternative.threshold==threshold) & (df_alternative.n_branches_edge==n_branches_edge)]
 
 				df_no_calib, df_ts = df_alt_inf_data[df_alt_inf_data.calib_mode=="no_calib"], df_alt_inf_data[df_alt_inf_data.calib_mode=="global_TS"]
 
