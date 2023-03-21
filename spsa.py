@@ -348,9 +348,9 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
 	data_conf = confs/temp_list[idx_branch] 
-	data_conf = data_conf[:, np.newaxis]
+	#data_conf = data_conf[:, np.newaxis]
 
-	conf_d = np.linspace(threshold, 1, 100)[:, np.newaxis]
+	conf_d = np.linspace(threshold, 1, 100)#[:, np.newaxis]
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.02)
 	model.fit(data_conf)
