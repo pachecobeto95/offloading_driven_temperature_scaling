@@ -347,7 +347,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
-	data_conf = confs/temp_list[idx_branch] 
+	data_conf = confs*temp_list[idx_branch] 
 	data_conf = data_conf[:, np.newaxis]
 
 	conf_d = np.linspace(threshold, 1, 100)
@@ -404,7 +404,7 @@ def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 
 	confs = df["conf_branch_%s"%(n_branches)]
-	calib_confs = confs/temp_list[n_branches-1]
+	calib_confs = confs*temp_list[n_branches-1]
 	early_exit_samples = calib_confs >= threshold
 
 	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
