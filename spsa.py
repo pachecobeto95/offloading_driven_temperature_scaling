@@ -357,6 +357,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	log_dens = model.score_samples(conf_d)
 
 	pdf_values = np.exp(log_dens)
+	print(pdf_values.shape)
+	sys.exit()
 
 	#kde = gaussian_kde(data_conf)
 
