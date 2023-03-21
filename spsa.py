@@ -347,13 +347,22 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
-	data_conf = confs*temp_list[idx_branch] 
+	data_conf = confs/temp_list[idx_branch] 
+	data_conf = data_conf[:, np.newaxis]
 
-	kde = gaussian_kde(data_conf)
+	conf_d = np.linspace(threshold, 1, 100)[:, np.newaxis]
 
-	conf_d = np.linspace(threshold, 1, 100)
+	model = KernelDensity(kernel='gaussian', bandwidth=0.02)
+	model.fit(data_conf)
+	log_dens = model.score_samples(conf_d)
 
-	pdf_values = kde.evaluate(conf_d)
+	pdf_values = np.exp(log_dens)
+
+	#kde = gaussian_kde(data_conf)
+
+	#conf_d = np.linspace(threshold, 1, 100)
+
+	#pdf_values = kde.evaluate(conf_d)
 
 	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 
