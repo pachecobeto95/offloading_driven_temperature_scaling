@@ -357,15 +357,15 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	log_dens = model.score_samples(conf_d)
 
 	pdf_values = np.exp(log_dens)
-	print(pdf_values.shape)
+	#print(pdf_values.shape)
 
-	kde = gaussian_kde(data_conf)
+	#kde = gaussian_kde(data_conf)
 
-	conf_d = np.linspace(threshold, 1, 100)
+	#conf_d = np.linspace(threshold, 1, 100)
 
-	pdf_values = kde.evaluate(conf_d)
+	#pdf_values = kde.evaluate(conf_d)
 
-	print(pdf_values.shape)
+	#print(pdf_values.shape)
 
 	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 
