@@ -400,6 +400,7 @@ def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_ste
 	bin_uppers = bin_boundaries[1:]
 	conf_list, acc_list = [], [] 
 	print(df.columns)
+	sys.exit()
 
 	bin_size = 1/n_bins
 	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
