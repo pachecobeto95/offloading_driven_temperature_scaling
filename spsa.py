@@ -353,7 +353,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	data_conf = data_conf[:, np.newaxis]
 
 	if(len(data_conf) == 0):
-		break
+		continue
 
 
 	conf_d = np.linspace(threshold, 1, 100)
