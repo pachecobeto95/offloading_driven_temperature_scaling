@@ -356,6 +356,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
+	print(temp_list)
 	data_conf = confs/temp_list[idx_branch] 
 	data_conf = np.float64(data_conf)
 	print(data_conf)
