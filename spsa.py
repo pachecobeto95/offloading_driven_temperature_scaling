@@ -383,7 +383,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	#print(pdf_values.shape)
 
 	#expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
-	expected_correct, pdf_values = compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list)
+	expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 	product = expected_correct*pdf_values
 
