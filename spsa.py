@@ -412,7 +412,7 @@ def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_ste
 		confs_in_bin, correct_in_bin = confs[in_bin], correct[in_bin] 
 		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
-		avg_acc_in_bin += delta
+		#avg_acc_in_bin += delta
 		conf_list.append(avg_confs_in_bin), acc_list.append(avg_acc_in_bin)
 
 	return np.array(acc_list), np.array(conf_list)
