@@ -382,7 +382,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#print(pdf_values.shape)
 
-	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
+	#expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
+	expected_correct, pdf_values = compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list)
 
 	product = expected_correct*pdf_values
 
@@ -390,6 +391,29 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
 
 	return prob_success_branch
+
+
+def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_step=0.01, n_bins=15):
+
+	bin_boundaries = np.linspace(0, 1, n_bins)
+	bin_lowers = bin_boundaries[:-1]
+	bin_uppers = bin_boundaries[1:]
+	conf_list, acc_list = [], [] 
+
+	bin_size = 1/n_bins
+	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
+
+	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+		in_bin = np.where((confs > bin_lower) & (confs <= bin_upper), True, False)
+		prop_in_bin = np.mean(in_bin)
+		confs_in_bin, correct_in_bin = confs[in_bin],correct[in_bin] 
+		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
+		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
+		avg_acc_in_bin += delta
+		conf_list.append(avg_confs_in_bin), acc_list.append(avg_acc_in_bin)
+
+	return np.array(acc_list), np.array(conf_list)
+
 
 
 def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
