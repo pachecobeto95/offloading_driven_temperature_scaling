@@ -124,7 +124,7 @@ def main(args):
 
 	threshold_list = [0.8]
 
-	beta_list = np.round(np.arange(0.04, -0.01, -0.01), 2)
+	beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
 	#beta_list = [0.48]
 	
 	df_inf_data = pd.read_csv(inf_data_path)
@@ -132,8 +132,8 @@ def main(args):
 
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
-	overhead_list = [0]
-	#overhead_list = [20, 30]
+	#overhead_list = [0, 5, 10, 15, 20, 30]
+	overhead_list = [5, 10, 15, 20, 30]
 
 	for overhead in overhead_list:
 
