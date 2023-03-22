@@ -239,6 +239,7 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, loss_acc, loss_time, beta, overhead):
 
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+
 	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	f = beta*acc_current + (1-beta)*inf_time_current 
@@ -327,6 +328,14 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	num = 0
 
 	for i in range(n_branches):
+		
+		#prob_success = compute_prob_success_branch(temp_list, i, threshold, df)
+		
+		#if (isinstance(prob_success, str)):
+		#	return "error", "error"
+		#else:
+		#	num += prob_success	
+
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
@@ -349,11 +358,12 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	
 	data_conf = confs/temp_list[idx_branch] 
 	data_conf = np.float64(data_conf)
+	print(data_conf)
 	data_conf = data_conf[data_conf < 1E308]
 	data_conf = data_conf[:, np.newaxis]
+	print(data_conf)
 
-	if(len(data_conf) == 0):
-		continue
+
 
 
 	conf_d = np.linspace(threshold, 1, 100)
