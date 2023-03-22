@@ -51,7 +51,7 @@ class SPSA (object):
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 0.2 # a small number
+		self.c = 0.1 # a small number
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
@@ -353,7 +353,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	conf_d = np.linspace(threshold, 1, 100)
 	conf_col = conf_d[:, np.newaxis]
 
-	model = KernelDensity(kernel='gaussian', bandwidth=0.02)
+	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 	model.fit(data_conf)
 	log_dens = model.score_samples(conf_col)
 
