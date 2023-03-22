@@ -351,6 +351,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	data_conf = np.float64(data_conf)
 	data_conf = data_conf[data_conf < 1E308]
 	data_conf = data_conf[:, np.newaxis]
+	print(data_conf)
 
 	conf_d = np.linspace(threshold, 1, 100)
 	conf_col = conf_d[:, np.newaxis]
