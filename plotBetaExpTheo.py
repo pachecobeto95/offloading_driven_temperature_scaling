@@ -14,8 +14,9 @@ def plotBetaTradeOff(args, df_beta_exp, df_beta_theo, df_no_calib, df_ts, thresh
 	acc_no_calib, inf_time_no_calib = -df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = -df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
-	acc_beta_index = np.argsort(acc_beta)
-	acc_beta, inf_time_beta	= acc_beta[acc_beta_index], inf_time_beta[acc_beta_index]
+	acc_beta_index_theo, acc_beta_index_exp = np.argsort(acc_beta_theo), np.argsort(acc_beta_exp)
+	acc_beta_theo, inf_time_beta_theo = acc_beta_theo[acc_beta_index_theo], inf_time_beta_theo[acc_beta_index_theo]
+	acc_beta_exp, inf_time_beta_exp = acc_beta_exp[acc_beta_index_exp], inf_time_beta_exp[acc_beta_index_exp]
 
 
 	plt.plot(inf_time_beta_exp, acc_beta_exp, color="green", marker="^", label="Real EdOff-TS")
