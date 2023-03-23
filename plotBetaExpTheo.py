@@ -9,7 +9,7 @@ def plotBetaTradeOff(args, df_beta_exp, df_beta_theo, df_no_calib, df_ts, thresh
 
 	fig, ax = plt.subplots()
 
-	acc_beta_exp, inf_time_beta_exp = -df_beta_theo.beta_acc.values, df_beta_theo.beta_inf_time.values
+	acc_beta_exp, inf_time_beta_exp = -df_beta_exp.beta_acc.values, df_beta_exp.beta_inf_time.values
 	acc_beta_theo, inf_time_beta_theo = -df_beta_theo.beta_acc.values, df_beta_theo.beta_inf_time.values
 	acc_no_calib, inf_time_no_calib = -df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = -df_ts.beta_acc.values, df_ts.beta_inf_time.values
