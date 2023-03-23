@@ -20,7 +20,7 @@ def plotBetaTradeOff(args, df_beta_exp, df_beta_theo, df_no_calib, df_ts, thresh
 
 
 	plt.plot(inf_time_beta_exp, acc_beta_exp, color="green", marker="^", label="Real EdOff-TS")
-	plt.plot(inf_time_beta_theo, acc_beta_theo, color="blue", marker="o", label="EdOff-TS")
+	#plt.plot(inf_time_beta_theo, acc_beta_theo, color="blue", marker="o", label="EdOff-TS")
 	plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="No-calibration")
 	plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
 
