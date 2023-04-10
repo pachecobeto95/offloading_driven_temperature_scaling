@@ -99,6 +99,8 @@ class SPSA (object):
 			theta_plus = theta + ck_deltak
 			theta_minus = theta - ck_deltak
 
+			theta_minus = np.maximum(theta_minus, self.min_bounds)
+
 			y_plus, _ = self.compute_loss(theta_plus) 
 			y_minus, _ = self.compute_loss(theta_minus)
 
@@ -199,7 +201,7 @@ class SPSA (object):
 				best_ee_prob = ee_prob
 
 			k += 1
-			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		
 		return best_theta, best_loss 
 
@@ -242,7 +244,9 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
-	f = beta*acc_current + (1-beta)*inf_time_current 
+	#f = beta*acc_current + (1-beta)*inf_time_current 
+	#f = (1-beta)*inf_time_current - beta*acc_current
+	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
 
@@ -252,7 +256,9 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
-	f = beta*acc_current + (1-beta)*inf_time_current 
+	#f = beta*acc_current + (1-beta)*inf_time_current 
+	#f = (1-beta)*inf_time_current - beta*acc_current
+	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
 
@@ -344,7 +350,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print("Acc: %s"%(acc))
 
-	return - acc, den
+	#return - acc, den
+	return	acc, den
+
+
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
@@ -356,7 +365,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 	
-	temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
+	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
 	data_conf = confs/temp_list[idx_branch] 
 	#data_conf = np.float64(data_conf)
 	#print(data_conf)
@@ -382,8 +391,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	#print(pdf_values.shape)
 
-	#expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
-	expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
+	expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
+	#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 	product = expected_correct*pdf_values
 
@@ -491,8 +500,8 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits)/n_samples
 
-	return - acc_edge, early_classification_prob
-
+	#return - acc_edge, early_classification_prob
+	return acc_edge, early_classification_prob
 
 def run_spsa(function, max_iter, dim, min_bounds, max_bounds, a0, c, alpha, gamma):
 	
@@ -575,11 +584,12 @@ def run_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, t
 
 	return theta_opt, loss_opt
 
-def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, gamma, overhead):
+def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
+	gamma, overhead, epsilon=0.001):
 
 	max_exits = max_branches + 1
 
-	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
