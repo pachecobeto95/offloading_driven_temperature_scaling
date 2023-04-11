@@ -592,7 +592,7 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt
 	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_beta_function, theta_initial, 100, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
 		args=(max_exits, threshold, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, beta, overhead))
 
 	# Run SPSA to minimize the objective function
