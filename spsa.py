@@ -585,7 +585,7 @@ def run_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, t
 	return theta_opt, loss_opt
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
-	gamma, overhead, epsilon=0.001):
+	gamma, overhead, epsilon=0.00001):
 
 	max_exits = max_branches + 1
 
