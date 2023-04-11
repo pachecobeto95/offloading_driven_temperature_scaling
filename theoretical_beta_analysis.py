@@ -126,7 +126,7 @@ def main(args):
 
 	#beta_list = np.round(np.arange(1, -0.01, -0.01), 2)
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, config.step_beta)
-	beta_list = [0, 100]
+	beta_list = [100, 0]
 	#beta_list = np.arange(config.max_beta, -config.step_beta, -config.step_beta)
 	
 	df_inf_data = pd.read_csv(inf_data_path)
