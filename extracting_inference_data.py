@@ -72,13 +72,11 @@ def main(args):
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
 
-	print("FIM")
-
-	sys.exit()
-
 	#Load Dataset 
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
+
+	print("FIM")
 	sys.exit()
 
 	#global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
