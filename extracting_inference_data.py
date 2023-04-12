@@ -68,8 +68,6 @@ def main(args):
 	#val_idx, test_idx = model_dict["val"], model_dict["test"]
 
 	val_idx = np.load(indices_path)
-	print(val_idx)
-	sys.exit()
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
