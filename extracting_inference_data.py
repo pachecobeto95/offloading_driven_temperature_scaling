@@ -72,6 +72,8 @@ def main(args):
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
 
+	print("FIM")
+
 	sys.exit()
 
 	#Load Dataset 
