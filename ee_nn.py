@@ -428,7 +428,7 @@ class Early_Exit_DNN(nn.Module):
     This method is used to train the early-exit DNN model
     """
 
-    conf_list, class_list, inference_time_list  = [], [], []
+    conf_list, class_list, inference_time_list, diff_inf_time_list = [], [], [], []
     starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
 
     cumulative_inf_time = 0.0
@@ -449,7 +449,7 @@ class Early_Exit_DNN(nn.Module):
       curr_time = starter.elapsed_time(ender)
       cumulative_inf_time += curr_time
 
-      conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+      conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time), diff_inf_time_list.append(curr_time)
 
     starter.record()
     x = self.stages[-1](x)
@@ -465,9 +465,9 @@ class Early_Exit_DNN(nn.Module):
     cumulative_inf_time += curr_time
 
     #output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
-    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time)
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time), diff_inf_time_list.append(curr_time)
 
-    return conf_list, class_list, inference_time_list
+    return conf_list, class_list, inference_time_list, diff_inf_time_list
 
 
   def forwardInference(self, x, threshold):
