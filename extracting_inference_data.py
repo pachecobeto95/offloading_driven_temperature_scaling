@@ -54,24 +54,25 @@ def main(args):
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )	
 
+	multi_branch_model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )	
+
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	model_dict = torch.load(model_path, map_location=device)
+	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
-
-	print("congrats")
-
-	sys.exit()
 
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
-	ee_model.load_state_dict(model_dict["model_state_dict"])
+	ee_model.load_state_dict(multi_model_dict["model_state_dict"])
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
+
+	sys.exit()
 
 	#Load Dataset 
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
