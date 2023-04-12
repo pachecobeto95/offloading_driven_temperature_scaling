@@ -3,6 +3,8 @@ import torch, os, sys, requests, early_exit_dnn, b_mobilenet, ee_nn
 import numpy as np
 import config
 import pandas as pd
+from tqdm import tqdm 
+
 
 def get_indices(dataset, split_ratio):
 	
@@ -171,7 +173,8 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 
 	model.eval()
 	with torch.no_grad():
-		for i, (data, target) in enumerate(test_loader, 1):
+		#for i, (data, target) in enumerate(test_loader, 1):
+		for i, (data, target) in tqdm(test_loader):	
 
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
