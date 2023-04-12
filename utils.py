@@ -166,7 +166,7 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 	"""
 
 	n_exits = n_branches + 1	
-	conf_list, correct_list, inference_time_list = [], [], []
+	conf_list, correct_list, inference_time_list, diff_inf_time_list = [], [], [], []
 	result_dict = {}
 
 	model.eval()
@@ -177,13 +177,14 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 			data, target = data.to(device), target.to(device)
 
 			# Obtain confs and predictions for each side branch.
-			confs, predictions, inf_time_branches = model.forwardCalibration(data, temp_list)
+			confs, predictions, inf_time_branches, diff_inf_time_branches = model.forwardCalibration(data, temp_list)
 
 			correct_list.append([predictions[i].eq(target.view_as(predictions[i])).sum().item() for i in range(n_exits)])
 
-			conf_list.append(confs), inference_time_list.append(inf_time_branches)
+			conf_list.append(confs), inference_time_list.append(inf_time_branches), diff_inf_time_list.append(diff_inf_time_branches)
 
 	conf_list, correct_list, inference_time_list = np.array(conf_list), np.array(correct_list), np.array(inference_time_list)
+	diff_inf_time_list = np.array(diff_inf_time_list)
 
 	accuracy_branches = [sum( correct_list[:, i])/len(correct_list[:, i]) for i in range(n_exits)]
 
@@ -195,6 +196,7 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 		result_dict["conf_branch_%s"%(i+1)] = conf_list[:, i]
 		result_dict["correct_branch_%s"%(i+1)] = correct_list[:, i]
 		result_dict["inferente_time_branch_%s"%(i+1)] = inference_time_list[:, i]
+		result_dict["delta_inferente_time_branch_%s"%(i+1)] = diff_inf_time_list[:, i]
 
 
 	#Converts to a DataFrame Format.
