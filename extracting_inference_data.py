@@ -65,9 +65,9 @@ def main(args):
 	model_dict = torch.load(model_path, map_location=device)
 	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
 
-	#val_idx, test_idx = model_dict["val"], model_dict["test"]
+	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
-	val_idx = np.load(indices_path)
+	#val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
