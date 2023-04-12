@@ -60,11 +60,16 @@ def main(args):
 
 	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
+	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
+
 	model_dict = torch.load(model_path, map_location=device)
 	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
 
-	val_idx, test_idx = model_dict["val"], model_dict["test"]
+	#val_idx, test_idx = model_dict["val"], model_dict["test"]
 
+	val_idx = np.load(indices_path)
+	print(val_idx)
+	sys.exit()
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
@@ -73,7 +78,7 @@ def main(args):
 	ee_model.eval()
 
 	#Load Dataset 
-	val_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
 	#global_ts_model, per_branch_ts_model = calibrating_early_exit_dnns(ee_model, test_loader, 0.8, args.max_iter, args.n_branches, device)
 
