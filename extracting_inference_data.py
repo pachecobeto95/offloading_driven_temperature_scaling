@@ -62,6 +62,8 @@ def main(args):
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
+	print("congrats")
+
 	sys.exit()
 
 
