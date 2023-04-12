@@ -166,6 +166,9 @@ def extracting_ee_inference_data(test_loader, model, temp_list, n_branches, devi
 	"""
 
 	n_exits = n_branches + 1
+	print("Number of Exits: %s"%(n_exits))
+	sys.exit()
+	
 	conf_list, correct_list, inference_time_list = [], [], []
 	result_dict = {}
 
