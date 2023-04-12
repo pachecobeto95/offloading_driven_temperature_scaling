@@ -33,7 +33,8 @@ temp_init = 1.5
 step = 0.1
 max_beta = 100
 step_beta = 5
-
+max_overhead = 30
+step_overhead = 5
 
 
 # Parameters of Data Augmentation

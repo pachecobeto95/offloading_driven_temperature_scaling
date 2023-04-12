@@ -243,6 +243,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
 	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
+	#inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
@@ -261,6 +262,48 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
+
+
+def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
+
+	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
+	avg_inference_time, inf_time_previous_branch = 0, 0
+	n_samples = len(df)
+	n_exits_device_list = []
+	n_remaining_samples = n_samples
+	remaining_data = df
+
+	for i in range(n_branches):
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
+		
+		n_exit_branch = df[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		n_exits_device_list.append(n_exit_branch)
+
+		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
+
+		delta_inference_time = inf_time_branch_device - inf_time_previous_branch
+
+		avg_inference_time += n_remaining_samples*delta_inference_time
+
+		n_remaining_samples -= n_exit_branch
+		inf_time_previous_branch = inf_time_branch_device
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+
+	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean() - inf_time_previous_branch
+
+	avg_inference_time += n_remaining_samples*(overhead+inf_time_branch_cloud)
+
+	avg_inference_time = avg_inference_time/float(n_samples)
+	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
+
+
+	return avg_inference_time, early_classification_prob
+
+
 
 
 def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
