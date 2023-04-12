@@ -58,7 +58,7 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano_v2.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
 
@@ -67,7 +67,7 @@ def main(args):
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
-	#val_idx = np.load(indices_path)
+	val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
