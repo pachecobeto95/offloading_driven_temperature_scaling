@@ -287,7 +287,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 		delta_inference_time = inf_time_branch_device - inf_time_previous_branch
 
-		print(n_exit_branch, delta_inference_time)
+		#print(n_exit_branch, delta_inference_time)
 
 		avg_inference_time += n_remaining_samples*delta_inference_time
 
@@ -303,6 +303,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
+	print(early_classification_prob)
 
 	return avg_inference_time, early_classification_prob
 
