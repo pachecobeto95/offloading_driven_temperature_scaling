@@ -280,7 +280,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 		early_exit_samples = calib_confs >= threshold
 		
 		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		print(confs, n_exit_branch)
+		print(n_exit_branch)
 		n_exits_device_list.append(n_exit_branch)
 
 		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
@@ -294,6 +294,8 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+
+	sys.exit()
 
 	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean() - inf_time_previous_branch
 
