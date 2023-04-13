@@ -287,11 +287,11 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
 
 
-		delta_inference_time = inf_time_branch_device - inf_time_previous_branch
+		#delta_inference_time = inf_time_branch_device - inf_time_previous_branch
 
 		#print(n_exit_branch, delta_inference_time)
 
-		avg_inference_time += n_remaining_samples*delta_inference_time
+		avg_inference_time += n_remaining_samples*inf_time_branch_device
 
 		n_remaining_samples -= n_exit_branch
 		inf_time_previous_branch = inf_time_branch_device
