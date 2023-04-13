@@ -123,7 +123,7 @@ def main(args):
 
 	threshold_list = [0.8, 0.9]
 	beta_list = np.arange(0, config.max_beta+config.step_beta, config.step_beta)
-	beta_list = [0]
+	beta_list = [100]
 	#beta_list = np.arange(config.max_beta, -config.step_beta, -config.step_beta)
 	
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
