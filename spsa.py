@@ -306,6 +306,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
 	#print(early_classification_prob)
+	print(avg_inference_time)
 
 	return avg_inference_time, early_classification_prob
 
