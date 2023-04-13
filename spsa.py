@@ -240,7 +240,7 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead):
 
-	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
 	#inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
@@ -303,7 +303,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
-	print(early_classification_prob)
+	#print(early_classification_prob)
 
 	return avg_inference_time, early_classification_prob
 
