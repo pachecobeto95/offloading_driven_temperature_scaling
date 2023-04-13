@@ -297,10 +297,9 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 		remaining_data = remaining_data[~early_exit_samples]
 
 
-	sys.exit()
-
 	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean() - inf_time_previous_branch
 
+	print(sum(n_exits_device_list)+n_remaining_samples, n_samples)
 	avg_inference_time += n_remaining_samples*(overhead+inf_time_branch_cloud)
 
 	avg_inference_time = avg_inference_time/float(n_samples)
