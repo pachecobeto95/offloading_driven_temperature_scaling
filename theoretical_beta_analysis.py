@@ -111,7 +111,7 @@ def main(args):
 	input_dim, dim = 330, 300
 
 	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
-	val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#temp_data_path = os.path.join(config.DIR_NAME, "temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -126,7 +126,7 @@ def main(args):
 	#beta_list = np.arange(config.max_beta, -config.step_beta, -config.step_beta)
 	
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
-	df_val_inf_data = pd.read_csv(val_inf_data_path)
+	#df_val_inf_data = pd.read_csv(val_inf_data_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
 	#overhead_list = [0, 5, 10, 15, 20, 30]
@@ -144,7 +144,7 @@ def main(args):
 
 				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
-				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, 
+				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
 				runNoCalibInference(args, df_inf_data_cloud, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
