@@ -280,10 +280,11 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 		early_exit_samples = calib_confs >= threshold
 		
 		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		print(n_exit_branch)
 		n_exits_device_list.append(n_exit_branch)
 
 		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
+
+		print(n_exit_branch, inf_time_branch_device)
 
 		delta_inference_time = inf_time_branch_device - inf_time_previous_branch
 
