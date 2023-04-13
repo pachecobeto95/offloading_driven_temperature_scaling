@@ -259,7 +259,9 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
-	f = inf_time_current - beta*acc_current
+	#f = inf_time_current - beta*acc_current
+	f = inf_time_current
+	print(f)
 
 	return f, ee_prob
 
@@ -272,7 +274,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 	n_exits_device_list = []
 	n_remaining_samples = n_samples
 	remaining_data = df
-	print(n_branches)
+	#print(n_branches)
 
 	for i in range(n_branches):
 		confs = remaining_data["conf_branch_%s"%(i+1)]
