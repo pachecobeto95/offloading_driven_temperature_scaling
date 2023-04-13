@@ -238,12 +238,12 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 	return f1+f2, _
 
 
-def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, loss_acc, loss_time, beta, overhead):
+def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead):
 
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
-	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
-	#inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
+	#inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
+	inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
@@ -627,7 +627,7 @@ def run_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, t
 
 	return theta_opt, loss_opt
 
-def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt_inf_time, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
+def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
 	gamma, overhead, epsilon=0.00001):
 
 	max_exits = max_branches + 1
@@ -636,7 +636,7 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, opt_acc, opt
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, df_inf_data_device, opt_acc, opt_inf_time, beta, overhead))
+		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
