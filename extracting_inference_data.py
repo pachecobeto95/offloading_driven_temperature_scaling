@@ -14,7 +14,7 @@ def calibrating_early_exit_dnns(model, data_loader, threshold, max_iter, n_branc
 	#per_branch_ts_model.run(data_loader)
 
 	
-	return global_ts_model, _
+	return global_ts_model, 0
 
 
 
