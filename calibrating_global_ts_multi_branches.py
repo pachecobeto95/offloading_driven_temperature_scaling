@@ -43,7 +43,7 @@ def main(args):
 		# Instantiate SPSA class to initializes the parameters
 		global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, args.n_branches, threshold)
 
-		global_ts.run(valid_loader)
+		global_ts.run(val_loader)
 
 		temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
