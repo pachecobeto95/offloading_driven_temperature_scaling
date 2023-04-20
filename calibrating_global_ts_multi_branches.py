@@ -2,7 +2,6 @@ import os, time, sys, json, os, argparse, torch, config, utils
 import numpy as np
 import pandas as pd
 import temperature_scaling, ee_nn
-from early_exit_dnn import Early_Exit_DNN
 
 
 def main(args):
@@ -21,19 +20,17 @@ def main(args):
 
 	#inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	#indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
+	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
 
 	model_dict = torch.load(model_path, map_location=device)
 	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
 
 	val_idx, test_idx = model_dict["test"], model_dict["test"]
 
-	#val_idx = np.load(indices_path)
+	val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
-	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, config.n_branches, config.input_dim, 
-		config.exit_type, device, config.distribution)
-	#ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
 	ee_model.load_state_dict(multi_model_dict["model_state_dict"])
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
