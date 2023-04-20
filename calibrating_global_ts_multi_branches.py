@@ -38,7 +38,7 @@ def main(args):
 	#Load Dataset 
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
-	theta_initial = 1.5
+	theta_initial = 1.0
 	threshold_list = [0.7, 0.8, 0.9]
 
 	for threshold in threshold_list:
@@ -49,7 +49,7 @@ def main(args):
 
 		#temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
-		result = {"threshold": threshold, "n_branches_edge": args.n_branches, "calib_mode": "global_TS", "temperature": global_ts.temperature_overall.item()}
+		result = {"threshold": threshold, "n_branches": args.n_branches, "calib_mode": "global_TS", "temperature": global_ts.temperature_overall.item()}
 
 		df = pd.DataFrame([result])
 		df.to_csv(temp_savePath, mode='a', header=not os.path.exists(temp_savePath))
