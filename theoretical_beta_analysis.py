@@ -118,21 +118,16 @@ def main(args):
 
 	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_theo.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	#global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 
-	threshold_list = [0.8, 0.9]
+	threshold_list = [0.7, 0.8, 0.9]
 	beta_list = np.arange(0, config.max_beta+config.step_beta, config.step_beta)
-	#beta_list = [100]
-	#beta_list = np.arange(config.max_beta, -config.step_beta, -config.step_beta)
 	
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
-	#df_val_inf_data = pd.read_csv(val_inf_data_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
-	#overhead_list = [0, 5, 10, 15, 20, 30]
 	overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
-	#overhead_list = [20]
 
 	for overhead in overhead_list:
 
@@ -143,15 +138,15 @@ def main(args):
 
 				#opt_acc, opt_inf_time = extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge)
 
-				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+				#temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
 				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
-				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
-					overhead, calib_mode="global_TS")
+				#runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
+				#	overhead, calib_mode="global_TS")
 
 
 
