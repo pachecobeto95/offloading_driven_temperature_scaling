@@ -6,16 +6,16 @@ import pandas as pd
 
 
 
-def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
+#def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
 	
-	df_temp = pd.read_csv(temp_data_path)
-	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
+#	df_temp = pd.read_csv(temp_data_path)
+#	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
 
-	acc_temp, inf_time_temp = df_temp[df_temp.metric == "acc"], df_temp[df_temp.metric == "inf_time"]
+#	acc_temp, inf_time_temp = df_temp[df_temp.metric == "acc"], df_temp[df_temp.metric == "inf_time"]
 
-	opt_acc, opt_inf_time = acc_temp.opt_loss, inf_time_temp.opt_loss
+#	opt_acc, opt_inf_time = acc_temp.opt_loss, inf_time_temp.opt_loss
 
-	return opt_acc.mean(), opt_inf_time.mean()
+#	return opt_acc.mean(), opt_inf_time.mean()
 
 def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge):
 
@@ -24,8 +24,10 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
-	
-	return df_temp[temp_list].values[0]
+	print(df_temp["temperature"].values)
+	sys.exit()
+	return df_temp["temperature"].values
+	#return df_temp[temp_list].values[0]
 
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
@@ -78,21 +80,24 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
-def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, temperature_overall, overhead, calib_mode):
+def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, global_ts_path, overhead, calib_mode):
 
 	max_exits = args.n_branches + 1
 
 	beta = 0
-	theta_initial = 1.5
+
+	temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+
+	#theta_initial = 1.5
 
 	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
 	# Instantiate SPSA class to initializes the parameters
-	global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+	#global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
 
-	global_ts.run(valid_loader)
+	#global_ts.run(valid_loader)
 
-	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
+	#temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
 
 	#print(temperature_overall)
 
@@ -136,14 +141,13 @@ def main(args):
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
 				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 				#	beta_list, resultsPath, overhead, calib_mode="beta_calib")			
 
 				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
+				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
 					overhead, calib_mode="global_TS")
 
 
