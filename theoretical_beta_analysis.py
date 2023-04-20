@@ -148,9 +148,23 @@ def main(args):
 
 				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
-					overhead, calib_mode="global_TS")
+				#runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
+				#	overhead, calib_mode="global_TS")
 
+				theta_initial = 1.5
+
+				#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
+
+				# Instantiate SPSA class to initializes the parameters
+				global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+
+				global_ts.run(valid_loader)
+
+				temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
+
+				print(temperature_overall)
+
+				sys.exit()
 
 
 if (__name__ == "__main__"):
