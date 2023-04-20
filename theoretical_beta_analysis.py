@@ -24,9 +24,7 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
-	print(df_temp["temperature"].values, type(df_temp["temperature"].values))
-	sys.exit()
-	return df_temp["temperature"].values
+	return [df_temp["temperature"].values[0]]*n_branches_edge
 	#return df_temp[temp_list].values[0]
 
 
