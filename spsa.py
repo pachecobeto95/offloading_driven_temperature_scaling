@@ -240,7 +240,9 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead):
 
-	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	#acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+
 
 	#inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
@@ -299,7 +301,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 		remaining_data = remaining_data[~early_exit_samples]
 
 
-	print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
+	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
 
 	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean() - inf_time_previous_branch
 
