@@ -25,7 +25,7 @@ def main(args):
 	model_dict = torch.load(model_path, map_location=device)
 	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
 
-	val_idx, test_idx = model_dict["val"], model_dict["test"]
+	val_idx, test_idx = model_dict["test"], model_dict["test"]
 
 	#val_idx = np.load(indices_path)
 
