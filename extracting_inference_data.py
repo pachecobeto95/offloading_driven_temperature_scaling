@@ -60,7 +60,7 @@ def main(args):
 
 	#inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	#indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
+	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
 
 	model_dict = torch.load(model_path, map_location=device)
 	multi_model_dict = torch.load(multi_branch_model_path, map_location=device)
