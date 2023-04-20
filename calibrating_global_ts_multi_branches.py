@@ -47,9 +47,9 @@ def main(args):
 
 		global_ts.run(val_loader)
 
-		temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
+		#temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
-		result = {"threshold": threshold, "n_branches_edge": args.n_branches, "calib_mode": "global_TS"}
+		result = {"threshold": threshold, "n_branches_edge": args.n_branches, "calib_mode": "global_TS", "temperature": global_ts.temperature_overall.item()}
 
 		df = pd.DataFrame([result])
 		df.to_csv(temp_savePath, mode='a', header=not os.path.exists(temp_savePath))
