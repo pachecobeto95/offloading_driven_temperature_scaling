@@ -38,14 +38,12 @@ def main(args):
 
 	theta_initial = 1.5
 
-	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
-
 	# Instantiate SPSA class to initializes the parameters
-	global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+	global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, args.n_branches, threshold)
 
 	global_ts.run(valid_loader)
 
-	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
+	temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
 	print(temperature_overall)
 
