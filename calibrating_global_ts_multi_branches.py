@@ -16,7 +16,7 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	temp_savePath = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id) )
+	temp_savePath = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s2.csv"%(args.model_name, args.n_branches, args.model_id) )
 
 	#inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 
@@ -38,7 +38,7 @@ def main(args):
 	#Load Dataset 
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
-	theta_initial = 1.0
+	theta_initial = 1.5
 	threshold_list = [0.7, 0.8, 0.9]
 
 	for threshold in threshold_list:
