@@ -87,7 +87,7 @@ def runNoCalibInference(args, df_inf_data, df_inf_data_device, threshold, n_bran
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 #def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data, threshold, n_branches_edge, savePath, device, temperature_overall, overhead, calib_mode):
-def runGlobalTemperatureScalingInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, temperature_overall, overhead, calib_mode):
+def runGlobalTemperatureScalingInference(args, model, valid_loader, df_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, temperature_overall, overhead, calib_mode):
 
 	max_exits = args.n_branches + 1
 
@@ -162,17 +162,17 @@ def main(args):
 	#device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
 
-	#model_dict = torch.load(model_path, map_location=device)
+	model_dict = torch.load(model_path, map_location=device)
 
-	#test_idx = model_dict["test"]
+	test_idx = model_dict["test"]
 
-	#ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
-	#ee_model.load_state_dict(model_dict["model_state_dict"])
-	#ee_model = ee_model.to(device)
-	#ee_model.eval()
+	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model.load_state_dict(model_dict["model_state_dict"])
+	ee_model = ee_model.to(device)
+	ee_model.eval()
 
 	#Load Dataset 
-	#test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
 	threshold_list = [0.7, 0.8, 0.9]
 
