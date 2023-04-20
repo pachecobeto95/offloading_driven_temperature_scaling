@@ -84,7 +84,7 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	beta = 0
 
-	temperature_global_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
 	#theta_initial = 1.5
 
