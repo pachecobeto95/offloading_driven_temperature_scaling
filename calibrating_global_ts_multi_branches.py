@@ -16,7 +16,7 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
-	temp_savePath = os.path.join(config.DIR_NAME,)
+	temp_savePath = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id) )
 
 	#inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 
