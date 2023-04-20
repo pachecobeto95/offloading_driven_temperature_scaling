@@ -16,6 +16,8 @@ def main(args):
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
+	temp_savePath = os.path.join(config.DIR_NAME,)
+
 	#inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
@@ -47,7 +49,12 @@ def main(args):
 
 		temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
-		print(temperature_overall)
+		result = {"threshold": threshold, "n_branches_edge": args.n_branches, "calib_mode": "global_TS"}
+
+		df = pd.DataFrame([result])
+		df.to_csv(temp_savePath, mode='a', header=not os.path.exists(temp_savePath))
+
+
 
 
 if (__name__ == "__main__"):
