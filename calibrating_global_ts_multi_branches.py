@@ -2,6 +2,7 @@ import os, time, sys, json, os, argparse, torch, config, utils
 import numpy as np
 import pandas as pd
 import temperature_scaling, ee_nn
+from early_exit_dnn import Early_Exit_DNN
 
 
 def main(args):
@@ -30,7 +31,9 @@ def main(args):
 	#val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
-	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model = Early_Exit_DNN(args.model_name, n_classes, args.pretrained, config.n_branches, config.input_dim, 
+		config.exit_type, device, config.distribution)
+	#ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
 	ee_model.load_state_dict(multi_model_dict["model_state_dict"])
 	ee_model = 	ee_model.to(device)
 	ee_model.eval()
