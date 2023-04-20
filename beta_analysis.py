@@ -201,7 +201,7 @@ def main(args):
 
 				#runNoCalibInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
+				runGlobalTemperatureScalingInference(args, ee_model, test_loader, df_inf_data, df_inf_data_device, threshold, n_branches_edge, resultsPath, temperature_global_list, 
 					overhead, calib_mode="global_TS")
 
 
