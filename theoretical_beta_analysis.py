@@ -132,6 +132,23 @@ def main(args):
 	#df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	#df_inf_data_device = pd.read_csv(inf_data_device_path)
 
+	dataset_path = config.dataset_path_dict[args.dataset_name]
+	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
+
+	val_idx = np.load(indices_path)
+
+	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
+
+	#Load Early-exit DNN model.	
+	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
+	ee_model.load_state_dict(multi_model_dict["model_state_dict"])
+	ee_model = 	ee_model.to(device)
+	ee_model.eval()
+
+	#Load Dataset 
+	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
+
+
 	overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 
 	for overhead in overhead_list:
@@ -156,7 +173,7 @@ def main(args):
 				#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
 
 				# Instantiate SPSA class to initializes the parameters
-				global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
+				global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
 
 				global_ts.run(valid_loader)
 
