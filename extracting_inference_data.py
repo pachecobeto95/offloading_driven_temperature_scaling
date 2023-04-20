@@ -67,7 +67,7 @@ def main(args):
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
-	#val_idx = np.load(indices_path)
+	val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
@@ -79,8 +79,9 @@ def main(args):
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
 	global_ts_model, _ = calibrating_early_exit_dnns(ee_model, val_loader, 0.8, args.max_iter, args.n_branches, device)
+	print(global_ts_model.temperature_overall)
 
-	df_global_calib = extracting_global_ts_ee_inference_data(val_loader, global_ts_model, n_branches, device)
+	#df_global_calib = extracting_global_ts_ee_inference_data(val_loader, global_ts_model, n_branches, device)
 
 	#df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, per_branch_ts_model, args.n_branches, device)
 
@@ -92,7 +93,7 @@ def main(args):
 
 	#df_inference_data.to_csv(inf_data_path)
 
-	df_global_calib.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
+	#df_global_calib.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
 	#df_per_branch_ts_inference_data.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
 	#df_no_calib.to_csv(inf_data_path, mode='a', header=not os.path.exists(inf_data_path))
 
