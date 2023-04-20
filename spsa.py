@@ -201,7 +201,7 @@ class SPSA (object):
 				best_ee_prob = ee_prob
 
 			k += 1
-			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		
 		return best_theta, best_loss 
 
@@ -310,7 +310,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
 	#print(early_classification_prob)
-	print(avg_inference_time)
+	#print(avg_inference_time)
 
 	return avg_inference_time, early_classification_prob
 
