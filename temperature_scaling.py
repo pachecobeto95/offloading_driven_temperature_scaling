@@ -54,7 +54,7 @@ class GlobalTemperatureScaling(nn.Module):
 		self.device = device
 		self.temperature_overall = nn.Parameter((temp_init*torch.ones(1)).to(self.device)) #initial temperature to be optimized
 		self.lr = lr #learning rate
-		self.max_iter = 1000 #maximum iteration to the optimization method
+		self.max_iter = max_iter #maximum iteration to the optimization method
 		self.n_branches_edge = n_branches_edge
 		self.threshold = threshold
 

@@ -6,10 +6,9 @@ import temperature_scaling, ee_nn
 
 def main(args):
 
-
 	n_classes, input_dim, dim = 257, 330, 300
 
-	temp_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	temp_save_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s2.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
@@ -19,7 +18,7 @@ def main(args):
 
 	model_dict = torch.load(model_path, map_location=device)
 
-	test_idx, val_idx = model_dict["test"], model_dict["val"]
+	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
 	ee_model.load_state_dict(model_dict["model_state_dict"])
@@ -27,11 +26,31 @@ def main(args):
 	ee_model.eval()
 
 	#Load Dataset 
+	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
+
+	data_loader = val_loader if (valid_indices) else test_loader
 
 	threshold_list = [0.7, 0.8, 0.9]
 
-	
+	for threshold in threshold_list:
+
+		# Instantiate SPSA class to initializes the parameters
+		global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, args.n_branches, threshold)
+
+		global_ts.run(data_loader)
+
+		temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
+
+		result = {"threshold": threshold, "n_branches": args.n_branches, "calib_mode": "global_TS"}
+
+		for i in range(args.n_branches):
+			result["temp_branch_%s"%(i+1)] = temperature_overall[i]
+
+
+		df = pd.DataFrame([result])
+		df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
+
 
 
 
@@ -77,10 +96,12 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--model_id', type=int, default=1)	
 
-	parser.add_argument('--input_dim', type=int, default=330)
+	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
+
 
 	args = parser.parse_args()
 
 	main(args)
+
