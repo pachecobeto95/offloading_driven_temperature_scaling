@@ -43,7 +43,7 @@ def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, th
 	df.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
 
 
-def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, beta_list, savePath, overhead, calib_mode):
+def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, beta_list, savePath, overhead, mode, calib_mode):
 
 	max_exits = args.n_branches + 1
 
@@ -51,7 +51,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 		print("Beta: %s"%(beta))
 
 		beta_theta, beta_opt_loss = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-			args.a0, args.c, args.alpha, args.gamma, overhead)
+			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
 
@@ -102,11 +102,13 @@ def main(args):
 
 	input_dim, dim = 330, 300
 
+	mode = "theo" if(args.theo_data) else "exp"
+
 	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_exp.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode))
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
@@ -128,7 +130,7 @@ def main(args):
 
 
 				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					beta_list, resultsPath, overhead, calib_mode="beta_calib")			
+					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
 				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
@@ -212,6 +214,7 @@ if (__name__ == "__main__"):
 	parser.add_argument('--input_dim', type=int, default=330)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
+	parser.add_argument('--theo_data', type=bool, default=True, help='Default: True')
 
 
 	args = parser.parse_args()
