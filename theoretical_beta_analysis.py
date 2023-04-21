@@ -24,8 +24,8 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
-	return [df_temp["temperature"].values[0]]*n_branches_edge
-	#return df_temp[temp_list].values[0]
+	#return [df_temp["temperature"].values[0]]*n_branches_edge
+	return df_temp[temp_list].values[0]
 
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
@@ -84,22 +84,8 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	beta = 0
 
-	#temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
-	theta_initial = 1.5
-
-	#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
-
-	# Instantiate SPSA class to initializes the parameters
-	global_ts = temperature_scaling.GlobalTemperatureScaling(model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
-
-	global_ts.run(valid_loader)
-
-	temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
-
-	print(temperature_overall)
-
-	sys.exit()
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
 	global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
@@ -129,25 +115,8 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 	beta_list = np.arange(0, config.max_beta+config.step_beta, config.step_beta)
 	
-	#df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
-	#df_inf_data_device = pd.read_csv(inf_data_device_path)
-
-	dataset_path = config.dataset_path_dict[args.dataset_name]
-	indices_path = os.path.join(config.DIR_NAME, "indices", "caltech256", "validation_idx_caltech256_id_1.npy")
-
-	val_idx = np.load(indices_path)
-
-	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
-
-	#Load Early-exit DNN model.	
-	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
-	ee_model.load_state_dict(multi_model_dict["model_state_dict"])
-	ee_model = 	ee_model.to(device)
-	ee_model.eval()
-
-	#Load Dataset 
-	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
-
+	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
+	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
 	overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 
@@ -165,21 +134,8 @@ def main(args):
 
 				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
-				#runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
-				#	overhead, calib_mode="global_TS")
-
-				theta_initial = 1.5
-
-				#calib_model = temperature_scaling.run_global_TS_opt(model, valid_loader, threshold, args.max_iter, n_branches_edge, args.n_branches, device)
-
-				# Instantiate SPSA class to initializes the parameters
-				global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, n_branches_edge, threshold)
-
-				global_ts.run(valid_loader)
-
-				temperature_overall = [global_ts.temperature_overall.item()]*n_branches_edge
-
-				print(temperature_overall)
+				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
+					overhead, calib_mode="global_TS")
 
 				sys.exit()
 
