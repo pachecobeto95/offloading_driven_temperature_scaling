@@ -29,7 +29,7 @@ def main(args):
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	data_loader = val_loader if (valid_indices) else test_loader
+	data_loader = val_loader if (args.valid_indices) else test_loader
 
 	threshold_list = [0.7, 0.8, 0.9]
 
@@ -99,6 +99,8 @@ if (__name__ == "__main__"):
 	parser.add_argument('--input_dim', type=int, default=330, help='Input Dim. Default: %s'%config.input_dim)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
+
+	parser.add_argument('--valid_indices', type=bool, default=True, help='Use Validation indices. default: True')
 
 
 	args = parser.parse_args()
