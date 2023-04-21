@@ -33,6 +33,8 @@ def main(args):
 
 	threshold_list = [0.7, 0.8, 0.9]
 
+	theta_initial = 1.5
+
 	for threshold in threshold_list:
 
 		# Instantiate SPSA class to initializes the parameters
