@@ -49,6 +49,7 @@ def main(args):
 		for i in range(args.n_branches):
 			result["temp_branch_%s"%(i+1)] = temperature_overall[i]
 
+		print(result)
 
 		df = pd.DataFrame([result])
 		df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
