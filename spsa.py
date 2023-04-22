@@ -309,7 +309,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()# - inf_time_previous_branch
 
-	avg_inference_time += n_remaining_samples*(overhead+inf_time_branch_cloud)
+	avg_inference_time += n_remaining_samples*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
 
 	avg_inference_time = avg_inference_time/float(n_samples)
 	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
