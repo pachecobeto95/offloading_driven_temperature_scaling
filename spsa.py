@@ -249,9 +249,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	#inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
-	inf_time_current2, _ = compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
-	print(inf_time_current, inf_time_current2)
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
@@ -269,50 +267,6 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
-
-#'delta_inferente_time_branch_2',
-
-
-def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
-
-	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
-	avg_inference_time, inf_time_previous_branch = 0, 0
-	n_samples = len(df)
-	n_exits_device_list = []
-	n_remaining_samples = n_samples
-	remaining_data = df
-
-	#print(df_device.columns)
-	#sys.exit()
-
-	for i in range(n_branches):
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
-		
-		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		n_exits_device_list.append(n_exit_branch)
-
-		inf_time_branch_device = df_device["delta_inferente_time_branch_%s"%(i+1)].mean()
-
-		avg_inference_time += n_remaining_samples*inf_time_branch_device
-
-		n_remaining_samples -= n_exit_branch
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
-
-	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df["inferente_time_branch_%s"%(n_branches)].mean()
-
-	avg_inference_time += n_remaining_samples*(overhead+inf_time_branch_cloud)
-
-	avg_inference_time = avg_inference_time/float(n_samples)
-	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
-	#print(early_classification_prob)
-	#print(avg_inference_time)
-
-	return avg_inference_time, early_classification_prob
 
 
 def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
