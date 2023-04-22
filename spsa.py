@@ -241,6 +241,7 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
 	#acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	print(mode)
 	if(mode == "exp"):
 		acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	else:
