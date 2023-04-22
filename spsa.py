@@ -201,8 +201,8 @@ class SPSA (object):
 				best_ee_prob = ee_prob
 
 			k += 1
-			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
-		
+			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+		sys.exit()
 		return best_theta, best_loss 
 
 def measure_inference_time(temp_list, n_branches, threshold, test_loader, model, device):
@@ -241,13 +241,13 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
 	#acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-	if(mode="exp"):
+	if(mode == "exp"):
 		acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	else:
 		acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
-	inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
-	#inf_time_current, ee_prob = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
+	#inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
+	inf_time_current, ee_prob = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
@@ -278,7 +278,9 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 	n_exits_device_list = []
 	n_remaining_samples = n_samples
 	remaining_data = df
-	#print(n_branches)
+
+	#print(df_device.columns)
+	#sys.exit()
 
 	for i in range(n_branches):
 		confs = remaining_data["conf_branch_%s"%(i+1)]
@@ -295,17 +297,16 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 		#print(n_exit_branch, delta_inference_time)
 
-		avg_inference_time += n_remaining_samples*inf_time_branch_device
+		avg_inference_time += n_exit_branch*inf_time_branch_device
 
 		n_remaining_samples -= n_exit_branch
 		inf_time_previous_branch = inf_time_branch_device
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-
 	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
 
-	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean() - inf_time_previous_branch
+	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()# - inf_time_previous_branch
 
 	avg_inference_time += n_remaining_samples*(overhead+inf_time_branch_cloud)
 
