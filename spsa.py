@@ -253,8 +253,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	print(acc_current, inf_time_current)
-	#f = inf_time_current - beta*acc_current
-	f = -acc_current
+	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
 
@@ -307,7 +306,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
 
-	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()# - inf_time_previous_branch
+	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df["inferente_time_branch_%s"%(n_branches)].mean()
 
 	avg_inference_time += n_remaining_samples*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
 
