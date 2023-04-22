@@ -267,7 +267,7 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 	#f = beta*acc_current + (1-beta)*inf_time_current 
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	#f = inf_time_current - beta*acc_current
-	f = inf_time_current - beta*acc_current
+	f = inf_time_current - 10*beta*acc_current
 
 	return f, ee_prob
 
