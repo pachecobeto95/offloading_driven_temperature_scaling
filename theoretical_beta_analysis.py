@@ -102,10 +102,10 @@ def main(args):
 
 	input_dim, dim = 330, 300
 
-	print(args.theo_data)
-	sys.exit()
-
 	mode = "theo" if(args.theo_data) else "exp"
+
+	print(mode)
+	sys.exit()
 
 	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
