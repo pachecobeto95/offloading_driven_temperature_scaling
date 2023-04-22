@@ -324,8 +324,6 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 	n_remaining_samples = n_samples
 	remaining_data = df
 
-	print(df_device.columns)
-	sys.exit()
 
 	for i in range(n_branches):
 		confs = remaining_data["conf_branch_%s"%(i+1)]
