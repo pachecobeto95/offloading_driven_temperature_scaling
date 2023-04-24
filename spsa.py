@@ -276,7 +276,7 @@ def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, thre
 
 
 	if(mode == "exp"):
-		acc_current, ee_prob = overall_accuracy(temp_list, max_exits, threshold, df)
+		acc_current, ee_prob = overall_accuracy(temp_list, n_branches, threshold, df)
 	else:
 		acc_current, ee_prob = theoretical_overall_accuracy(temp_list, max_exits, threshold, df)
 
@@ -521,7 +521,7 @@ def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 	return prob
 
 
-def overall_accuracy(temp_list, n_exits, threshold, df):
+def overall_accuracy(temp_list, n_branches_edge, threshold, df):
 
 	"""
 	This function computes the accuracy on the edge
@@ -532,18 +532,19 @@ def overall_accuracy(temp_list, n_exits, threshold, df):
 		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
 		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
 					side branches at the edge device.
-		n_exits: number of on the early-exit DNN model, including .
+		n_branches_edge: number of side branches at the edge device.
 
 	Outputs:
 		acc_edge: is the accuracy obtained by the side branches at the edge device.
 	"""
 	
+	n_exits = n_branches_edge + 1
 	numexits, correct_list = np.zeros(n_exits), np.zeros(n_exits)
 	n_samples = len(df)
 
 	remaining_data = df
 
-	for i in range(n_exits):
+	for i in range(n_branches_edge):
 		current_n_samples = len(remaining_data)
 
 		confs = remaining_data["conf_branch_%s"%(i+1)]
@@ -555,11 +556,14 @@ def overall_accuracy(temp_list, n_exits, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	overall_acc = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	overall_classification_prob = sum(numexits)/n_samples
+	
+	correct_list[-1] = remaining_data["correct_branch_%s"%(n_exits)].sum()
+	numexits[-1] = remaining_data["conf_branch_%s"%(n_exits)].count()
 
-	print(overall_classification_prob)
+	print(sum(numexits), n_samples)
+	sys.exit()
 
+	overall_acc = sum(correct_list)/n_samples
 	return overall_acc, 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
