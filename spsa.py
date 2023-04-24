@@ -272,7 +272,7 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
 	#print(temp_list, type(temp_list))
-	temp_list = np.concatenate((temp_list, [10]))
+	#temp_list = np.concatenate((temp_list, [10]))
 
 	if(mode == "exp"):
 		acc_current, ee_prob = overall_accuracy(temp_list, max_exits, threshold, df)
@@ -704,7 +704,7 @@ def run_overall_acc_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, 
 
 	max_exits = max_branches + 1
 
-	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
+	theta_initial, min_bounds = np.ones(max_exits), np.zeros(max_exits)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
