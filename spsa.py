@@ -559,7 +559,7 @@ def overall_accuracy(temp_list, n_exits, threshold, df):
 
 	print(overall_classification_prob)
 
-	return acc_edge, 0
+	return overall_acc, 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 
