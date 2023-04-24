@@ -269,9 +269,6 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 
 	return f, ee_prob
 
-		args=(max_branches, max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
-
-
 def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
 	#print(temp_list, type(temp_list))
