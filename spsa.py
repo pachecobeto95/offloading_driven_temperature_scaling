@@ -269,6 +269,9 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 
 	return f, ee_prob
 
+		args=(max_branches, max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
+
+
 def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
 	#print(temp_list, type(temp_list))
@@ -709,8 +712,8 @@ def run_overall_acc_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, 
 	theta_initial, min_bounds = np.ones(max_branches), np.zeros(max_branches)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, max_exits, a0, c, alpha, gamma, min_bounds, 
-		args=(max_branches, max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
+	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, max_branches, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
