@@ -273,6 +273,8 @@ def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, thre
 
 	#print(temp_list, type(temp_list))
 	#temp_list = np.concatenate((temp_list, [10]))
+	print(n_branches)
+	sys.exit()
 
 	if(mode == "exp"):
 		acc_current, ee_prob = overall_accuracy(temp_list, max_exits, threshold, df)
