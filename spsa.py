@@ -707,7 +707,7 @@ def run_overall_acc_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, 
 	theta_initial, min_bounds = np.ones(max_exits), np.zeros(max_exits)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, max_exits, a0, c, alpha, gamma, min_bounds, 
 		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
 
 	# Run SPSA to minimize the objective function
