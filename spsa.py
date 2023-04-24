@@ -273,7 +273,7 @@ def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, thre
 
 	#print(temp_list, type(temp_list))
 	#temp_list = np.concatenate((temp_list, [10]))
-	print(n_branches)
+	print(n_branches, max_exits)
 	sys.exit()
 
 	if(mode == "exp"):
@@ -706,11 +706,11 @@ def run_overall_acc_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, 
 
 	max_exits = max_branches + 1
 
-	theta_initial, min_bounds = np.ones(max_exits), np.zeros(max_exits)+epsilon
+	theta_initial, min_bounds = np.ones(max_branches), np.zeros(max_branches)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, max_exits, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
+		args=(max_branches, max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
 
 	# Run SPSA to minimize the objective function
 	theta_opt, loss_opt = optim.min()
