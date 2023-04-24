@@ -560,9 +560,6 @@ def overall_accuracy(temp_list, n_branches_edge, threshold, df):
 	correct_list[-1] = remaining_data["correct_branch_%s"%(n_exits)].sum()
 	numexits[-1] = remaining_data["conf_branch_%s"%(n_exits)].count()
 
-	print(sum(numexits), n_samples)
-	sys.exit()
-
 	overall_acc = sum(correct_list)/n_samples
 	return overall_acc, 0
 
