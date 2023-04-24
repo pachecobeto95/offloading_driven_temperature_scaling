@@ -278,7 +278,7 @@ def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, thre
 	if(mode == "exp"):
 		acc_current, ee_prob = overall_accuracy(temp_list, n_branches, threshold, df)
 	else:
-		acc_current, ee_prob = theoretical_overall_accuracy(temp_list, max_exits, threshold, df)
+		acc_current, ee_prob = theoretical_overall_accuracy(temp_list, n_branches, threshold, df)
 
 	if(n_branches == 1):
 		inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
@@ -371,21 +371,23 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	return avg_inference_time, early_classification_prob
 
 
-def theoretical_overall_accuracy(temp_list, n_exits, threshold, df):
+def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 
+	n_exits = n_branches + 1
 	n_samples = len(df)
 	num = 0
+
+	temp_list = np.concatenate((temp_list, [1]))
 
 	for i in range(n_exits):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
-	den = compute_theoretical_edge_prob(temp_list, n_exits, threshold, df)
-
-	acc = num/den if (den>0) else 0
+	
+	acc = num/n_branches
 
 	#return - acc, den
-	return	acc, den
+	return	acc, 0
 
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
