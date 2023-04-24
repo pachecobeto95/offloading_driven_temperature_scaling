@@ -271,9 +271,6 @@ def beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, lo
 
 def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
-	print(n_branches, max_exits)
-	sys.exit()
-
 	if(mode == "exp"):
 		acc_current, ee_prob = overall_accuracy(temp_list, max_exits, threshold, df)
 	else:
