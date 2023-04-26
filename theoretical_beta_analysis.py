@@ -121,7 +121,7 @@ def main(args):
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.8]
-	beta_list = np.arange(0, config.max_beta+config.step_beta, 0.5)
+	beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
