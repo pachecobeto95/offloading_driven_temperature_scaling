@@ -65,7 +65,7 @@ class SPSA (object):
 	def init_hyperparameters(self):
 
 		# A is <= 10% of the number of iterations
-		A = self.nr_iter*0.01
+		A = self.nr_iter*0.1
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
@@ -76,7 +76,7 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = 0.1*((A+1)**self.alpha)/magnitude_g0
+		a = 0.01*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
