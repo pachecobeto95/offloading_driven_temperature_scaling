@@ -122,7 +122,7 @@ class SPSA (object):
 		return 2*a/((k+A)**(self.alpha))
 
 	def compute_ck(self, c, k):
-		return c/(k**(self.gamma))
+		return 2*c/(k**(self.gamma))
 
 
 	def check_function_tolerance(self, theta, old_theta, k):
