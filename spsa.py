@@ -46,7 +46,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = 1000
+		self.nr_iter = 500
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
@@ -76,7 +76,7 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = ((A+1)**self.alpha)/magnitude_g0
+		a = 0.01*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
