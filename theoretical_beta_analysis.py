@@ -79,10 +79,10 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 	no_calib_acc, no_calib_ee_prob = spsa.accuracy_edge(temp_list, n_branches_edge, threshold, df_inf_data)
 
 	if(n_branches_edge == 1):
-		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 	else:
-		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
