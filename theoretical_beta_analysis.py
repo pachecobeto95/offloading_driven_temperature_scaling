@@ -57,10 +57,10 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 
 
 		if(n_branches_edge == 1):
-			global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			global_ts_inf_time, ee_prob = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		else:
-			global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
