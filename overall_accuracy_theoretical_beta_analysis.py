@@ -3,8 +3,6 @@ import config, utils, spsa, temperature_scaling, ee_nn
 import numpy as np
 import pandas as pd
 
-
-
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
 	result = {"beta_acc": beta_acc, "beta_inf_time": beta_inf_time, "ee_prob": ee_prob, "threshold": threshold, "n_branches_edge": n_branches_edge, "beta": beta, 
 	"calib_mode": calib_mode, "overhead": overhead}
@@ -31,12 +29,63 @@ def run_overall_acc_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data
 			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
 		beta_acc, beta_ee_prob = spsa.overall_accuracy(beta_theta, n_branches_edge, threshold, df_inf_data)
-		beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+
+		if(n_branches_edge == 1):
+			global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+		else:
+			global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+		#beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
 
 		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+
+
+def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, overhead, calib_mode):
+
+	temp_list = np.ones(n_branches_edge)
+
+	max_exits = args.n_branches + 1
+
+	beta = 0
+
+	no_calib_acc, no_calib_ee_prob = spsa.overall_accuracy(temp_list, n_branches_edge, threshold, df_inf_data)
+
+
+	if(n_branches_edge == 1):
+		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+	else:
+		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+
+	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+
+def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, global_ts_path, overhead, calib_mode):
+
+	max_exits = args.n_branches + 1
+
+	beta = 0
+
+	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+
+	global_ts_acc, global_ts_ee_prob = spsa.overall_accuracy(temperature_overall, n_branches_edge, threshold, df_inf_data)
+
+	if(n_branches_edge == 1):
+		global_ts_inf_time, _ = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+	else:
+		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+
+	#print(global_ts_acc, global_ts_ee_prob, global_ts_inf_time, ee_prob)
+
+	save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+
 
 
 def main(args):
@@ -72,6 +121,14 @@ def main(args):
 
 				run_overall_acc_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					beta_list, resultsPath, overhead, mode, calib_mode="overall_acc_beta_calib")
+
+
+				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+
+				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
+					overhead, calib_mode="global_TS")
+
+
 
 if (__name__ == "__main__"):
 	# Input Arguments to configure the early-exit model .
