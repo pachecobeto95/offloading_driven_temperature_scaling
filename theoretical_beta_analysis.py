@@ -55,12 +55,10 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
 
-
-		if(n_branches_edge == 1):
-			global_ts_inf_time, ee_prob = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-
+		if():
+			beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 		else:
-			global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			beta_inf_time, _ = spsa.compute_inference_time_multi_branches(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
@@ -79,11 +77,9 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 	no_calib_acc, no_calib_ee_prob = spsa.accuracy_edge(temp_list, n_branches_edge, threshold, df_inf_data)
 
 	if(n_branches_edge == 1):
-		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-
+		no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 	else:
-		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-
+		no_calib_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
@@ -93,18 +89,16 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	beta = 0
 
-	print(n_branches_edge)
-	sys.exit()
-
 	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
 	if(n_branches_edge == 1):
 		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-
 	else:
-		global_ts_inf_time, _ = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		global_ts_inf_time, ee_prob = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+	#print(global_ts_acc, global_ts_ee_prob, global_ts_inf_time, ee_prob)
 
 	save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
@@ -141,7 +135,6 @@ def main(args):
 
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
-
 
 				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
