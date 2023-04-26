@@ -119,10 +119,10 @@ class SPSA (object):
 		return avg_grad_hat, theta, y
 
 	def compute_ak(self, a, A, k):
-		return 2*a/((k+A)**(self.alpha))
+		return a/((k+A)**(self.alpha))
 
 	def compute_ck(self, c, k):
-		return 2*c/(k**(self.gamma))
+		return 0.2*c/(k**(self.gamma))
 
 
 	def check_function_tolerance(self, theta, old_theta, k):
