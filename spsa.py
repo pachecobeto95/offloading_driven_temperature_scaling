@@ -46,7 +46,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = nr_iter
+		self.nr_iter = 500
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
@@ -65,7 +65,7 @@ class SPSA (object):
 	def init_hyperparameters(self):
 
 		# A is <= 10% of the number of iterations
-		A = self.nr_iter*0.05
+		A = self.nr_iter*0.01
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
