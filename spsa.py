@@ -431,7 +431,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	if (len(data_conf) > 0):
 
-		model = KernelDensity(kernel='gaussian', bandwidth=0.01)
+		model = KernelDensity(kernel='gaussian', bandwidth=0.5)
 		#print(len(data_conf))
 		model.fit(data_conf)
 		log_dens = model.score_samples(conf_col)
