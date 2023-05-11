@@ -32,7 +32,6 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	plt.yticks(fontsize=args.fontsize)
 	plt.tight_layout()
 
-	plt.savefig(plotPath)
 	plt.savefig(plotPath+".pdf")
 
 
