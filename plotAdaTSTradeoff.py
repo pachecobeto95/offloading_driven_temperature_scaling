@@ -6,8 +6,11 @@ import os, sys, argparse
 def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
 	print("oi")
 	acc_beta, inf_time_beta = df_spsa.beta_acc.values, df_spsa.beta_inf_time.values
+	 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values
+	
+	acc_beta = np.concat(acc_beta, acc_beta1)
 
-	print(acc_beta, df_spsa1.beta_acc.values)
+	print(acc_beta)
 
 def main(args):
 
