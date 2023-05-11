@@ -12,7 +12,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 
 	#acc_beta, inf_time_beta = np.concatenate((acc_beta, acc_beta1)), np.concatenate((inf_time_beta, inf_time_beta1))
 	
-	acc_beta_index = np.argsort(acc_beta)
+	acc_beta_index = np.argsort(inf_time_beta)
 	acc_beta, inf_time_beta	= acc_beta[acc_beta_index], inf_time_beta[acc_beta_index]
 
 
