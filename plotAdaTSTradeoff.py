@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os, sys, argparse
 
+def plotBetaTradeOff(args, df_spsa, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
+	print("oi")
+
 def main(args):
 
 
@@ -14,12 +17,19 @@ def main(args):
 	if(not os.path.exists(plotDir)):
 		os.makedirs(plotDir)
 
-	threshold_list = [0.8]
+	threshold = 0.8
 
 	df = pd.read_csv(resultPath)
 	df1 = pd.read_csv(resultPath1)
 
 	df_inf_data = df[df.overhead==args.overhead]
+
+
+	df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
+
+	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(args.n_branches, threshold, args.overhead) )
+
+	plotBetaTradeOff(args, df_spsa, df_no_calib, df_ts, threshold, args.n_branches, args.overhead, plotPath)
 
 
 if (__name__ == "__main__"):
