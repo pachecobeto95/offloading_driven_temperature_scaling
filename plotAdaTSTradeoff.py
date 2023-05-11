@@ -6,13 +6,35 @@ import os, sys, argparse
 def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
 	print("oi")
 	acc_beta, inf_time_beta = df_spsa.beta_acc.values, df_spsa.beta_inf_time.values
-	acc_beta1 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values
+	acc_beta1, inf_time_beta1 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values, df_spsa1[df_spsa1.beta_acc>0.94].beta_inf_time.values
+
+	acc_beta, inf_time_beta = np.concatenate((acc_beta, acc_beta1)), np.concatenate((inf_time_beta, inf_time_beta1))
 	
-	print(type(acc_beta), type(acc_beta1))
+	acc_beta_index = np.argsort(acc_beta)
+	acc_beta, inf_time_beta	= acc_beta[acc_beta_index], inf_time_beta[acc_beta_index]
 
-	acc_beta = np.concatenate((acc_beta, acc_beta1))
 
-	print(acc_beta)
+	#plt.plot(inf_time_beta, acc_beta, color="blue", marker="o")
+	#plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
+	#plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
+
+
+	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
+	#plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
+	#plt.plot(inf_time_ts, acc_ts, marker="*", markersize=8, color="black", label=r"TS, $\gamma$=%s"%(threshold))
+
+
+	#plt.ylim(0.5, 1.01)
+	plt.xlabel("Inference Time (ms)", fontsize=fontsize)
+	plt.ylabel("On-device Accuracy", fontsize=fontsize)
+	#ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
+	plt.xticks(fontsize=fontsize)
+	plt.yticks(fontsize=fontsize)
+	plt.tight_layout()
+
+	plt.savefig(plotPath)
+	plt.savefig(plotPath+".pdf")
+
 
 def main(args):
 
