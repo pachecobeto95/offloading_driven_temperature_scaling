@@ -63,7 +63,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
 
-		#save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 
 def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, overhead, calib_mode):
@@ -116,18 +116,23 @@ def main(args):
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_2_review_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode))
+	resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_2_review_%s_overhead_10.csv"%(args.model_name, args.n_branches, args.model_id, mode))
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.8]
-	beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
+	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
+	beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
+	beta_list = beta_list[args.slot_beta]
+
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
 	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
-	overhead_list = [5, 10, 15]
+	#overhead_list = [5, 10, 15]
+	overhead_list = [10]
+
 
 	for overhead in overhead_list:
 
@@ -223,6 +228,7 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
 	parser.add_argument('--theo_data', type=int, help='Default: True')
+	parser.add_argument('--slot_beta', type=int)
 
 
 	args = parser.parse_args()
