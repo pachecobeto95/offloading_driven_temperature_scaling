@@ -25,11 +25,11 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 
 
 	#plt.ylim(0.5, 1.01)
-	plt.xlabel("Inference Time (ms)", fontsize=fontsize)
-	plt.ylabel("On-device Accuracy", fontsize=fontsize)
+	plt.xlabel("Inference Time (ms)", fontsize=args.fontsize)
+	plt.ylabel("On-device Accuracy", fontsize=args.fontsize)
 	#ax.xaxis.set_major_formatter(FormatStrFormatter('%.1f'))
-	plt.xticks(fontsize=fontsize)
-	plt.yticks(fontsize=fontsize)
+	plt.xticks(fontsize=args.fontsize)
+	plt.yticks(fontsize=args.fontsize)
 	plt.tight_layout()
 
 	plt.savefig(plotPath)
