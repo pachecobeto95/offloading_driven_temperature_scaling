@@ -19,8 +19,7 @@ def main(args):
 	df = pd.read_csv(resultPath)
 	df1 = pd.read_csv(resultPath1)
 
-	#df_inf_data = df[(df.threshold==threshold) & (df.n_branches_edge==n_branches_edge) & (df.overhead==overhead)]
-	print(df.threshold.unique())
+	df_inf_data = df[df.overhead==args.overhead]
 
 
 if (__name__ == "__main__"):
