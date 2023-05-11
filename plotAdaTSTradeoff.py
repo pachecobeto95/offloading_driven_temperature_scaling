@@ -54,6 +54,8 @@ def main(args):
 	df = pd.read_csv(resultPath)
 	df1 = pd.read_csv(resultPath1)
 
+	print(df.threshold.unique())
+
 	df_inf_data = df[df.overhead==args.overhead]
 	df_inf_data1 = df1[df1.overhead==args.overhead]
 
