@@ -16,13 +16,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	
 	acc_beta_index = np.argsort(inf_time_beta)
 	acc_beta, inf_time_beta	= acc_beta[acc_beta_index], inf_time_beta[acc_beta_index]
-	#acc_beta, inf_time_beta	= sorted(acc_beta), sorted(inf_time_beta)
-
-
-	#plt.plot(inf_time_beta, acc_beta, color="blue", marker="o")
-	#plt.plot(inf_time_no_calib, acc_no_calib-0.01, color="red", marker="x", label="Conventional")
-	#plt.plot(inf_time_ts, acc_ts-0.01, color="black", marker="v", label="TS")
-
+	acc_beta, inf_time_beta	= sorted(acc_beta), sorted(inf_time_beta)
 
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
 	#plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
