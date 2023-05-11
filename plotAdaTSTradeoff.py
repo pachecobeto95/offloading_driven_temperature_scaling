@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os, sys, argparse
 
-def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_no_calib1, df_ts, df_ts1, threshold, n_branches, overhead, plotPath):
+def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
 	acc_beta, inf_time_beta = df_spsa.beta_acc.values, df_spsa.beta_inf_time.values
 
 	acc_beta, inf_time_beta = df_spsa[df_spsa.beta_acc>0.6].beta_acc.values, df_spsa[df_spsa.beta_acc>0.6].beta_inf_time.values
@@ -18,19 +18,9 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_no_calib1, df_ts, 
 	acc_no_calib, inf_time_no_calib = df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
-	acc_no_calib1, inf_time_no_calib1 = df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
-	acc_ts1, inf_time_ts1 = df_ts.beta_acc.values, df_ts.beta_inf_time.values
-
-	print(acc_no_calib, acc_ts)
-	print(acc_no_calib1, acc_ts1)
-
-
-
-
-
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
-	#plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
-	#plt.plot(inf_time_ts, acc_ts, marker="*", markersize=8, color="black", label=r"TS, $\gamma$=%s"%(threshold))
+	plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
+	plt.plot(inf_time_ts, acc_ts, marker="*", markersize=8, color="black", label=r"TS, $\gamma$=%s"%(threshold))
 
 
 	#plt.ylim(0.5, 1.01)
@@ -69,7 +59,7 @@ def main(args):
 
 	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(args.n_branches, threshold, args.overhead) )
 
-	plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_no_calib1, df_ts, df_ts1, threshold, args.n_branches, args.overhead, plotPath)
+	plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, args.n_branches, args.overhead, plotPath)
 
 
 if (__name__ == "__main__"):
