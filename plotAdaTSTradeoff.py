@@ -7,7 +7,7 @@ def main(args):
 
 
 	resultPath = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_2_review_theo.csv"%(args.model_name, args.n_branches, args.model_id))
-	resultPath1 = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_theo"%(args.model_name, args.n_branches, args.model_id))
+	resultPath1 = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_theo.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	plotDir = os.path.join(".", "plots_pos_review2")
 
