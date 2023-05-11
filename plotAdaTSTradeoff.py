@@ -5,6 +5,9 @@ import os, sys, argparse
 
 def plotBetaTradeOff(args, df_spsa, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
 	print("oi")
+	acc_beta, inf_time_beta = -df_beta.beta_acc.values, df_beta.beta_inf_time.values
+
+	print(acc_beta)
 
 def main(args):
 
