@@ -7,7 +7,8 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	acc_beta, inf_time_beta = df_spsa.beta_acc.values, df_spsa.beta_inf_time.values
 
 	acc_beta, inf_time_beta = df_spsa[df_spsa.beta_acc>0.6].beta_acc.values, df_spsa[df_spsa.beta_acc>0.6].beta_inf_time.values
-	acc_beta1, inf_time_beta1 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values, df_spsa1[df_spsa1.beta_acc>0.94].beta_inf_time.values
+	#acc_beta1, inf_time_beta1 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values, df_spsa1[df_spsa1.beta_acc>0.94].beta_inf_time.values
+	acc_beta1, inf_time_beta1 = df_spsa1.beta_acc.values, df_spsa1.beta_inf_time.values
 
 	acc_beta, inf_time_beta = np.concatenate((acc_beta, acc_beta1)), np.concatenate((inf_time_beta, inf_time_beta1))
 	
