@@ -3,13 +3,10 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os, sys, argparse
 
-def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_branches, overhead, plotPath):
-	print("oi")
+def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_no_calib1, df_ts, df_ts1, threshold, n_branches, overhead, plotPath):
 	acc_beta, inf_time_beta = df_spsa.beta_acc.values, df_spsa.beta_inf_time.values
 
 	acc_beta, inf_time_beta = df_spsa[df_spsa.beta_acc>0.6].beta_acc.values, df_spsa[df_spsa.beta_acc>0.6].beta_inf_time.values
-	print(acc_beta)
-	print(acc_beta.shape)
 	acc_beta1, inf_time_beta1 = df_spsa1[df_spsa1.beta_acc>0.94].beta_acc.values, df_spsa1[df_spsa1.beta_acc>0.94].beta_inf_time.values
 
 	acc_beta, inf_time_beta = np.concatenate((acc_beta, acc_beta1)), np.concatenate((inf_time_beta, inf_time_beta1))
@@ -17,6 +14,19 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	acc_beta_index = np.argsort(inf_time_beta)
 	acc_beta, inf_time_beta	= acc_beta[acc_beta_index], inf_time_beta[acc_beta_index]
 	acc_beta, inf_time_beta	= sorted(acc_beta), sorted(inf_time_beta)
+
+	acc_no_calib, inf_time_no_calib = df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
+	acc_ts, inf_time_ts = df_ts.beta_acc.values, df_ts.beta_inf_time.values
+
+	acc_no_calib1, inf_time_no_calib1 = df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
+	acc_ts1, inf_time_ts1 = df_ts.beta_acc.values, df_ts.beta_inf_time.values
+
+	print(acc_no_calib, acc_ts)
+	print(acc_no_calib1, acc_ts1)
+
+
+
+
 
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
 	#plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
@@ -50,17 +60,16 @@ def main(args):
 	df = pd.read_csv(resultPath)
 	df1 = pd.read_csv(resultPath1)
 
-	print(df.threshold.unique())
-
 	df_inf_data = df[df.overhead==args.overhead]
 	df_inf_data1 = df1[df1.overhead==args.overhead]
 
 	df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
-	df_spsa1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"]
+	#df_spsa1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"]
+	df_spsa1, df_no_calib1, df_ts1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"], df_inf_data1[df_inf_data1.calib_mode=="no_calib"], df_inf_data1[df_inf_data1.calib_mode=="global_TS"]
 
 	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(args.n_branches, threshold, args.overhead) )
 
-	plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, args.n_branches, args.overhead, plotPath)
+	plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_no_calib1, df_ts, df_ts1, threshold, args.n_branches, args.overhead, plotPath)
 
 
 if (__name__ == "__main__"):
