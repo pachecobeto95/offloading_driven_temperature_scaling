@@ -10,7 +10,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	
 	print(type(acc_beta), type(acc_beta1))
 
-	acc_beta = np.concatenate(acc_beta, acc_beta1)
+	acc_beta = np.concatenate((acc_beta, acc_beta1))
 
 	print(acc_beta)
 
