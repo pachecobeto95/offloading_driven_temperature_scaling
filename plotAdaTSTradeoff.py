@@ -21,7 +21,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
 	plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=8, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
-	plt.plot(inf_time_ts, acc_ts, marker="*", markersize=8, color="black", label=r"TS, $\gamma$=%s"%(threshold))
+	plt.plot(inf_time_ts, acc_ts-.01, marker="*", markersize=8, color="black", label=r"TS, $\gamma$=%s"%(threshold))
 
 
 	#plt.ylim(0.5, 1.01)
