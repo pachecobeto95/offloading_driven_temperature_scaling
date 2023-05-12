@@ -18,8 +18,6 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	acc_no_calib, inf_time_no_calib = df_no_calib.beta_acc.values, df_no_calib.beta_inf_time.values
 	acc_ts, inf_time_ts = df_ts.beta_acc.values, df_ts.beta_inf_time.values
 
-	print(acc_no_calib, acc_ts)
-
 	plt.plot(inf_time_beta, acc_beta, color="blue", marker="o", linestyle="solid", label=r"AdaTS($\beta$), $\gamma$=%s"%(threshold))
 	plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=10, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
 	plt.plot(inf_time_ts, acc_ts , marker="*", markersize=10, color="black", label=r"TS, $\gamma$=%s"%(threshold))
@@ -57,8 +55,6 @@ def main(args):
 
 	df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
 	df_spsa1, df_no_calib1, df_ts1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"], df_inf_data1[df_inf_data1.calib_mode=="no_calib"], df_inf_data1[df_inf_data1.calib_mode=="global_TS"]
-
-	print(df_inf_data.calib_mode.unique())
 
 	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(args.n_branches, threshold, args.overhead) )
 
