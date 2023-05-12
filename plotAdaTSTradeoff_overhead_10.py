@@ -68,6 +68,7 @@ if (__name__ == "__main__"):
 	parser.add_argument('--n_branches', type=int, help='Number of exit exits.')
 	parser.add_argument('--model_name', type=str, help='Model name.')
 	parser.add_argument('--fontsize', type=int, default=18, help='Font Size.')
+	parser.add_argument('--overhead', type=int, default=10, help='Overhead.')
 
 	#parser.add_argument('--mode', type=str, help='Theoretical or Experimental Data.')
 
