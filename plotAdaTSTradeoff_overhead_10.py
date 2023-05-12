@@ -39,7 +39,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 def main(args):
 
 
-	resultPath = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_2_review_theo_overhead_10.csv"%(args.model_name, args.n_branches, args.model_id))
+	resultPath = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_2_review_theo_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, args.overhead))
 	resultPath1 = os.path.join(".", "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_1_review_theo.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	plotDir = os.path.join(".", "plots_pos_review2")
