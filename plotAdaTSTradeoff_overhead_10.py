@@ -22,7 +22,7 @@ def plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, n_b
 	plt.plot(inf_time_no_calib, acc_no_calib, marker="x", markersize=10, color= "red", label=r"No Calib, $\gamma$=%s"%(threshold))
 	plt.plot(inf_time_ts, acc_ts , marker="*", markersize=10, color="black", label=r"TS, $\gamma$=%s"%(threshold))
 
-
+	print("ok")
 	plt.ylim(0.9, 1.01)
 	plt.xlabel("Inference Time (ms)", fontsize=args.fontsize)
 	plt.ylabel("On-device Accuracy", fontsize=args.fontsize)
