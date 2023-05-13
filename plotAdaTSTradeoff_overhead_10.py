@@ -53,7 +53,7 @@ def main(args):
 	df1 = pd.read_csv(resultPath1)
 
 	df_inf_data = df[(df.overhead==args.overhead)&(df.threshold==threshold)]
-	df_inf_data1 = df1[(df1.overhead==args.overhead)&(df.threshold==threshold)]
+	df_inf_data1 = df1[(df1.overhead==args.overhead)&(df1.threshold==threshold)]
 
 	print(df_inf_data1.beta_acc.unique())
 
