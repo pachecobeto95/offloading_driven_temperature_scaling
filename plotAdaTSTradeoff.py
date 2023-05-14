@@ -55,6 +55,8 @@ def main(args):
 	df_inf_data = df[(df.overhead==args.overhead) & (df.threshold==threshold)]
 	df_inf_data1 = df1[(df1.overhead==args.overhead) & (df1.threshold==threshold)]
 
+	print(df_inf_data)
+
 	df_spsa, df_no_calib, df_ts = df_inf_data[df_inf_data.calib_mode=="beta_calib"], df_inf_data[df_inf_data.calib_mode=="no_calib"], df_inf_data[df_inf_data.calib_mode=="global_TS"]
 	#df_spsa1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"]
 	df_spsa1, df_no_calib1, df_ts1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"], df_inf_data1[df_inf_data1.calib_mode=="no_calib"], df_inf_data1[df_inf_data1.calib_mode=="global_TS"]
