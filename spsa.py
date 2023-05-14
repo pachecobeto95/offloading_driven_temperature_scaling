@@ -76,7 +76,7 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a = 2*((A+1)**self.alpha)/magnitude_g0
+		a =  0.1*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
@@ -119,10 +119,12 @@ class SPSA (object):
 		return avg_grad_hat, theta, y
 
 	def compute_ak(self, a, A, k):
-		return 0.1*a/((k+A)**(self.alpha))
+		#return 0.1*a/((k+A)**(self.alpha))
+		return a/((k+A)**(self.alpha))
 
 	def compute_ck(self, c, k):
-		return 0.1*c/(k**(self.gamma))
+		#return 0.1*c/(k**(self.gamma))
+		return c/(k**(self.gamma))
 
 
 	def check_function_tolerance(self, theta, old_theta, k):
