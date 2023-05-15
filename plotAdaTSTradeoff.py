@@ -63,7 +63,7 @@ def main(args):
 	#df_spsa1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"]
 	#df_spsa1, df_no_calib1, df_ts1 = df_inf_data1[df_inf_data1.calib_mode=="beta_calib"], df_inf_data1[df_inf_data1.calib_mode=="no_calib"], df_inf_data1[df_inf_data1.calib_mode=="global_TS"]
 
-	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano"%(args.n_branches, threshold, args.overhead) )
+	plotPath = os.path.join(plotDir, "beta_analysis_%s_branches_threshold_%s_overhead_%s_with_nano_pos_review"%(args.n_branches, threshold, args.overhead) )
 
 	#plotBetaTradeOff(args, df_spsa, df_spsa1, df_no_calib, df_ts, threshold, args.n_branches, args.overhead, plotPath)
 	plotBetaTradeOff(args, df_spsa, df_no_calib, df_ts, threshold, args.n_branches, args.overhead, plotPath)
