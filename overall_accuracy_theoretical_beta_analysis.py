@@ -92,18 +92,22 @@ def main(args):
 	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	resultsPath = os.path.join(config.DIR_NAME, "overall_acc_adaTS_%s_%s_branches_%s_with_overhead_with_nano_pos_2_review_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode))
+	resultsPath = os.path.join(config.DIR_NAME, "overall_acc_adaTS_%s_%s_branches_%s_with_overhead_with_nano_pos_3_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
 
 	#global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#threshold_list = [0.7, 0.8, 0.9]
 	threshold_list = [0.8]
-	beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
+	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
+	beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
+	beta_list = beta_list[args.slot_beta]
+
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
-	overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
+	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
+	overhead_list = [args.overhead]
 
 	for overhead in overhead_list:
 
@@ -200,6 +204,8 @@ if (__name__ == "__main__"):
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
 	parser.add_argument('--theo_data', type=int, help='Default: True')
+	parser.add_argument('--slot_beta', type=int)
+	parser.add_argument('--overhead', type=int)
 
 
 	args = parser.parse_args()
