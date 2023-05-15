@@ -113,7 +113,7 @@ def main(args):
 
 		#for n_branches_edge in reversed(range(1, args.n_branches+1)):
 		
-		print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
+		print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, args.n_branches, threshold))
 
 		#run_overall_acc_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 		#	beta_list, resultsPath, overhead, mode, calib_mode="overall_acc_beta_calib")
