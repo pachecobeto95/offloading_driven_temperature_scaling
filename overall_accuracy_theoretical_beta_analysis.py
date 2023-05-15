@@ -119,9 +119,9 @@ def main(args):
 		#	beta_list, resultsPath, overhead, mode, calib_mode="overall_acc_beta_calib")
 
 
-		runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+		runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, args.n_branches, resultsPath, overhead, calib_mode="no_calib")
 
-		runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
+		runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, args.n_branches, resultsPath, global_ts_path, 
 			overhead, calib_mode="global_TS")
 
 
