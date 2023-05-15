@@ -97,7 +97,7 @@ def main(args):
 	#global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#threshold_list = [0.7, 0.8, 0.9]
-	threshold_list = 0.8
+	threshold = 0.8
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
 	beta_list = beta_list[args.slot_beta]
