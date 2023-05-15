@@ -94,7 +94,7 @@ def main(args):
 
 	#resultsPath = os.path.join(config.DIR_NAME, "overall_acc_adaTS_%s_%s_branches_%s_with_overhead_with_nano_pos_3_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
 	resultsPath = os.path.join(config.DIR_NAME, "overall_acc_adaTS_mobilenet_1_branches_1_with_overhead_with_nano_pos_1_review_theo.csv")
-	#global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#threshold_list = [0.7, 0.8, 0.9]
 	threshold = 0.8
