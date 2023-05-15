@@ -3,6 +3,15 @@ import config, utils, spsa, temperature_scaling, ee_nn
 import numpy as np
 import pandas as pd
 
+def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge):
+
+	df_temp = pd.read_csv(temp_data_path)
+	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
+
+	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
+
+	#return [df_temp["temperature"].values[0]]*n_branches_edge
+	return df_temp[temp_list].values[0]
 
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
