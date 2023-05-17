@@ -230,7 +230,7 @@ if (__name__ == "__main__"):
 	parser.add_argument('--input_dim', type=int, default=330)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
-	parser.add_argument('--theo_data', type=int, help='Default: True')
+	parser.add_argument('--theo_data', type=int, default=1, help='Default: True')
 	parser.add_argument('--slot_beta', type=int)
 	parser.add_argument('--overhead', type=int)
 
