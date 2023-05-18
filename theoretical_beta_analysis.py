@@ -112,6 +112,7 @@ def main(args):
 
 	mode = "theo" if(args.theo_data) else "exp"
 
+
 	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -229,7 +230,7 @@ if (__name__ == "__main__"):
 	parser.add_argument('--input_dim', type=int, default=330)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
-	parser.add_argument('--theo_data', type=int, help='Default: True')
+	parser.add_argument('--theo_data', type=int, default=1, help='Default: True')
 	parser.add_argument('--slot_beta', type=int)
 	parser.add_argument('--overhead', type=int)
 

@@ -108,7 +108,8 @@ def main(args):
 	#threshold_list = [0.7, 0.8, 0.9]
 	threshold = 0.8
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
-	beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
+	#beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
+	beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]	
 	beta_list = beta_list[args.slot_beta]
 
 
@@ -124,8 +125,8 @@ def main(args):
 		
 		print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, args.n_branches, threshold))
 
-		#run_overall_acc_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-		#	beta_list, resultsPath, overhead, mode, calib_mode="overall_acc_beta_calib")
+		run_overall_acc_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, args.n_branches, 
+			beta_list, resultsPath, overhead, mode, calib_mode="overall_acc_beta_calib")
 
 
 		runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, args.n_branches, resultsPath, overhead, calib_mode="no_calib")
