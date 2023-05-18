@@ -20,7 +20,7 @@ import pandas as pd
 def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge):
 
 	df_temp = pd.read_csv(temp_data_path)
-	df_temp = df_temp[(df_temp.threshold==0.9) & (df_temp.n_branches == n_branches_edge)]
+	df_temp = df_temp[(df_temp.threshold==threshold) & (df_temp.n_branches == n_branches_edge)]
 
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
