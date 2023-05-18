@@ -33,26 +33,28 @@ def main(args):
 
 	threshold_list = [0.8]
 
-	theta_initial = 1.2
+	theta_initial_list = np.arange(1, 1.5, 0.02)
 
-	for threshold in threshold_list:
+	for theta_initial in theta_initial_list:
 
-		# Instantiate SPSA class to initializes the parameters
-		global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, args.n_branches, threshold)
+		for threshold in threshold_list:
 
-		global_ts.run(data_loader)
+			# Instantiate SPSA class to initializes the parameters
+			global_ts = temperature_scaling.GlobalTemperatureScaling(ee_model, device, theta_initial, args.max_iter, args.n_branches, threshold)
 
-		temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
+			global_ts.run(data_loader)
 
-		result = {"threshold": threshold, "n_branches": args.n_branches, "calib_mode": "global_TS"}
+			temperature_overall = [global_ts.temperature_overall.item()]*args.n_branches
 
-		for i in range(args.n_branches):
-			result["temp_branch_%s"%(i+1)] = temperature_overall[i]
+			result = {"threshold": threshold, "n_branches": args.n_branches, "calib_mode": "global_TS"}
 
-		print(result)
+			for i in range(args.n_branches):
+				result["temp_branch_%s"%(i+1)] = temperature_overall[i]
 
-		df = pd.DataFrame([result])
-		df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
+			print(result)
+
+			df = pd.DataFrame([result])
+			df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
 
 
 
