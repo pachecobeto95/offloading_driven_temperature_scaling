@@ -146,7 +146,7 @@ def main(args):
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
 				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
+				#	beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
 				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
