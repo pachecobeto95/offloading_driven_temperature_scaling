@@ -46,7 +46,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = 200
+		self.nr_iter = nr_iter
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha

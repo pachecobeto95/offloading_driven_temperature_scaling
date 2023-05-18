@@ -123,8 +123,8 @@ def main(args):
 	threshold_list = [0.8]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	#beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
-	#beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
-	beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
+	beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
+	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	beta_list = beta_list[args.slot_beta]
 
 
