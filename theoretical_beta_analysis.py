@@ -25,7 +25,8 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
 	#return [df_temp["temperature"].values[0]]*n_branches_edge
-	return df_temp[temp_list].values[0]
+	#return df_temp[temp_list].values[0]
+	return df_temp[temp_list].values
 
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
@@ -89,7 +90,11 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	beta = 0
 
-	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)
+
+	print(temperature_overall)
+
+	sys.exit()			
 
 	global_ts_acc, global_ts_ee_prob = spsa.accuracy_edge(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
@@ -144,10 +149,10 @@ def main(args):
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
+				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+				#	beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
-				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
+				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, overhead, calib_mode="no_calib")
 
 				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, resultsPath, global_ts_path, 
 					overhead, calib_mode="global_TS")
