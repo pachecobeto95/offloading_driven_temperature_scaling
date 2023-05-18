@@ -33,7 +33,7 @@ def main(args):
 
 	threshold_list = [0.8]
 
-	theta_initial = 1.
+	theta_initial = 1.5
 
 	for threshold in threshold_list:
 
