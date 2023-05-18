@@ -31,9 +31,9 @@ def main(args):
 
 	data_loader = val_loader if (args.valid_indices) else test_loader
 
-	threshold_list = [0.7, 0.8, 0.9]
+	threshold_list = [0.8]
 
-	theta_initial = 1.5
+	theta_initial = 1.
 
 	for threshold in threshold_list:
 
