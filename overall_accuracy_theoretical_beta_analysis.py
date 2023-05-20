@@ -11,7 +11,8 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 	temp_list = ["temp_branch_%s"%(i) for i in range(1, args.n_branches+1)]
 
 	#return [df_temp["temperature"].values[0]]*n_branches_edge
-	return df_temp[temp_list].values[0]
+	#return df_temp[temp_list].values[0]
+	return df_temp[temp_list].values
 
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
@@ -76,18 +77,21 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 	beta = 0
 
-	temperature_overall = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
+	temperature_overall_list = extractGlobalTSTemperature(args, global_ts_path, threshold, n_branches_edge)			
 
-	global_ts_acc, global_ts_ee_prob = spsa.overall_accuracy(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
-	if(n_branches_edge == 1):
-		global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-	else:
-		global_ts_inf_time, ee_prob = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+	for temperature_overall in temperature_overall_list:
 
-	print(global_ts_acc, global_ts_ee_prob, global_ts_inf_time, ee_prob)
+		global_ts_acc, global_ts_ee_prob = spsa.overall_accuracy(temperature_overall, n_branches_edge, threshold, df_inf_data)
 
-	save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+		if(n_branches_edge == 1):
+			global_ts_inf_time, ee_prob = spsa.compute_inference_time(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		else:
+			global_ts_inf_time, ee_prob = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+
+		print(global_ts_acc, global_ts_ee_prob, global_ts_inf_time, ee_prob)
+
+		save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 
 def main(args):
@@ -109,7 +113,10 @@ def main(args):
 	threshold = 0.8
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	#beta_list = [np.arange(10*i, 10*(i+1), 0.1) for i in range(10)]
-	beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]	
+	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]	
+	#beta_list = beta_list[args.slot_beta]
+	beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
+	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	beta_list = beta_list[args.slot_beta]
 
 
