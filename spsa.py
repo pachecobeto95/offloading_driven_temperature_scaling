@@ -381,7 +381,7 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 
 	temp_list = np.concatenate((temp_list, [1]))
 
-	for i in range(n_exits):
+	for i in range(n_exits-1):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 	
