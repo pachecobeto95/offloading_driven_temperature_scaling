@@ -388,8 +388,18 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 		print(num)
 	
+
+	den = compute_theoretical_edge_prob(temp_list, n_exits, threshold, df)
+
+	acc = num/den if (den>0) else 0
+
+	#return - acc, den
+	return	acc, den
+
 	
 	acc = num/n_branches
+
+	print(acc)
 
 	#return - acc, den
 	return	acc, 0
