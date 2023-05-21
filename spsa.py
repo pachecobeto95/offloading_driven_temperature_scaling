@@ -386,6 +386,7 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 	for i in range(n_exits-1):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
+		print(num)
 	
 	
 	acc = num/n_branches
