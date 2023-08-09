@@ -109,8 +109,6 @@ class SPSA (object):
 
 			delta_y_pred = y_plus - y_minus
 
-			print(delta_y_pred, ck_deltak)
-
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
 		avg_grad_hat = grad_hat/float(self.ens_size)
@@ -250,18 +248,14 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	else:
 		acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-		print("Acc: %s"%acc_current)
 
 	if(n_branches == 1):
 		inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	else:
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
-		print("Inf: %s"%inf_time_current)
 
 	#f = (1-beta)*inf_time_current - beta*acc_current
-	print(beta)
 	f = inf_time_current - beta*acc_current
-	print("F: %s"%f)
 
 	return f, ee_prob
 
