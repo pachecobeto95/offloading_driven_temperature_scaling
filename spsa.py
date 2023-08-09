@@ -109,6 +109,8 @@ class SPSA (object):
 
 			delta_y_pred = y_plus - y_minus
 
+			print(delta_y_pred, ck_deltak)
+
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
 		avg_grad_hat = grad_hat/float(self.ens_size)
