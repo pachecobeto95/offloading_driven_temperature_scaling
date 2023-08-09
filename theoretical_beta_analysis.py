@@ -128,10 +128,11 @@ def main(args):
 	threshold_list = [0.8]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	beta_list = [np.arange(10*i, 10*(i+1), 0.5) for i in range(10)]
-	beta_list = [10, 20, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 70, 80, 90]
+	#beta_list = [10, 20, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 70, 80, 90]
 	#beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
 	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	#beta_list = beta_list[args.slot_beta]
+	beta_list = [0]
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
