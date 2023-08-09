@@ -157,7 +157,7 @@ def main(args):
 					resultsPath, overhead, calib_mode="no_calib")
 
 				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					resultsPath, resultsPath, overhead, calib_mode="global_TS")
+					resultsPath, global_ts_path, overhead, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
