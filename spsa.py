@@ -250,17 +250,17 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	else:
 		acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-		print(acc_current)
+		print("Acc: %s"%acc_current)
 
 	if(n_branches == 1):
 		inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	else:
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
-		print(inf_time_current)
+		print("Inf: %s"%inf_time_current)
 
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
-	print(f)
+	print("F: %s"%f)
 
 	return f, ee_prob
 
