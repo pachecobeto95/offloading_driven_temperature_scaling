@@ -120,7 +120,7 @@ def main(args):
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
-	resultsPath = os.path.join(config.DIR_NAME, "ufmt_theo_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "ufmt_theo_beta_analysis_%s_%s_branches_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
 
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
