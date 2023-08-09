@@ -259,6 +259,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		print("Inf: %s"%inf_time_current)
 
 	#f = (1-beta)*inf_time_current - beta*acc_current
+	print(beta)
 	f = inf_time_current - beta*acc_current
 	print("F: %s"%f)
 
