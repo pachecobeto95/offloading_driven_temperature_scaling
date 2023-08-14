@@ -148,13 +148,13 @@ def main(args):
 	for overhead in overhead_list:
 
 		#for n_branches_edge in reversed(range(1, args.n_branches+1)):
-		for n_branches_edge in [3]:
+		for n_branches_edge in [args.n_branches]:
 
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
+				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+				#	beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
 				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					resultsPath, overhead, calib_mode="no_calib")
