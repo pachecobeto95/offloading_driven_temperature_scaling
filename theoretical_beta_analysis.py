@@ -81,9 +81,9 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 		no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 	else:
 		print(overhead)
-		no_calib_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		no_calib_inf_time, a = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
-	print(no_calib_inf_time, no_calib_acc, no_calib_ee_prob)
+	print(no_calib_inf_time, no_calib_acc, no_calib_ee_prob, a)
 	#save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, global_ts_path, overhead, calib_mode):
@@ -128,7 +128,7 @@ def main(args):
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.8]
+	threshold_list = [0.9]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	beta_list = [np.arange(10*i, 10*(i+1), 0.5) for i in range(10)]
 	#beta_list = [10, 20, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 70, 80, 90]
@@ -148,7 +148,7 @@ def main(args):
 	for overhead in overhead_list:
 
 		#for n_branches_edge in reversed(range(1, args.n_branches+1)):
-		for n_branches_edge in [2]:
+		for n_branches_edge in [args.n_branches]:
 
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
