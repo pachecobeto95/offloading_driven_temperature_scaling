@@ -118,7 +118,7 @@ def main(args):
 	mode = "theo" if(args.theo_data) else "exp"
 
 
-	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_final.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, 3))
 	#inf_data_cloud_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -129,7 +129,7 @@ def main(args):
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.8]
+	threshold_list = [0.8, 0.85]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	beta_list = [np.arange(10*i, 10*(i+1), 0.5) for i in range(10)]
 	#beta_list = [10, 20, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 51, 52, 53, 54, 55, 56, 57, 58, 60, 70, 80, 90]
