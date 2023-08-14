@@ -80,7 +80,7 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 	if(n_branches_edge == 1):
 		no_calib_inf_time, _ = spsa.compute_inference_time(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 	else:
-		no_calib_inf_time, a = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+		no_calib_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 	print(no_calib_acc, no_calib_inf_time)
 	print(no_calib_ee_prob, a)
@@ -117,7 +117,7 @@ def main(args):
 	mode = "theo" if(args.theo_data) else "exp"
 
 
-	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server_v2.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
