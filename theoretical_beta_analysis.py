@@ -136,6 +136,7 @@ def main(args):
 	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	beta_list = beta_list[args.slot_beta]
 	print(beta_list)
+	sys.exit()
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
