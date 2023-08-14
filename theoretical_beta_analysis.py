@@ -83,7 +83,6 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 		no_calib_inf_time, _ = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 	print(no_calib_acc, no_calib_inf_time)
-	print(no_calib_ee_prob, a)
 	#save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
 def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, global_ts_path, overhead, calib_mode):
