@@ -141,6 +141,7 @@ def main(args):
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
 	print(df_inf_data_device.columns)
+	print([df_inf_data_device['inferente_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
 
 	sys.exit()
 
