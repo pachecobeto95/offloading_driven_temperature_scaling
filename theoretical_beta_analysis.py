@@ -140,6 +140,10 @@ def main(args):
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
+	print(df_inf_data_device.columns)
+
+	sys.exit()
+
 	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 	#overhead_list = [5, 10, 15]
 	overhead_list = [args.overhead]
