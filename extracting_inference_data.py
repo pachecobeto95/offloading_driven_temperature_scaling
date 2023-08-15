@@ -9,7 +9,6 @@ def calibrating_early_exit_dnns(model, data_loader, threshold, max_iter, n_branc
 	global_ts_model = temperature_scaling.GlobalTemperatureScaling(model, device, 1.5, max_iter, n_branches, 0.8)
 	global_ts_model.run(data_loader)
 
-
 	#per_branch_ts_model = temperature_scaling.PerBranchTemperatureScaling(model, device, 1.5, max_iter, n_branches, 0.8)
 	#per_branch_ts_model.run(data_loader)
 
@@ -46,6 +45,48 @@ def extracting_ee_inference_data(data_loader, model, n_branches, device):
 	return df
 
 
+def accuracy_edge(temp_list, n_branches, threshold, df):
+
+	"""
+	This function computes the accuracy on the edge
+	return avg_inf_time
+
+	Inputs:
+		temp_list:  temperature vector
+		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
+		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
+					side branches at the edge device.
+		n_branches: number of side branches that is placed at the edge device.
+
+	Outputs:
+		acc_edge: is the accuracy obtained by the side branches at the edge device.
+	"""
+	
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	n_samples = len(df)
+
+	remaining_data = df
+
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
+
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
+
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
+	early_classification_prob = sum(numexits)/n_samples
+	print(early_classification_prob)
+
+	#return - acc_edge, early_classification_prob
+	#return acc_edge, early_classification_prob
+
+
 def main(args):
 
 	n_classes = 257
@@ -67,7 +108,7 @@ def main(args):
 
 	val_idx, test_idx = model_dict["val"], model_dict["test"]
 
-	val_idx = np.load(indices_path)
+	#val_idx = np.load(indices_path)
 
 	#Load Early-exit DNN model.	
 	ee_model = ee_nn.Early_Exit_DNN(args.model_name, n_classes, args.pretrained, args.n_branches, args.dim, device, args.exit_type, args.distribution)
@@ -78,15 +119,17 @@ def main(args):
 	#Load Dataset 
 	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
 
-	global_ts_model, _ = calibrating_early_exit_dnns(ee_model, val_loader, 0.8, args.max_iter, args.n_branches, device)
-	print(global_ts_model.temperature_overall)
+	#global_ts_model, _ = calibrating_early_exit_dnns(ee_model, val_loader, 0.8, args.max_iter, args.n_branches, device)
+	#print(global_ts_model.temperature_overall)
 
 	#df_global_calib = extracting_global_ts_ee_inference_data(val_loader, global_ts_model, n_branches, device)
 
 	#df_per_branch_ts_inference_data = extracting_per_branch_ts_ee_inference_data(test_loader, per_branch_ts_model, args.n_branches, device)
 
 
-	#df_no_calib = extracting_ee_inference_data(val_loader, ee_model, args.n_branches, device)
+	df_no_calib = extracting_ee_inference_data(val_loader, ee_model, args.n_branches, device)
+
+	accuracy_edge([1,1,1], 3, 0.8, df_no_calib)
 
 	# Obtain the confidences and predictions running an early-exit DNN inference. It returns as a Dataframe
 	#df_inference_data = utils.extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
