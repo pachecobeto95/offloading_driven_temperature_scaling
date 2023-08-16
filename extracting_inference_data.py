@@ -81,7 +81,8 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits[:2])/n_samples
-	print(early_classification_prob)
+	
+	print(acc_edge, early_classification_prob)
 
 	#return - acc_edge, early_classification_prob
 	#return acc_edge, early_classification_prob
@@ -93,7 +94,7 @@ def main(args):
 
 	device = torch.device('cuda' if (torch.cuda.is_available() and args.cuda) else 'cpu')
 
-	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )	
+	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, 3) )	
 
 	multi_branch_model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )	
 
