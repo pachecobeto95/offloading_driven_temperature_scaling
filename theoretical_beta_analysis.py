@@ -118,7 +118,7 @@ def main(args):
 	mode = "theo" if(args.theo_data) else "exp"
 
 
-	inf_data_cloud_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
+	inf_data_cloud_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_local_server.csv"%(args.model_name, args.n_branches, args.model_id))
 	#inf_data_cloud_path = os.path.join(config.DIR_NAME, "inference_data", "inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -141,7 +141,10 @@ def main(args):
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
+	print([df_inf_data_cloud['inf_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
+	print([df_inf_data_device['inf_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
 
+	sys.exit()
 	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 	#overhead_list = [5, 10, 15]
 	overhead_list = [args.overhead]
