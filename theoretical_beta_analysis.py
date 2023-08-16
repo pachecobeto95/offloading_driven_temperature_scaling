@@ -140,8 +140,8 @@ def main(args):
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
-	print(df_inf_data_cloud.columns)
-	print([df_inf_data_cloud['inf_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
+	print(df_inf_data_device.columns)
+	print([df_inf_data_cloud['inferente_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
 	print([df_inf_data_device['inf_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
 
 	sys.exit()
