@@ -118,7 +118,7 @@ def main(args):
 	ee_model.eval()
 
 	#Load Dataset 
-	val_loader = utils.load_caltech256_test_inference(args, dataset_path, val_idx)
+	val_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
 	#global_ts_model, _ = calibrating_early_exit_dnns(ee_model, val_loader, 0.8, args.max_iter, args.n_branches, device)
 	#print(global_ts_model.temperature_overall)
