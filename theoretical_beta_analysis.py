@@ -150,7 +150,7 @@ def main(args):
 	for overhead in overhead_list:
 
 		#for n_branches_edge in reversed(range(1, args.n_branches+1)):
-		for n_branches_edge in [2]:
+		for n_branches_edge in [args.n_branches]:
 
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
