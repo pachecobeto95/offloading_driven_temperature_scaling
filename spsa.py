@@ -305,11 +305,11 @@ def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, thr
 
 	for i in range(1, n_branches+1):
 		confs = remaining_data["conf_branch_%s"%(i)]
-		calib_confs = confs/temp_list[i]
+		calib_confs = confs/temp_list[i-1]
 		early_exit_samples = calib_confs >= threshold
 
 		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i)].mean()
-		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i)].count()
 
 		n_exits_device_list.append(n_exit_branch)
 
@@ -324,7 +324,7 @@ def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, thr
 	avg_inference_time = avg_inference_time/float(n_samples)
 	return avg_inference_time, early_classification_prob
 
-	
+
 def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
 
 	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
