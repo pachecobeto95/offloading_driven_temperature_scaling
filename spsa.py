@@ -303,9 +303,6 @@ def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, thr
 	n_remaining_samples = n_samples
 	remaining_data = df
 
-	print(df_device.columns)
-	sys.exit()
-
 	for i in range(n_branches):
 		confs = remaining_data["conf_branch_%s"%(i+1)]
 		calib_confs = confs/temp_list[i]
@@ -330,7 +327,7 @@ def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, thr
 
 	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
 
-	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df["inferente_time_branch_%s"%(n_branches)].mean()
+	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df_device["inferente_time_branch_%s"%(n_branches)].mean()
 
 	avg_inference_time += n_remaining_samples*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
 
