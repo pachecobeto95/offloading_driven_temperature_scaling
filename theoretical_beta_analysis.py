@@ -124,7 +124,7 @@ def main(args):
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	#resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
-	resultsPath = os.path.join(config.DIR_NAME, "ufmt2_theo_beta_analysis_%s_%s_branches_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "ufmt3_theo_beta_analysis_%s_%s_branches_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
 
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -140,11 +140,6 @@ def main(args):
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
-	print(df_inf_data_device.columns)
-	print([df_inf_data_cloud['inferente_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
-	print([df_inf_data_device['inferente_time_branch_%s'%(i)].mean() for i in [1, 2, 3, 4]])
-
-	sys.exit()
 	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 	#overhead_list = [5, 10, 15]
 	overhead_list = [args.overhead]
@@ -158,14 +153,14 @@ def main(args):
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-				#	beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
+				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
 				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
 					resultsPath, overhead, calib_mode="no_calib")
 
-				#runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-				#	resultsPath, global_ts_path, overhead, calib_mode="global_TS")
+				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+					resultsPath, global_ts_path, overhead, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
