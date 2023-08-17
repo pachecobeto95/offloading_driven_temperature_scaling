@@ -337,7 +337,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
 
-	if(idx_branch == 0)
+	if(idx_branch == 0):
 		previous_exit_prob = 1
 		df_branch = df
 	else:
