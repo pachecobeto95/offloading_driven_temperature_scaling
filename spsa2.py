@@ -347,9 +347,9 @@ def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
 
 	data_conf = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
 	print(data_conf)
-	data_conf = random.choices(data_conf, 100)	
+	data_conf = random.sample(data_conf, 100)	
 	data_conf = data_conf[:, np.newaxis]
-
+	sys.exit()
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
