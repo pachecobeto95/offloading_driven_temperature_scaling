@@ -55,6 +55,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
+		beta_acc1, beta_ee_prob1 = spsa.theoretical_accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
 
 		if(n_branches_edge == 1):
 			beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
@@ -63,6 +64,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
+		print(beta_acc1, beta_ee_prob1)
 
 		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
 
