@@ -518,7 +518,7 @@ def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
 
 	if (len(data_conf) > 0):
 
-		a = np.histogram(data_conf, bins=100, density=True)
+		a, _ = np.histogram(data_conf, bins=100, density=True)
 
 		print(a)
 		print(a.shape)
