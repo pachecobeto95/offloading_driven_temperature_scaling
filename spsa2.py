@@ -326,13 +326,57 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	conf_d = np.linspace(threshold, 1, 100)
-	print(conf_d)
+	result = 0
 
 	for i in range(1, 101):
 		delta_conf = conf_d[i] - conf_d[i-1]
-		print(delta_conf)
-		sys.exit()
 
+		expectation = compute_expectation(df, temp_list, threshold, idx_branch, conf_d[i-1], conf_d[i])
+		
+		cond_prob = compute_cond_prob(df, temp_list, threshold, idx_branch, conf_d[i])		
+
+def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
+
+	if(idx_branch == 0)
+		previous_exit_prob = 1
+		df_branch = df
+	else:
+		df_branch = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]
+		num_exit_branch = df_branch["conf_branch_%s"%(idx_branch)].count()
+		previous_exit_prob = num_exit_branch/len(df)
+
+	data_conf = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
+	data_conf = data_conf[:, np.newaxis]
+
+	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		#print(len(data_conf))
+	model.fit(data_conf)
+	log_dens = model.score_samples(current_conf)
+
+	pdf_values = np.exp(log_dens)
+	print(pdf_values)
+	print(pdf_values.shape)
+	sys.exit()
+
+def compute_expectation(df, temp_list, threshold, idx_branch, previous_conf, current_conf):
+
+	if(idx_branch == 0):
+		df_branch = df
+	else:
+		df_branch = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]
+
+	df_conf_branch = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= previous_conf)&(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= current_conf)]
+
+	n_samples = len(df_conf_branch)
+
+	correct = df_conf_branch["correct_branch_%s"%(idx_branch+1)].sum()
+
+	n_samples = len(df_conf_branch["correct_branch_%s"%(idx_branch+1)].values)
+
+	expected_correct = correct/n_samples if (n_samples>0) else 0
+	#expected_correct = df_conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
+
+	return expected_correct
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
