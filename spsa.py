@@ -516,23 +516,10 @@ def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
 
 	if (len(data_conf) > 0):
 
-		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-		#print(len(data_conf))
-		model.fit(data_conf)
-		log_dens = model.score_samples(conf_col)
+		a = numpy.histogram(data_conf, bins=100, density=True)
 
-		pdf_values = np.exp(log_dens)
-		#print(pdf_values.shape)
 
-		#kde = gaussian_kde(data_conf)
-
-		#conf_d = np.linspace(threshold, 1, 100)
-
-		#pdf_values = kde.evaluate(conf_d)
-
-		#print(pdf_values.shape)
-
-		expected_correct, pdf_values = compute_P_l(df, data_conf, conf_d, idx_branch, temp_list)
+		expected_correct, pdf_values = compute_P_l(df, a, conf_d, idx_branch, temp_list)
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 		product = expected_correct*pdf_values
