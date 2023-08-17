@@ -519,7 +519,7 @@ def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
 		a = np.histogram(data_conf, bins=100, density=True)
 
 
-		expected_correct, pdf_values = compute_P_l(df, a, conf_d, idx_branch, temp_list)
+		expected_correct, pdf_values = compute_P_l(df, a, data_conf, idx_branch, temp_list)
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 		product = expected_correct*pdf_values
