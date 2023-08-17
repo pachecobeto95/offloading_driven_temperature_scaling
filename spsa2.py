@@ -327,28 +327,12 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	conf_d = np.linspace(threshold, 1, 100)
 	print(conf_d)
-	sys.exit()
 
+	for i in range(1, 101):
+		delta_conf = conf_d[i] - conf_d[i-1]
+		print(delta_conf)
+		sys.exit()
 
-def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
-
-	expected_correct_list, pdf_list = [], []
-
-	for i, conf in enumerate(confs):
-		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
-		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
-
-		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
-
-		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
-
-		expected_correct = correct/n_samples if (n_samples>0) else 0
-		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
-
-		if (expected_correct is not np.nan):
-			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
-
-	return np.array(expected_correct_list), np.array(pdf_list)
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
