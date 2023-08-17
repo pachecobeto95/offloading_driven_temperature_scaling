@@ -513,13 +513,15 @@ def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
 	
 	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
 	data_conf = confs/temp_list[idx_branch] 
+	conf_d = np.linspace(threshold, 1, 100)
+
 
 	if (len(data_conf) > 0):
 
 		a = np.histogram(data_conf, bins=100, density=True)
 
 
-		expected_correct, pdf_values = compute_P_l(df, a, data_conf, idx_branch, temp_list)
+		expected_correct, pdf_values = compute_P_l(df, a, conf_d, idx_branch, temp_list)
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 		product = expected_correct*pdf_values
