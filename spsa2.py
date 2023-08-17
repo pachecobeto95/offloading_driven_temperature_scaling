@@ -350,14 +350,14 @@ def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
 
 	conf_d = np.linspace(threshold, 1, 100)
 	conf_col = conf_d[:, np.newaxis]
-	print(conf_col)
-	print(conf_col.shape)
-	sys.exit()
+	#print(conf_col)
+	#print(conf_col.shape)
+	#sys.exit()
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
 	model.fit(data_conf)
-	log_dens = model.score_samples(current_conf)
+	log_dens = model.score_samples(np.array([current_conf]))
 
 	pdf_values = np.exp(log_dens)
 	print(pdf_values)
