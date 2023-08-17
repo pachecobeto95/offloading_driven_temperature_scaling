@@ -501,6 +501,51 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	return prob_success_branch
 
 
+def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
+
+	n_samples = len(df)
+
+	if(idx_branch == 0):
+		confs = df["conf_branch_%s"%(idx_branch+1)].values
+
+	else:
+		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
+	
+	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
+	data_conf = confs/temp_list[idx_branch] 
+
+	if (len(data_conf) > 0):
+
+		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		#print(len(data_conf))
+		model.fit(data_conf)
+		log_dens = model.score_samples(conf_col)
+
+		pdf_values = np.exp(log_dens)
+		#print(pdf_values.shape)
+
+		#kde = gaussian_kde(data_conf)
+
+		#conf_d = np.linspace(threshold, 1, 100)
+
+		#pdf_values = kde.evaluate(conf_d)
+
+		#print(pdf_values.shape)
+
+		expected_correct, pdf_values = compute_P_l(df, data_conf, conf_d, idx_branch, temp_list)
+		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
+
+		product = expected_correct*pdf_values
+
+		#Integrate
+		prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
+
+	else:
+		prob_success_branch = 0
+
+	return prob_success_branch
+
+
 def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_step=0.01, n_bins=15):
 
 	bin_boundaries = np.linspace(0, 1, n_bins)
