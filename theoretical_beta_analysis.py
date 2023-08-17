@@ -1,9 +1,9 @@
 import os, time, sys, json, os, argparse, torch
-import config, utils, spsa, temperature_scaling, ee_nn
+import config, utils, temperature_scaling, ee_nn
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
-
+import spsa2 as spsa
 
 
 #def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
