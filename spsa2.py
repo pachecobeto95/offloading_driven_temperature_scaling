@@ -347,7 +347,7 @@ def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
 
 	data_conf = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
 	print(type(data_conf))
-	data_conf = random.sample(list(data_conf), 100)	
+	data_conf = np.array(random.sample(list(data_conf), 100))
 	print(type(data_conf))
 	data_conf = data_conf[:, np.newaxis]
 	sys.exit()
