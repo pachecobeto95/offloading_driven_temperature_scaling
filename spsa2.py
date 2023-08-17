@@ -326,7 +326,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	conf_d = np.linspace(threshold, 1, 100)
-	print()
+	print(conf_d)
 	sys.exit()
 
 
