@@ -555,7 +555,9 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 		if (expected_correct is not np.nan):
 			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
-
+		else:
+			expected_correct_list.append(0), pdf_list.append(pdf[i])
+	
 	return np.array(expected_correct_list), np.array(pdf_list)
 
 
