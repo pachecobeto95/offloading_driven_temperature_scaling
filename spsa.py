@@ -5,7 +5,7 @@ import config
 import pandas as pd
 from sklearn.neighbors import KernelDensity
 from scipy.stats import norm, gaussian_kde
-import matplot.pyplot as plt
+import matplotlib.pyplot as plt
 
 class Bernoulli(object):
 	'''
