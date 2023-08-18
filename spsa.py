@@ -502,7 +502,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
 
 		product = expected_correct*pdf_values
-		print(product)
 
 		#Integrate
 		prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
