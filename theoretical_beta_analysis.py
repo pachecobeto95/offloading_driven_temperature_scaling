@@ -29,9 +29,9 @@ def extractGlobalTSTemperature(args, temp_data_path, threshold, n_branches_edge)
 	return df_temp[temp_list].values
 
 
-def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode):
+def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode, mode):
 	result = {"beta_acc": beta_acc, "beta_inf_time": beta_inf_time, "ee_prob": ee_prob, "threshold": threshold, "n_branches_edge": n_branches_edge, "beta": beta, 
-	"calib_mode": calib_mode, "overhead": overhead}
+	"calib_mode": calib_mode, "overhead": overhead, "mode": mode}
 
 	for i in range(max_branches):
 
@@ -51,27 +51,28 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 	for beta in beta_list:
 		print("Beta: %s"%(beta))
 
-		beta_theta, beta_opt_loss = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
+		beta_theta_exp, beta_opt_loss_exp = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
 			args.a0, args.c, args.alpha, args.gamma, overhead, "exp")
 
-		beta_theta1, beta_opt_loss1 = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
+		beta_theta_theo, beta_opt_loss_theo = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
+			args.a0, args.c, args.alpha, args.gamma, overhead, "theo")
 
 
-		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
-		beta_acc1, beta_ee_prob1 = spsa.accuracy_edge(beta_theta1, n_branches_edge, threshold, df_inf_data)
+		beta_acc_exp, beta_ee_prob_exp = spsa.accuracy_edge(beta_theta_exp, n_branches_edge, threshold, df_inf_data)
+		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, threshold, df_inf_data)
 
 		if(n_branches_edge == 1):
-			beta_inf_time, _ = spsa.compute_inference_time(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			beta_inf_time, _ = spsa.compute_inference_time(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 		else:
-			beta_inf_time, _ = spsa.compute_inference_time_multi_branches(beta_theta, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-			beta_inf_time1, _ = spsa.compute_inference_time_multi_branches(beta_theta1, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			beta_inf_time_exp, _ = spsa.compute_inference_time_multi_branches(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			beta_inf_time_theo, _ = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		print("Test")
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc, beta_inf_time, beta_ee_prob))
 		print(beta_acc1, beta_inf_time1, beta_ee_prob1)
 
-		save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, beta_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+		save_beta_results(savePath, beta_theta_exp, beta_acc_exp, beta_inf_time_exp, beta_ee_prob_exp, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="exp")
+		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
 
 def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, overhead, calib_mode):
@@ -89,7 +90,7 @@ def runNoCalibInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, 
 	else:
 		no_calib_inf_time, a = spsa.compute_inference_time_multi_branches(temp_list, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
-	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+	save_beta_results(savePath, temp_list, no_calib_acc, no_calib_inf_time, no_calib_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
 def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, savePath, global_ts_path, overhead, calib_mode):
 
@@ -109,7 +110,7 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 			global_ts_inf_time, ee_prob = spsa.compute_inference_time_multi_branches(temperature_overall, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 
-		save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode)
+		save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
 
 def main(args):
@@ -133,10 +134,10 @@ def main(args):
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.8, 0.9]
+	threshold_list = [0.7, 0.75, 0.8, 0.85, 0.9]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
-	beta_list = [np.arange(10*i, 10*(i+1), 0.5) for i in range(10)]
-	beta_list = [[70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 100]]
+	beta_list = [np.arange(10*i, 10*(i+1), 1) for i in range(10)]
+	#beta_list = [[70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 100]]
 	#beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
 	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	beta_list = beta_list[args.slot_beta]
