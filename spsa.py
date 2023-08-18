@@ -461,7 +461,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		num_exit_branch = len(confs)
 		previous_exit_prob = num_exit_branch/len(df)
 	
-	print(previous_exit_prob)
+	print(previous_exit_prob, idx_branch)
 	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
 	data_conf = confs/temp_list[idx_branch] 
 	#data_conf = np.float64(data_conf)
