@@ -556,18 +556,45 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
+def accuracy_edge(temp_list, n_branches, threshold, df):
+
+	"""
+	This function computes the accuracy on the edge
+	return avg_inf_time
+
+	Inputs:
+		temp_list:  temperature vector
+		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
+		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
+					side branches at the edge device.
+		n_branches: number of side branches that is placed at the edge device.
+
+	Outputs:
+		acc_edge: is the accuracy obtained by the side branches at the edge device.
+	"""
+	
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
 
-	confs = df["conf_branch_%s"%(n_branches)]
-	calib_confs = confs/temp_list[n_branches-1]
-	early_exit_samples = calib_confs >= threshold
+	remaining_data = df
 
-	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
 
-	prob = numexits/n_samples
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
-	return prob
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
 
+		remaining_data = remaining_data[~early_exit_samples]
+
+	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
+	early_classification_prob = sum(numexits)/n_samples
+
+	#return - acc_edge, early_classification_prob
+	return early_classification_prob
 
 def overall_accuracy(temp_list, n_branches_edge, threshold, df):
 
