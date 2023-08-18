@@ -453,6 +453,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	n_samples = len(df)
 
+	pdf_values = plt.hist(df["conf_branch_%s"%(idx_branch+1)].values, bins=500, density=True)[0]
+
 	if(idx_branch == 0):
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
 		previous_exit_prob = 1
@@ -487,8 +489,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		#pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
 
-		pdf_values = previous_exit_prob*plt.hist(data_conf, bins=500, density=True)[0]
-
+		#pdf_values = previous_exit_prob*plt.hist(data_conf, bins=500, density=True)[0]
+		pdf_values = previous_exit_prob*pdf_values
 
 		#kde = gaussian_kde(data_conf)
 
