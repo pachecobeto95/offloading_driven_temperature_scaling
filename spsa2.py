@@ -326,10 +326,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	n_samples = len(df)
-	conf_d = np.linspace(threshold, 1, 200)
+	conf_d = np.linspace(threshold, 1, 100)
 
 	pdf_values = compute_cond_prob(df, temp_list, threshold, idx_branch)
 	expectation = compute_expectation(df, temp_list, threshold, idx_branch, conf_d)
+	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*expectation[i] for i in range(len(conf_d) - 1) ])
+	return prob_success_branch
 
 
 def compute_cond_prob(df, temp_list, threshold, idx_branch):
@@ -371,13 +373,15 @@ def compute_expectation(df, temp_list, threshold, idx_branch, confs):
 		df_conf_branch = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= confs[i])&(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= confs[i+1])]
 
 		correct = df_conf_branch["correct_branch_%s"%(idx_branch+1)].sum()
+		numexits = df_conf_branch["correct_branch_%s"%(idx_branch+1)].count()
+		a = numexits/len(df_branch)
 
 		n_samples = len(df_conf_branch["correct_branch_%s"%(idx_branch+1)].values)
 
 		expected_correct = correct/n_samples if (n_samples>0) else 0
 		#expected_correct = df_conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
 		#print(confs[i], confs[i+1], expected_correct, expected_correct1)
-		expected_correct_list.append(expected_correct)	
+		expected_correct_list.append(expected_correct*a)	
 
 
 	return expected_correct_list
