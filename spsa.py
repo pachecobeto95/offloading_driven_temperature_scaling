@@ -482,8 +482,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 		log_dens = model.score_samples(conf_col)
 
-		pdf_values = previous_exit_prob*np.exp(log_dens)
-
+		#pdf_values = previous_exit_prob*np.exp(log_dens)
+		pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
 
 		#kde = gaussian_kde(data_conf)
