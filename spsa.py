@@ -476,15 +476,18 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	if (len(data_conf) > 0):
 
-		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		#model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
-		model.fit(data_conf)
+		#model.fit(data_conf)
 
-		log_dens = model.score_samples(conf_col)
+		#log_dens = model.score_samples(conf_col)
 
 		#pdf_values = previous_exit_prob*np.exp(log_dens)
-		pdf_values = np.exp(log_dens)
+		#pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
+
+		pdf_values = plt.hist(data_conf, bins=100, density=True)[0]
+
 
 		#kde = gaussian_kde(data_conf)
 
