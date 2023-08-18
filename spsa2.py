@@ -325,15 +325,13 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
-	conf_d = np.linspace(threshold, 1, 100)
-	result = 0
+	n_samples = len(df)
+	conf_d = np.linspace(threshold, 1, 200)
 
-	for i in range(1, 101):
-		delta_conf = conf_d[i] - conf_d[i-1]
+	print(conf_d)
+	sys.exit()
 
-		expectation = compute_expectation(df, temp_list, threshold, idx_branch, conf_d[i-1], conf_d[i])
-		
-		cond_prob = compute_cond_prob(df, temp_list, threshold, idx_branch, conf_d[i])		
+
 
 def compute_cond_prob(df, temp_list, threshold, idx_branch, current_conf):
 
