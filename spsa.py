@@ -457,7 +457,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		previous_exit_prob = 1
 
 	else:
-		confs = df[df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < threshold]["conf_branch_%s"%(idx_branch+1)].values
+		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
 		num_exit_branch = len(confs)
 		previous_exit_prob = num_exit_branch/len(df)
 	
@@ -467,6 +467,8 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	#data_conf = np.float64(data_conf)
 	#print(data_conf)
 	#data_conf = data_conf[data_conf < 1E308]
+	data_conf = np.array(random.sample(list(data_conf), 100))
+
 	data_conf = data_conf[:, np.newaxis]
 	#print(data_conf)
 
