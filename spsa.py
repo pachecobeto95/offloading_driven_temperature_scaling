@@ -474,7 +474,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
 		model.fit(data_conf)
-		log_dens = model.score_samples(conf_col)
+		log_dens = model.score_samples(data_conf)
 
 		pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
