@@ -507,40 +507,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	return prob_success_branch
 
-
-def compute_prob_success_branch2(temp_list, idx_branch, threshold, df):
-
-	n_samples = len(df)
-
-	if(idx_branch == 0):
-		confs = df["conf_branch_%s"%(idx_branch+1)].values
-
-	else:
-		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
-	
-	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
-	data_conf = confs/temp_list[idx_branch] 
-	conf_d = np.linspace(threshold, 1, 100)
-
-
-	if (len(data_conf) > 0):
-
-		a, _ = np.histogram(data_conf, bins=100, density=True)
-
-		expected_correct, pdf_values = compute_P_l(df, a, conf_d, idx_branch, temp_list)
-		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
-
-		product = expected_correct*pdf_values
-
-		#Integrate
-		prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
-
-	else:
-		prob_success_branch = 0
-
-	return prob_success_branch
-
-
 def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_step=0.01, n_bins=15):
 
 	bin_boundaries = np.linspace(0, 1, n_bins)
@@ -590,17 +556,26 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
+	numexits = np.zeros(n_branches)
 	n_samples = len(df)
 
-	confs = df["conf_branch_%s"%(n_branches)]
-	calib_confs = confs/temp_list[n_branches-1]
-	early_exit_samples = calib_confs >= threshold
+	remaining_data = df
 
-	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
 
-	prob = numexits/n_samples
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
-	return prob
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	early_classification_prob = sum(numexits)/n_samples
+
+	#return - acc_edge, early_classification_prob
+	return early_classification_prob
 
 
 def overall_accuracy(temp_list, n_branches_edge, threshold, df):
