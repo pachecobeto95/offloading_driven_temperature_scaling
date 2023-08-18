@@ -368,7 +368,7 @@ def compute_expectation(df, temp_list, threshold, idx_branch, confs):
 
 	for i in range(len(confs) - 1):
 	
-		df_conf_branch = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= conf[i])&(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= conf[i+1])]
+		df_conf_branch = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= confs[i])&(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= confs[i+1])]
 
 		correct = df_conf_branch["correct_branch_%s"%(idx_branch+1)].sum()
 
