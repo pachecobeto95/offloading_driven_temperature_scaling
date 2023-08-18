@@ -556,8 +556,6 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
-def accuracy_edge(temp_list, n_branches, threshold, df):
-
 	"""
 	This function computes the accuracy on the edge
 	return avg_inf_time
