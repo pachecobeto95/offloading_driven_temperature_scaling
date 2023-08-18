@@ -487,7 +487,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		#pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
 
-		pdf_values = plt.hist(data_conf, bins=100, density=True)[0]
+		pdf_values = previous_exit_prob*plt.hist(data_conf, bins=100, density=True)[0]
 
 
 		#kde = gaussian_kde(data_conf)
