@@ -467,7 +467,6 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	#data_conf = np.float64(data_conf)
 	#print(data_conf)
 	#data_conf = data_conf[data_conf < 1E308]
-	data_conf = np.array(random.sample(list(data_conf), 100))
 
 	data_conf = data_conf[:, np.newaxis]
 	#print(data_conf)
@@ -480,7 +479,9 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
 		model.fit(data_conf)
-		log_dens = model.score_samples(conf_col)
+		data_conf = np.array(random.sample(list(data_conf), 100))
+
+		log_dens = model.score_samples(data_conf)
 
 		pdf_values = np.exp(log_dens)
 		pdf_values = pdf_values
