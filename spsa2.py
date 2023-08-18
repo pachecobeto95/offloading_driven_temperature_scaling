@@ -328,7 +328,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	n_samples = len(df)
 	conf_d = np.linspace(threshold, 1, 100)
 
-	pdf_values = compute_cond_prob(df, temp_list, threshold, idx_branch)
+	#pdf_values = compute_cond_prob(df, temp_list, threshold, idx_branch)
 	expectation = compute_expectation(df, temp_list, threshold, idx_branch, conf_d)
 	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*expectation[i] for i in range(len(conf_d) - 1) ])
 	return prob_success_branch
