@@ -439,6 +439,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
+		print(num)
 	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
