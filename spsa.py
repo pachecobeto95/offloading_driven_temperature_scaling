@@ -551,7 +551,7 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
 		expected_correct = correct/n_samples if (n_samples>0) else 0
-		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
+		#expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
 
 		if (expected_correct is not np.nan):
 			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
