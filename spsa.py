@@ -439,8 +439,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-		print(num)
-	
+
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
 	acc = num/den if (den>0) else 0
@@ -473,7 +472,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	data_conf = data_conf[:, np.newaxis]
 	#print(data_conf)
 
-	conf_d = np.linspace(threshold, 1, 100)
+	conf_d = np.linspace(threshold, 1, 500)
 	conf_col = conf_d[:, np.newaxis]
 
 	if (len(data_conf) > 0):
@@ -488,7 +487,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		#pdf_values = np.exp(log_dens)
 		#print(pdf_values.shape)
 
-		pdf_values = previous_exit_prob*plt.hist(data_conf, bins=100, density=True)[0]
+		pdf_values = previous_exit_prob*plt.hist(data_conf, bins=500, density=True)[0]
 
 
 		#kde = gaussian_kde(data_conf)
