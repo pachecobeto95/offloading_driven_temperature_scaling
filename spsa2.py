@@ -376,7 +376,7 @@ def compute_expectation(df, temp_list, threshold, idx_branch, confs):
 
 		expected_correct = correct/n_samples if (n_samples>0) else 0
 		expected_correct = df_conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
-		print(conf[i], conf[i+1], expected_correct)
+		print(confs[i], confs[i+1], expected_correct)
 		expected_correct_list.append(expected_correct)	
 
 
