@@ -461,7 +461,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		num_exit_branch = len(confs)
 		previous_exit_prob = num_exit_branch/len(df)
 	
-	print(previous_exit_prob, idx_branch)
+	#print(previous_exit_prob, idx_branch)
 	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
 	data_conf = confs/temp_list[idx_branch] 
 	#data_conf = np.float64(data_conf)
@@ -480,10 +480,10 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 		#print(len(data_conf))
 		model.fit(data_conf)
-		log_dens = model.score_samples(data_conf)
+		log_dens = model.score_samples(conf_col)
 
 		pdf_values = np.exp(log_dens)
-		pdf_values = previous_exit_prob*pdf_values
+		pdf_values = pdf_values
 		#print(pdf_values.shape)
 
 		#kde = gaussian_kde(data_conf)
