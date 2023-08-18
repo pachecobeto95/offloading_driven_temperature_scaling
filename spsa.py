@@ -556,26 +556,17 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
-	numexits = np.zeros(n_branches)
 	n_samples = len(df)
 
-	remaining_data = df
+	confs = df["conf_branch_%s"%(n_branches)]
+	calib_confs = confs/temp_list[n_branches-1]
+	early_exit_samples = calib_confs >= threshold
 
-	for i in range(n_branches):
-		current_n_samples = len(remaining_data)
+	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
 
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
+	prob = numexits/n_samples
 
-		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	early_classification_prob = sum(numexits)/n_samples
-
-	#return - acc_edge, early_classification_prob
-	return early_classification_prob
+	return prob
 
 
 def overall_accuracy(temp_list, n_branches_edge, threshold, df):
