@@ -52,10 +52,10 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 		print("Beta: %s"%(beta))
 
 		beta_theta, beta_opt_loss = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
+			args.a0, args.c, args.alpha, args.gamma, overhead, "exp")
 
 		beta_theta1, beta_opt_loss1 = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-			args.a0, args.c, args.alpha, args.gamma, overhead, "exp")
+			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
 
 		beta_acc, beta_ee_prob = spsa.accuracy_edge(beta_theta, n_branches_edge, threshold, df_inf_data)
