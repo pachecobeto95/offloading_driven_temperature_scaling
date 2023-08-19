@@ -328,7 +328,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge = sum(correct_list)/numexits if(numexits > 0) else 0
 
-	#return - acc_edge, early_classification_prob
 	return acc_edge, early_classification_prob
 
 
@@ -336,11 +335,12 @@ def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
 	n_samples = len(df)
 
-	confs = df["conf_branch_%s"%(n_branches)]
-	calib_confs = confs/temp_list[n_branches-1]
-	early_exit_samples = calib_confs >= threshold
+	confs = df[(df["conf_branch_3"]/temp_list[2] >= threshold) | (df["conf_branch_2"]/temp_list[1] >= threshold)]
+	#calib_confs = confs/temp_list[n_branches-1]
+	#early_exit_samples = calib_confs >= threshold
 
-	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
+	#numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
+	numexits = len(confs)
 
 	prob = numexits/n_samples
 
