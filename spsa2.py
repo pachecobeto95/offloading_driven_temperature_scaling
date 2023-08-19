@@ -307,84 +307,30 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
-	num = 0
+
+	remaining_data = df
 
 	for i in range(n_branches):
-		
-		num += compute_prob_success_branch(temp_list, i, threshold, df)
-	
-	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
+		current_n_samples = len(remaining_data)
 
-	acc = num/den if (den>0) else 0
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
-	#return - acc, den
-	return	acc, den
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
 
+		remaining_data = remaining_data[~early_exit_samples]
 
+	n_correct = sum(correct_list)
+	early_classification_prob, numexits = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
-def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
+	acc_edge = n_correct/numexits
 
-	n_samples = len(df)
-	conf_d = np.linspace(threshold, 1, 100)
+	return acc_edge, early_classification_prob
 
-	#pdf_values = compute_cond_prob(df, temp_list, threshold, idx_branch)
-	expectation = compute_expectation(df, temp_list, threshold, idx_branch, conf_d)
-	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*expectation[i] for i in range(len(conf_d) - 1) ])
-	return prob_success_branch
-
-
-def compute_cond_prob(df, temp_list, threshold, idx_branch):
-
-	if(idx_branch == 0):
-		previous_exit_prob = 1
-		df_branch = df
-	else:
-		df_branch = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]
-		num_exit_branch = df_branch["conf_branch_%s"%(idx_branch)].count()
-		previous_exit_prob = num_exit_branch/len(df)
-
-	confs = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
-	confs = confs[:, np.newaxis]
-
-	pdf_values = computeKDE(confs, previous_exit_prob, threshold)
-
-def computeKDE(confs, previous_exit_prob, threshold):
-
-	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-	model.fit(confs)
-	log_dens = model.score_samples(confs)
-
-	pdf_values = previous_exit_prob*np.exp(log_dens)
-
-	return pdf_values
-
-def compute_expectation(df, temp_list, threshold, idx_branch, confs):
-
-	expected_correct_list = []
-
-	if(idx_branch == 0):
-		df_branch = df
-	else:
-		df_branch = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]	
-
-	for i in range(len(confs) - 1):
-	
-		df_conf_branch = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= confs[i])&(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= confs[i+1])]
-
-		correct = df_conf_branch["correct_branch_%s"%(idx_branch+1)].sum()
-		numexits = df_conf_branch["correct_branch_%s"%(idx_branch+1)].count()
-		a = numexits/len(df_branch)
-
-		n_samples = len(df_conf_branch["correct_branch_%s"%(idx_branch+1)].values)
-
-		expected_correct = correct/n_samples if (n_samples>0) else 0
-		#expected_correct = df_conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
-		#print(confs[i], confs[i+1], expected_correct, expected_correct1)
-		expected_correct_list.append(expected_correct*a)	
-
-
-	return expected_correct_list
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
@@ -399,50 +345,8 @@ def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
 	prob = numexits/n_samples
 
-	return prob
+	return prob, numexits
 
-
-def overall_accuracy(temp_list, n_branches_edge, threshold, df):
-
-	"""
-	This function computes the accuracy on the edge
-	return avg_inf_time
-
-	Inputs:
-		temp_list:  temperature vector
-		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
-		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
-					side branches at the edge device.
-		n_branches_edge: number of side branches at the edge device.
-
-	Outputs:
-		acc_edge: is the accuracy obtained by the side branches at the edge device.
-	"""
-	
-	n_exits = n_branches_edge + 1
-	numexits, correct_list = np.zeros(n_exits), np.zeros(n_exits)
-	n_samples = len(df)
-
-	remaining_data = df
-
-	for i in range(n_branches_edge):
-		current_n_samples = len(remaining_data)
-
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
-
-		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	
-	correct_list[-1] = remaining_data["correct_branch_%s"%(n_exits)].sum()
-	numexits[-1] = remaining_data["conf_branch_%s"%(n_exits)].count()
-
-	overall_acc = sum(correct_list)/n_samples
-	return overall_acc, 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 
@@ -499,24 +403,6 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, m
 	theta_opt, loss_opt = optim.min()
 
 	return theta_opt, loss_opt
-
-
-def run_overall_acc_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, 
-	a0, c, alpha, gamma, overhead, mode, epsilon=0.00001):
-
-	max_exits = max_branches + 1
-
-	theta_initial, min_bounds = 1.5*np.ones(max_branches), np.zeros(max_branches)+epsilon
-
-	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_overall_accuracy_function, theta_initial, max_iter, max_branches, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
-
-	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt = optim.min()
-
-	return theta_opt, loss_opt
-
 
 
 def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_branches, metric):
