@@ -327,7 +327,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	n_correct = sum(correct_list)
 	early_classification_prob, numexits = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
-	acc_edge = n_correct/numexits
+	acc_edge = n_correct/numexits if(numexits > 0) else 0
 
 	return acc_edge, early_classification_prob
 
