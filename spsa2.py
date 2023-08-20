@@ -329,7 +329,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		remaining_data = remaining_data[~early_exit_samples]
 
 	prob = numexits/n_samples
-	product = sum(np.array(expectation_list)*prob)
+	product = sum(np.array(expectation_list))
 
 	return product, early_classification_prob
 
