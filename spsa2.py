@@ -324,9 +324,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	print(acc_edge)
-	print(np.mean(expectation_list))
-
+	print(acc_edge, np.mean(expectation_list))
+	
 	return acc_edge, early_classification_prob
 
 
