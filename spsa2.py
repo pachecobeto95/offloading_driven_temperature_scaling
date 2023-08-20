@@ -338,6 +338,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 			integration += delta_conf*product
 		prob_success = integration
 		print(prob_success, acc_edge)
+	return acc_edge, early_classification_prob
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
 
