@@ -313,44 +313,31 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	expectation_list = []
 	numexits = np.zeros(n_branches)
 
-	for i in range(n_branches):
-		current_n_samples = len(remaining_data)
-
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
-
-		numexits[i] = len(remaining_data[early_exit_samples])
-
-		expectation_branch = compute_expectation(remaining_data[early_exit_samples], temp_list, i, threshold)		
-
-		expectation_list.append(expectation_branch)		
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	prob = numexits/n_samples
-	product = sum(np.array(expectation_list))
-
-	return product, early_classification_prob
-
-
-def compute_expectation(data, temp_list, idx_branch, threshold):		
-
 	confs = np.linspace(threshold, 1, 10)
-	expectation_list, prob_list = [], []
 
-	for i in range(len(confs) - 1):
-		conf_branch = data[(data["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= confs[i]) & (data["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= confs[i+1])]
-		expectation = conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
-		prob = conf_branch["conf_branch_%s"%(idx_branch+1)].count()/len(data)
 
-		expectation_list.append(expectation), prob_list.append(prob)
+	for i in range(n_branches):
+		integration = 0
 
-	product = sum(np.array(expectation_list)*np.array(prob_list))
-	print(product)
+		if(i == 0):
+			df_prob = df
+			prob = 0
+		else:
+			df_prob = df[df["conf_branch_%s"%(i)]/temp_list[i-1] >= threshold]
+			prob = len(df_prob)/len(df)
 
-	return product
+		for j in range(len(confs) - 1):
+			delta_conf = confs[j+1] - confs[j]
+			expectation_data = df[(df["conf_branch_%s"%(i+1)]/temp_list[i] >= confs[j]) & (df["conf_branch_%s"%(i+1)]/temp_list[i] <= confs[j+1])]
+			expectation = expectation_data["correct_branch_%s"%(i)].mean()
 
+			pdf = prob*np.histogram(df_prob["conf_branch_%s"%(i+1)].values, bin=10, density=True)[0]
+
+			product = expectation*pdf
+
+			integration += delta_conf*product
+		prob_success = integration
+		print(prob_success, acc_edge)
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
 
