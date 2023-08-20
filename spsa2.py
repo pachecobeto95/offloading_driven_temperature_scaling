@@ -313,7 +313,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	expected_correct_list = []
 
 	for i in range(len(confs_d) - 1):
-		data = df[(df["conf_branch_%s"%(idx_branch+1)] >= confs[i]) & (df["conf_branch_%s"%(idx_branch+1)] <= confs[i+1])]
+		data = df[(df["conf_branch_%s"%(3)] >= confs[i]) & (df["conf_branch_%s"%(3)] <= confs[i+1])]
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
