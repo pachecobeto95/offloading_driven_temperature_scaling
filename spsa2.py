@@ -326,17 +326,18 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 			df_prob = df[df["conf_branch_%s"%(i)]/temp_list[i-1] >= threshold]
 			prob = len(df_prob)/len(df)
 
+		pdf = prob*np.histogram(df_prob["conf_branch_%s"%(i+1)].values, bins=10, density=True)[0]
+		
 		for j in range(len(confs) - 1):
 			delta_conf = confs[j+1] - confs[j]
 			expectation_data = df[(df["conf_branch_%s"%(i+1)]/temp_list[i] >= confs[j]) & (df["conf_branch_%s"%(i+1)]/temp_list[i] <= confs[j+1])]
 			expectation = expectation_data["correct_branch_%s"%(i+1)].mean()
+			expectation_list.append(expectation), delta_conf_list.append(delta_conf)
 
-			pdf = prob*np.histogram(df_prob["conf_branch_%s"%(i+1)].values, bins=10, density=True)[0]
+			
 
-			product = expectation*pdf
-
-			integration += delta_conf*product
-		prob_success = integration
+		product = sum(np.array(delta_conf_list)*np.array(expectation_list)*pdf)
+		prob_success = product
 		print(prob_success, acc_edge)
 	return acc_edge, early_classification_prob
 
