@@ -319,7 +319,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		n_samples = len(data["correct_branch_%s"%(3)].values)
 
-		expected_correct = correct/n_samples if (n_samples>0) else 0
+		#expected_correct = correct/n_samples if (n_samples>0) else 0
+		expected_correct = (data["conf_branch_%s"%(3)]/temp_list[2]).mean()		
 		expected_correct_list.append(expected_correct)
 
 	print(acc_edge, np.mean(expected_correct_list))
