@@ -322,7 +322,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		numexits[i] = len(remaining_data[early_exit_samples])
 
-		expectation_branch = compute_expectation(remaining_data[early_exit_samples], i, threshold)		
+		expectation_branch = compute_expectation(remaining_data[early_exit_samples], temp_list, i, threshold)		
 
 		expectation_list.append(expectation_branch)		
 
@@ -334,13 +334,13 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return product, early_classification_prob
 
 
-def compute_expectation(data, idx_branch, threshold):		
+def compute_expectation(data, temp_list, idx_branch, threshold):		
 
 	confs = np.linspace(threshold, 1, 10)
 	expectation_list, prob_list = [], []
 
 	for i in range(len(confs) - 1):
-		conf_branch = data[(data["conf_branch_%s"%(idx_branch+1)] >= confs[i]) & (data["conf_branch_%s"%(idx_branch+1)] <= confs[i+1])]
+		conf_branch = data[(data["conf_branch_%s"%(idx_branch+1)]/temp_list[i] >= confs[i]) & (data["conf_branch_%s"%(idx_branch+1)]/temp_list[i] <= confs[i+1])]
 		expectation = conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
 		prob = conf_branch["conf_branch_%s"%(idx_branch+1)].count()
 	
