@@ -314,6 +314,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	numexits = np.zeros(n_branches)
 
 	confs = np.linspace(threshold, 1, 10)
+	delta_conf_list = []
 
 	for i in range(n_branches):
 		integration = 0
