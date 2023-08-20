@@ -343,10 +343,12 @@ def compute_expectation(data, temp_list, idx_branch, threshold):
 		conf_branch = data[(data["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] >= confs[i]) & (data["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] <= confs[i+1])]
 		expectation = conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
 		prob = conf_branch["conf_branch_%s"%(idx_branch+1)].count()/len(data)
-	
+
 		expectation_list.append(expectation), prob_list.append(prob)
 
 	product = sum(np.array(expectation_list)*np.array(prob_list))
+	print(product)
+
 	return product
 
 
