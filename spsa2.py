@@ -333,7 +333,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print(acc_edge, product)
 
-	return acc_edge, early_classification_prob
+	return product, early_classification_prob
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
