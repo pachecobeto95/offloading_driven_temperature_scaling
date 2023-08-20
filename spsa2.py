@@ -331,7 +331,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	prob = numexits/n_samples
 	product = sum(np.array(expectation_list)*prob)
 
-	print(acc_edge, product)
+	#print(acc_edge, product)
 
 	return acc_edge, early_classification_prob
 
