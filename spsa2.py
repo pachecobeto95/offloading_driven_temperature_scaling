@@ -307,26 +307,23 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
-	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
-	n_samples = len(df)
+	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-	remaining_data = df
+	confs_d = np.linspace(threshold, 1, 100)
+	expected_correct_list = []
 
-	for i in range(n_branches):
-		current_n_samples = len(remaining_data)
+	for i in range(len(confs_d) - 1):
+		data = df[(df["conf_branch_%s"%(idx_branch+1)] >= confs[i]) & (df["conf_branch_%s"%(idx_branch+1)] <= confs[i+1])]
 
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
+		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
-		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
-		remaining_data = remaining_data[~early_exit_samples]
+		expected_correct = correct/n_samples if (n_samples>0) else 0
+		expected_correct_list.append(expected_correct)
 
-	early_classification_prob, numexits = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
+	print(acc_edge, np.mean(expected_correct_list))
 
-	acc_edge = sum(correct_list)/numexits if(numexits > 0) else 0
 
 	return acc_edge, early_classification_prob
 
