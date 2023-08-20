@@ -304,8 +304,53 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 	return avg_inference_time, early_classification_prob
 
 
-
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
+
+	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+
+	n_samples = len(df)
+	remaining_data = df
+	expectation_list = []
+	numexits = np.zeros(n_branches)
+
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
+
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
+
+		numexits[i] = len(remaining_data[early_exit_samples])
+
+		expectation_branch = compute_expectation(remaining_data[early_exit_samples], i, threshold)		
+
+		expectation_list.append(expectation_branch)		
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	prob = numexits/n_samples
+	product = sum(np.array(expectation_list)*prob)
+
+	return product, early_classification_prob
+
+
+def compute_expectation(data, idx_branch, threshold):		
+
+	confs = np.linspace(threshold, 1, 10)
+	expectation_list, prob_list = [], []
+
+	for i in range(len(conf_d) - 1):
+		conf_branch = data[(data["conf_branch_%s"%(idx_branch+1)] >= confs[i]) & (data["conf_branch_%s"%(idx_branch+1)] <= confs[i+1])]
+		expectation = conf_branch["conf_branch_%s"%(idx_branch+1)].mean()
+		prob = conf_branch["conf_branch_%s"%(idx_branch+1)].count()
+	
+		expectation_list.append(expectation), prob_list.append(prob)
+
+	product = sum(np.array(expectation_list)*np.array(prob_list))
+	return product
+
+
+def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
