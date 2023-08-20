@@ -309,22 +309,23 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-	confs = np.linspace(threshold, 1, 100)
-	expected_correct_list = []
+	remaining_data = df
+	expectation_list = []
 
-	for i in range(len(confs) - 1):
-		data = df[(df["conf_branch_%s"%(3)]/temp_list[2] >= confs[i]) & (df["conf_branch_%s"%(3)]/temp_list[2] <= confs[i+1])]
+	for i in range(n_branches):
+		current_n_samples = len(remaining_data)
 
-		correct = data["correct_branch_%s"%(3)].sum()
+		confs = remaining_data["conf_branch_%s"%(i+1)]
+		calib_confs = confs/temp_list[i]
+		early_exit_samples = calib_confs >= threshold
 
-		n_samples = len(data["correct_branch_%s"%(3)].values)
+		expectation = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].mean()
+		expectation_list.append(expectation)
 
-		#expected_correct = correct/n_samples if (n_samples>0) else 0
-		expected_correct = (data["conf_branch_%s"%(3)]/temp_list[2]).mean()		
-		expected_correct_list.append(expected_correct)
+		remaining_data = remaining_data[~early_exit_samples]
 
-	print(acc_edge, np.mean(expected_correct_list))
-
+	print(acc_edge)
+	print(np.mean(expectation_list))
 
 	return acc_edge, early_classification_prob
 
