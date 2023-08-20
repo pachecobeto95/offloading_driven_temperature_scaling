@@ -309,15 +309,15 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-	confs_d = np.linspace(threshold, 1, 100)
+	confs = np.linspace(threshold, 1, 100)
 	expected_correct_list = []
 
-	for i in range(len(confs_d) - 1):
+	for i in range(len(confs) - 1):
 		data = df[(df["conf_branch_%s"%(3)] >= confs[i]) & (df["conf_branch_%s"%(3)] <= confs[i+1])]
 
-		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
+		correct = data["correct_branch_%s"%(3)].sum()
 
-		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
+		n_samples = len(data["correct_branch_%s"%(3)].values)
 
 		expected_correct = correct/n_samples if (n_samples>0) else 0
 		expected_correct_list.append(expected_correct)
