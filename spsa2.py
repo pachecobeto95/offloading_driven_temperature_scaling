@@ -309,8 +309,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
+	n_samples = len(df)
 	remaining_data = df
 	expectation_list = []
+	numexits = np.zeros(n_branches)
 
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
@@ -319,13 +321,18 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		calib_confs = confs/temp_list[i]
 		early_exit_samples = calib_confs >= threshold
 
+		numexits[i] = len(remaining_data[early_exit_samples])
+
 		expectation = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].mean()
 		expectation_list.append(expectation)
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	print(acc_edge, np.mean(expectation_list))
-	
+	prob = numexits/n_samples
+	product = sum(np.array(expectation_list)*prob)
+
+	print(acc_edge, product)
+
 	return acc_edge, early_classification_prob
 
 
