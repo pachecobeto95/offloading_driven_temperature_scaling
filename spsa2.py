@@ -335,7 +335,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 			expectation_list.append(expectation), delta_conf_list.append(delta_conf)
 
 			
-
+		print(len(delta_conf_list), len(expectation_list), len(pdf))
 		product = sum(np.array(delta_conf_list)*np.array(expectation_list)*pdf)
 		prob_success = product
 		print(prob_success, acc_edge)
