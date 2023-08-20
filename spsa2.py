@@ -313,7 +313,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	numexits = np.zeros(n_branches)
 
 	confs = np.linspace(threshold, 1, 10)
-
+	prob_success = 0
+	
 	for i in range(n_branches):
 		expectation_list = []
 		delta_conf_list = []
@@ -334,10 +335,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 			expectation_list.append(expectation), delta_conf_list.append(delta_conf)
 
 			
-		print(len(delta_conf_list), len(expectation_list), len(pdf))
 		product = sum(np.array(delta_conf_list)*np.array(expectation_list)*pdf[1:])
-		prob_success = product
-		print(prob_success, acc_edge)
+		prob_success += product
+	print(prob_success, acc_edge)
+
 	return acc_edge, early_classification_prob
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
