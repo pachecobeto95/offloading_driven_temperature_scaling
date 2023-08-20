@@ -329,7 +329,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		for j in range(len(confs) - 1):
 			delta_conf = confs[j+1] - confs[j]
 			expectation_data = df[(df["conf_branch_%s"%(i+1)]/temp_list[i] >= confs[j]) & (df["conf_branch_%s"%(i+1)]/temp_list[i] <= confs[j+1])]
-			expectation = expectation_data["correct_branch_%s"%(i)].mean()
+			expectation = expectation_data["correct_branch_%s"%(i+1)].mean()
 
 			pdf = prob*np.histogram(df_prob["conf_branch_%s"%(i+1)].values, bin=10, density=True)[0]
 
