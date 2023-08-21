@@ -318,25 +318,40 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
 	conf_list = np.linspace(threshold, 1, 100)
 
-	expectation = compute_expectation(df, temp_list, conf_list, threshold, idx_branch)
-
+	expectation_list, confs_branch = compute_expectation(df, temp_list, conf_list, threshold, idx_branch)
+	pdf_values = compute_pdf(df, temp_list, confs_branch, threshold, idx_branch)
 
 def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
+	expectation_list = []
+
 	if(idx_branch == 0):
 		df_branch = df
 	else:
 		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
 
-	confs_branch = df_branch["conf_branch_%s"%(idx_branch+1)].values
+	confs_branch = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
 
 	for conf in confs_branch:
-		print(conf)
-		print()
-		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf])
-		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["conf_branch_%s"%(idx_branch+1)].mean())
-		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["correct_branch_%s"%(idx_branch+1)].mean())
+		#print(conf)
+		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf])
+		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["conf_branch_%s"%(idx_branch+1)].mean())
+		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["correct_branch_%s"%(idx_branch+1)].mean())
+		expectation = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]) == conf]["correct_branch_%s"%(idx_branch+1)].mean()
+		expectation_list.append(expectation)
 
-		sys.exit()
+	return expectation_list, confs_branch
+
+def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
+	if(idx_branch == 0):
+		df_branch = df
+	else:
+		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
+
+	df_conf_branch = df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]
+	pdf, bin_bounds = np.histogram(df_conf_branch.values, bins=100, density=True)
+	inds = np.digitize(conf_list, bin_bounds)
+	print(pdf)
+	sys.exit()
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
 
