@@ -5,6 +5,21 @@ import pandas as pd
 import spsa3 as spsa
 import torch.nn as nn
 
+def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode, mode):
+	result = {"beta_acc": beta_acc, "beta_inf_time": beta_inf_time, "ee_prob": ee_prob, "threshold": threshold, "n_branches_edge": n_branches_edge, "beta": beta, 
+	"calib_mode": calib_mode, "overhead": overhead, "mode": mode}
+
+	for i in range(max_branches):
+
+		temp_branch = beta_theta[i] if (i < max_branches) else np.nan
+
+		result["temp_branch_%s"%(i+1)] = temp_branch
+
+
+	df = pd.DataFrame([result])
+	df.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
+
+
 def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_data_device, threshold, n_branches_edge, beta_list, savePath, overhead, mode, calib_mode):
 	max_exits = args.n_branches + 1
 
