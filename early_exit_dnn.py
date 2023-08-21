@@ -577,6 +577,10 @@ class Early_Exit_DNN(nn.Module):
     self.set_device()
     self.softmax = nn.Softmax(dim=1)
 
+  def test(self, x):
+    print("oi")
+    sys.exit()
+
   def forward(self, x):
 
     conf_list, class_list, inference_time_list  = [], [], []
