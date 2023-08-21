@@ -3,6 +3,7 @@ import config, utils, spsa, ee_nn, temperature_scaling
 from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
+from tqdm import tqdm 
 
 
 def save_data(logit_branches, target, resultPath):
