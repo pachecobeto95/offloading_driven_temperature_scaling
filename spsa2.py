@@ -327,7 +327,7 @@ def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
 	else:
 		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
 
-	confs_branch = df_branch["conf_branch_%s"%(idx_branch)].values
+	confs_branch = df_branch["conf_branch_%s"%(idx_branch+1)].values
 	print(confs_branch)
 	sys.exit()
 
