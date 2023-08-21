@@ -239,7 +239,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		current_n_samples = len(remaining_data)
 
-		logit_branch = getLogitBranches(df, i)
+		logit_branch = getLogitBranches(remaining_data, i)
 
 		conf_list, infered_class_list = get_confidences(logit_branch, i, temp_list)
 
