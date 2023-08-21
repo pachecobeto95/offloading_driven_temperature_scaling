@@ -323,7 +323,7 @@ def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
 
 	product = expectation_list*pdf_values
 
-	prob_success_branch = np.sum([(conf_d[i+1] - conf_d[i])*product[i] for i in range(len(product) - 1) ])
+	prob_success_branch = np.sum([(confs_branch[i+1] - confs_branch[i])*product[i] for i in range(len(product) - 1) ])
 	return prob_success_branch
 
 
