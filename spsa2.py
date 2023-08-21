@@ -321,6 +321,10 @@ def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
 	expectation_list, confs_branch = compute_expectation(df, temp_list, conf_list, threshold, idx_branch)
 	pdf_values = compute_pdf(df, temp_list, confs_branch, threshold, idx_branch)
 
+	product_list = expectation_list*pdf_values
+	print(product_list)
+	sys.exit()
+
 def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
 	expectation_list = []
 
@@ -339,7 +343,7 @@ def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
 		expectation = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]) == conf]["correct_branch_%s"%(idx_branch+1)].mean()
 		expectation_list.append(expectation)
 
-	return expectation_list, confs_branch
+	return np.array(expectation_list), np.array(confs_branch)
 
 def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	if(idx_branch == 0):
@@ -354,9 +358,10 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	for ind in inds:
 		if(ind >= len(pdf)):
 			pdf_values.append(pdf[-1])
-
 		else:
 			pdf_values.append(pdf[ind-1])
+
+	return np.array(pdf_values)
 
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
