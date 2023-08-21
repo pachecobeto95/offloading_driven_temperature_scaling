@@ -6,7 +6,7 @@ import pandas as pd
 from tqdm import tqdm 
 
 def save_data(logits, confs, classes, inference_times, diff_inf_times, target, resultPath):
-	print(target)
+	print(target.item())
 	sys.exit()
 
 def extracting_ee_inference_data(data_loader, model, n_branches, device, resultPath):
