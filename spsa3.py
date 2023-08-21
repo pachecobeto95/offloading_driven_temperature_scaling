@@ -259,10 +259,12 @@ def get_confidences(logit_branch, i):
 	softmax = nn.Softmax(dim=1)
 
 	for n_row in range(n_rows):
-		print(logit_branch[n_row, :])
+		tensor_logit_branch = torch.from_numpy(logit_branch[n_row, :])
+		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
 		#print(softmax(torch.from_numpy(logit_branch[n_row, :])))
-		print(torch.from_numpy(logit_branch[n_row, :]).shape)
-		print(torch.reshape(torch.from_numpy(logit_branch[n_row, :]), (1, 257)).shape)
+		#print(torch.from_numpy(logit_branch[n_row, :]).shape)
+		print(tensor_logit_branch.shape)
+		print(softmax(tensor_logit_branch))
 		sys.exit()
 
 
