@@ -5,11 +5,22 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm 
 
-def save_data(logits, confs, classes, inference_times, diff_inf_times, target, resultPath):
-	print(target.item())
-	sys.exit()
+def save_data(logits, confs, classes, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath):
+	result_dict = {"target": target.item()}
 
-def extracting_ee_inference_data(data_loader, model, n_branches, device, resultPath):
+	for i in range(n_exits):
+		result_dict["conf_branch_%s"%(i+1)] = confs[i]
+		result_dict["correct_branch_%s"%(i+1)] = correct_list[i]
+		result_dict["inferente_time_branch_%s"%(i+1)] = inference_times[i]
+		result_dict["delta_inferente_time_branch_%s"%(i+1)] = diff_inf_times[i]
+		result_dict["inf_class_branch_%s"%(i+1)] = classes[i]
+
+		for j in range(n_classes):
+			result_dict["logit_branch_%s_class_%s"%(i+1, j+1)] = logits[i][j]
+
+		sys.exit()
+
+def extracting_ee_inference_data(data_loader, model, n_branches, device, n_classes, resultPath):
 
 	n_exits = n_branches + 1	
 	conf_list, correct_list, inference_time_list, diff_inf_time_list = [], [], [], []
@@ -23,7 +34,7 @@ def extracting_ee_inference_data(data_loader, model, n_branches, device, resultP
 			data, target = data.to(device), target.to(device)
 			logits, confs, classes, inference_times, diff_inf_times  = model.forwardInferenceTest(data)
 
-			save_data(logits, confs, classes, inference_times, diff_inf_times, target, resultPath)
+			save_data(logits, confs, classes, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath)
 
 
 def main(args):
@@ -54,7 +65,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device, resultPath)
+	extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device, n_classes, resultPath)
 
 
 if (__name__ == "__main__"):
