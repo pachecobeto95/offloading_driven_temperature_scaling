@@ -241,7 +241,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		logit_branch = getLogitBranches(df, i)
 
-		confs = get_confidences(logit_branch, i)
+		confs = get_confidences(logit_branch, i, temp_list)
 
 		sys.exit()
 
@@ -254,13 +254,18 @@ def getLogitBranches(df, idx_branch):
 		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values
 	return logit_data
 
-def get_confidences(logit_branch, i):
+def get_confidences(logit_branch, idx_branch, temp_list):
 	n_rows, n_classes = logit_branch.shape
 	softmax = nn.Softmax(dim=1)
 
 	for n_row in range(n_rows):
-		tensor_logit_branch = torch.from_numpy(logit_branch[n_row, :])
+		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+		
+		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
+		
+		softmax_data = softmax(tensor_logit_branch)
+
 		#print(softmax(torch.from_numpy(logit_branch[n_row, :])))
 		#print(torch.from_numpy(logit_branch[n_row, :]).shape)
 		print(tensor_logit_branch.shape)
