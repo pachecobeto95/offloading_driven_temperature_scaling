@@ -229,6 +229,16 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	return f, ee_prob
 
 
+def accuracy_edge(temp_list, n_branches, threshold, df):
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	n_samples = len(df)
+
+	remaining_data = df
+
+	for i in range(n_branches):
+		print(i)
+	sys.exit()
+
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
 	gamma, overhead, mode, epsilon=0.00001):
 
