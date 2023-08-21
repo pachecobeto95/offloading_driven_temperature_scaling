@@ -6,6 +6,7 @@ import pandas as pd
 from sklearn.neighbors import KernelDensity
 from scipy.stats import norm, gaussian_kde
 import matplotlib.pyplot as plt
+import torch.nn as nn
 
 class Bernoulli(object):
 	'''
@@ -255,8 +256,11 @@ def getLogitBranches(df, idx_branch):
 
 def get_confidences(logit_branch, i):
 	n_rows, n_classes = logit_branch.shape
+	softmax = nn.Softmax(dim=1)
+
 	for n_row in range(n_rows):
 		print(logit_branch[n_row, :])
+		print(softmax())
 		sys.exit()
 
 
