@@ -172,6 +172,8 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
+		print("oi")
+		sys.exit()
 		best_loss, best_ee_prob = self.compute_loss(theta)
 
 		while (k <= self.nr_iter):
@@ -233,9 +235,6 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, m
 	max_exits = max_branches + 1
 
 	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
-
-	print("oi")
-	sys.exit()
 
 	# Instantiate SPSA class to initializes the parameters
 	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
