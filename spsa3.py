@@ -241,9 +241,21 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		logit_branch = getLogitBranches(df, i)
 
-		confs = get_confidences(logit_branch, i, temp_list)
+		conf_list, infered_class_list = get_confidences(logit_branch, i, temp_list)
 
-		sys.exit()
+		early_exit_samples = conf_list >= threshold
+
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
+	early_classification_prob = sum(numexits)/n_samples
+
+	return acc_edge, early_classification_prob
+
+
 
 
 def getLogitBranches(df, idx_branch):
@@ -257,20 +269,19 @@ def getLogitBranches(df, idx_branch):
 def get_confidences(logit_branch, idx_branch, temp_list):
 	n_rows, n_classes = logit_branch.shape
 	softmax = nn.Softmax(dim=1)
+	conf_list, infered_class_list = [], []
 
 	for n_row in range(n_rows):
 		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
-		
+
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
 		
 		softmax_data = softmax(tensor_logit_branch)
+		conf, infered_class = torch.max(softmax_data, 1)
+		conf_list.append(conf), infered_class_list.append(infered_class)
 
-		#print(softmax(torch.from_numpy(logit_branch[n_row, :])))
-		#print(torch.from_numpy(logit_branch[n_row, :]).shape)
-		print(tensor_logit_branch.shape)
-		print(softmax(tensor_logit_branch))
-		sys.exit()
+	return np.array(conf_list), np.array(infered_class_list)
 
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
