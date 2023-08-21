@@ -254,7 +254,8 @@ def getLogitBranches(df, idx_branch):
 	return logit_data
 
 def get_confidences(logit_branch, i):
-	print(logit_branch.shape)
+	n_rows, n_classes = logit_branch.shape
+	print(n_rows)
 	sys.exit()
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
