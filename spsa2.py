@@ -349,7 +349,12 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 
 	df_conf_branch = df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]
 	pdf, bin_bounds = np.histogram(df_conf_branch.values, bins=100, density=True)
-	inds = np.digitize(conf_list, bin_bounds)
+	#inds = np.digitize(conf_list, bin_bounds)
+	for conf in conf_list:
+		ind = np.digitize(conf, bin_bounds)	
+
+	print()
+
 	print(pdf)
 	sys.exit()
 
