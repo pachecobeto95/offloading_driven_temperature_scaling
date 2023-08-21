@@ -66,7 +66,7 @@ def main(args):
 				print("Overhead: %s, Threshold: %s"%(overhead, threshold))
 
 				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, 
-					df_inf_data_device, threshold, n_branches_edge, 
+					df_inf_data_device, threshold, args.n_branches, 
 					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
 
