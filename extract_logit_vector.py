@@ -15,6 +15,7 @@ def save_data(logits, confs, classes, inference_times, diff_inf_times, target, n
 		result_dict["delta_inferente_time_branch_%s"%(i+1)] = diff_inf_times[i]
 		result_dict["inf_class_branch_%s"%(i+1)] = classes[i]
 		print(type(logits[i]))
+		print(logits[i].shape)
 		sys.exit()
 		for j in range(n_classes):
 			result_dict["logit_branch_%s_class_%s"%(i+1, j+1)] = logits[i][j]
