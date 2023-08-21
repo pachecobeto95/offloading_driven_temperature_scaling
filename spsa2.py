@@ -351,7 +351,7 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	pdf, bin_bounds = np.histogram(df_conf_branch.values, bins=100, density=True)
 	inds = np.digitize(conf_list, bin_bounds)
 	print(inds)
-	pdf_values = pdf[inds-1]
+	pdf_values = pdf[[inds-1]]
 	sys.exit()
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
