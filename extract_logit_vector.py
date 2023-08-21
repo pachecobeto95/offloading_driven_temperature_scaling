@@ -5,19 +5,21 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm 
 
-def save_data(logits, confs, classes, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath):
+def save_data(logits, confs, classes, corrects, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath):
 	result_dict = {"target": target.item()}
 
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = confs[i]
-		#result_dict["correct_branch_%s"%(i+1)] = correct_list[i]
+		result_dict["correct_branch_%s"%(i+1)] = corrects[i]
 		result_dict["inferente_time_branch_%s"%(i+1)] = inference_times[i]
 		result_dict["delta_inferente_time_branch_%s"%(i+1)] = diff_inf_times[i]
 		result_dict["inf_class_branch_%s"%(i+1)] = classes[i]
 		for j in range(n_classes):
 			result_dict["logit_branch_%s_class_%s"%(i+1, j+1)] = logits[i][0, j].item()
 
-		sys.exit()
+	#df = pd.DataFrame(np.array(list(result_dict.values())).T, columns=list(result_dict.keys()))
+	df = pd.DataFrame([result_dict])
+
 
 def extracting_ee_inference_data(data_loader, model, n_branches, device, n_classes, resultPath):
 
@@ -33,7 +35,9 @@ def extracting_ee_inference_data(data_loader, model, n_branches, device, n_class
 			data, target = data.to(device), target.to(device)
 			logits, confs, classes, inference_times, diff_inf_times  = model.forwardInferenceTest(data)
 
-			save_data(logits, confs, classes, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath)
+			correct_branches = [classes[i].eq(target.view_as(classes[i])).sum().item() for i in range(n_exits)]
+
+			save_data(logits, confs, classes, correct_branches, inference_times, diff_inf_times, target, n_exits, n_classes, resultPath)
 
 
 def main(args):
