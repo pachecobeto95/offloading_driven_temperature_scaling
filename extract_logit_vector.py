@@ -5,8 +5,7 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm 
 
-
-def save_data(logit_branches, target, resultPath):
+def save_data(logits, confs, classes, inference_times, diff_inf_times, target, resultPath):
 	print(target)
 	sys.exit()
 
@@ -22,9 +21,9 @@ def extracting_ee_inference_data(data_loader, model, n_branches, device, resultP
 
 			# Convert data and target into the current device.
 			data, target = data.to(device), target.to(device)
-			logit_branches = model.test(data)
+			logits, confs, classes, inference_times, diff_inf_times  = model.forwardInferenceTest(data)
 
-			save_data(logit_branches, target, resultPath)
+			save_data(logits, confs, classes, inference_times, diff_inf_times, target, resultPath)
 
 
 def main(args):

@@ -422,8 +422,53 @@ class Early_Exit_DNN(nn.Module):
     return torch.div(logits, temp)
 
   def test(self, x):
-    print("oi")
-    sys.exit()
+    output_branch_list, conf_list, class_list = [], [], []
+    inference_time_list, diff_inf_time_list = [], []
+    starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
+
+    cumulative_inf_time = 0.0
+
+    for i, exitBlock in enumerate(self.exits):
+
+      starter.record()
+
+      x = self.stages[i](x)
+      output_branch = exitBlock(x)
+      #output_branch = self.temperature_scaling(output_branch, temp_list[i])
+
+      #Confidence is the maximum probability of belongs one of the predefined classes and inference_class is the argmax
+      conf, infered_class = torch.max(self.softmax(output_branch), 1)
+
+      ender.record()
+      torch.cuda.synchronize()
+      curr_time = starter.elapsed_time(ender)
+      cumulative_inf_time += curr_time
+
+      conf_list.append(conf.item()), class_list.append(infered_class)
+      inference_time_list.append(cumulative_inf_time), diff_inf_time_list.append(curr_time)
+      output_branch_list.append(output_branch)
+
+    starter.record()
+    x = self.stages[-1](x)
+
+    x = torch.flatten(x, 1)
+
+    output = self.classifier(x)
+    conf, infered_class = torch.max(self.softmax(output), 1)
+
+    ender.record()
+    torch.cuda.synchronize()
+    curr_time = starter.elapsed_time(ender)
+    cumulative_inf_time += curr_time
+
+    #output_list.append(output), conf_list.append(conf), class_list.append(infered_class)
+    conf_list.append(conf.item()), class_list.append(infered_class), inference_time_list.append(cumulative_inf_time), diff_inf_time_list.append(curr_time)
+    output_branch_list.append(output)
+
+    return output_branch_list, conf_list, class_list, inference_time_list, diff_inf_time_list
+
+
+
 
   def forwardCalibration(self, x, temp_list):
 
