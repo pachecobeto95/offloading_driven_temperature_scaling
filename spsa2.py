@@ -322,7 +322,7 @@ def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
 	pdf_values = compute_pdf(df, temp_list, confs_branch, threshold, idx_branch)
 
 	product_list = expectation_list*pdf_values
-	print(product_list)
+	print(expectation_list)
 	sys.exit()
 
 def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
