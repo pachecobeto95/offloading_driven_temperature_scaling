@@ -19,8 +19,7 @@ def save_data(logits, confs, classes, corrects, inference_times, diff_inf_times,
 
 	#df = pd.DataFrame(np.array(list(result_dict.values())).T, columns=list(result_dict.keys()))
 	df = pd.DataFrame([result_dict])
-	print(df.columns)
-	sys.exit()
+	df.to_csv(resultPath, mode='a', header=not os.path.exists(resultPath))
 
 def extracting_ee_inference_data(data_loader, model, n_branches, device, n_classes, resultPath):
 
