@@ -242,10 +242,13 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 def getLogitBranches(df, idx_branch):
 	n_classes = 257
+	logit_data = np.zeros((len(df), n_classes))
 
 	for j in range(n_classes):
-		print(df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values)
-		sys.exit()	
+		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values
+	
+	print("ok")
+	sys.exit()	
 
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
