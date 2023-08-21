@@ -353,7 +353,7 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	inds = np.digitize(conf_list, bin_bounds)
 	for ind in inds:
 		print(ind)
-		pdf_values.append(pdf[ind-1])
+		pdf_values.append(pdf[ind-2])
 
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
