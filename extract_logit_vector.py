@@ -48,7 +48,7 @@ def main(args):
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id))
 	multi_branch_model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(args.model_name, args.n_branches, args.model_id) )
-	resultPath = os.path.join(config.DIR_NAME, "test.csv")
+	resultPath = os.path.join(config.DIR_NAME, "last_chance_inf_data_%s_%s_branches.csv"%(args.model_name, args.n_branches))
 
 	dataset_path = config.dataset_path_dict[args.dataset_name]
 
