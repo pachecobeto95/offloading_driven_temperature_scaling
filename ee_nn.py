@@ -421,7 +421,7 @@ class Early_Exit_DNN(nn.Module):
   def temperature_scaling(self, logits, temp):
     return torch.div(logits, temp)
 
-  def test(self, x):
+  def forwardInferenceTest(self, x):
     output_branch_list, conf_list, class_list = [], [], []
     inference_time_list, diff_inf_time_list = [], []
     starter, ender = torch.cuda.Event(enable_timing=True), torch.cuda.Event(enable_timing=True)
