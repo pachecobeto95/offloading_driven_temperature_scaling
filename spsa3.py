@@ -260,7 +260,7 @@ def get_confidences(logit_branch, i):
 
 	for n_row in range(n_rows):
 		print(logit_branch[n_row, :])
-		print(softmax())
+		print(softmax(logit_branch[n_row, :]))
 		sys.exit()
 
 
