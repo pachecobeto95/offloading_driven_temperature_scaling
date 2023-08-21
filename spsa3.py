@@ -315,7 +315,6 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 		
 		softmax_data = softmax(tensor_logit_branch)
 		conf, infered_class = torch.max(softmax_data, 1)
-		print(conf, infered_class)
 		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
 
 	return np.array(conf_list), np.array(infered_class_list)
