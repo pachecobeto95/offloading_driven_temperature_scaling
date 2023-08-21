@@ -54,7 +54,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
+	extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device, resultPath)
 
 
 if (__name__ == "__main__"):
