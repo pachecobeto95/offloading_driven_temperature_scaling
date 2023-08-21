@@ -307,39 +307,18 @@ def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_d
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
-
-	n_samples = len(df)
-	remaining_data = df
-	numexits = np.zeros(n_branches)
-
-	confs = np.linspace(threshold, 1, 10)
-	prob_success = 0
+	num = 0
 	
 	for i in range(n_branches):
-		expectation_list = []
-		delta_conf_list = []
+		num += compute_prob_success_branch(df, temp_list, threshold, i)
+	
 
-		if(i == 0):
-			df_prob = df
-			prob = 1
-		else:
-			df_prob = df[df["conf_branch_%s"%(i)]/temp_list[i-1] >= threshold]
-			prob = len(df_prob)/len(df)
-
-		pdf = prob*np.histogram(df_prob["conf_branch_%s"%(i+1)].values, bins=10, density=True)[0]
-		
-		for j in range(len(confs) - 1):
-			delta_conf = confs[j+1] - confs[j]
-			expectation_data = df[(df["conf_branch_%s"%(i+1)]/temp_list[i] >= confs[j]) & (df["conf_branch_%s"%(i+1)]/temp_list[i] <= confs[j+1])]
-			expectation = expectation_data["correct_branch_%s"%(i+1)].mean()
-			expectation_list.append(expectation), delta_conf_list.append(delta_conf)
-
-			
-		product = sum(np.array(expectation_list)*pdf[1:])
-		prob_success += product
-
-	print(prob_success/early_classification_prob, acc_edge)
 	return acc_edge, early_classification_prob
+
+def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
+	conf_list = np.linspace(threshold, 1, 100)
+	print(conf_list)
+	sys.exit()
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
 
