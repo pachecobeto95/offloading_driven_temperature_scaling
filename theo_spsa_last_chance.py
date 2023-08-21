@@ -67,7 +67,7 @@ def main(args):
 	resultsPath = os.path.join(config.DIR_NAME, "last_chance_theo_beta_analysis_%s_%s_branches_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.8]
-	beta_list = [[20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90]]
+	beta_list = [[80, 90]]
 	beta_list = beta_list[args.slot_beta]
 
 
