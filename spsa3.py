@@ -173,8 +173,7 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		print("oi")
-		sys.exit()
+		
 		best_loss, best_ee_prob = self.compute_loss(theta)
 
 		while (k <= self.nr_iter):
