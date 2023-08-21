@@ -317,7 +317,18 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
 	conf_list = np.linspace(threshold, 1, 100)
-	print(conf_list)
+
+	expectation = compute_expectation(df, temp_list, conf_list, threshold, idx_branch)
+
+
+def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
+	if(idx_branch == 0):
+		df_branch = df
+	else:
+		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
+
+	confs_branch = df_branch["conf_branch_%s"%(idx_branch)].values
+	print(confs_branch)
 	sys.exit()
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
