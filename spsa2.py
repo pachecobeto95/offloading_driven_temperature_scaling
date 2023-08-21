@@ -330,6 +330,7 @@ def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
 	confs_branch = df_branch["conf_branch_%s"%(idx_branch+1)].values
 
 	for conf in confs_branch:
+		print(conf)
 		print(df[df_branch["conf_branch_%s"%(idx_branch+1) == conf]])
 		sys.exit()
 
