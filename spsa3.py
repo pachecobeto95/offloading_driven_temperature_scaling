@@ -173,7 +173,7 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		
+
 		best_loss, best_ee_prob = self.compute_loss(theta)
 
 		while (k <= self.nr_iter):
@@ -315,6 +315,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 		
 		softmax_data = softmax(tensor_logit_branch)
 		conf, infered_class = torch.max(softmax_data, 1)
+		print(conf, infered_class)
 		conf_list.append(conf), infered_class_list.append(infered_class)
 
 	return np.array(conf_list, dtype=object), np.array(infered_class_list, dtype=object)
