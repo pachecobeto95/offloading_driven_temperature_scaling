@@ -333,6 +333,9 @@ def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
 		print(conf)
 		print()
 		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf])
+		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["conf_branch_%s"%(idx_branch+1)].mean())
+		print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["correct_branch_%s"%(idx_branch+1)].mean())
+
 		sys.exit()
 
 def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
