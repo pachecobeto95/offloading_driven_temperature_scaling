@@ -10,7 +10,7 @@ def save_data(logits, confs, classes, inference_times, diff_inf_times, target, n
 
 	for i in range(n_exits):
 		result_dict["conf_branch_%s"%(i+1)] = confs[i]
-		result_dict["correct_branch_%s"%(i+1)] = correct_list[i]
+		#result_dict["correct_branch_%s"%(i+1)] = correct_list[i]
 		result_dict["inferente_time_branch_%s"%(i+1)] = inference_times[i]
 		result_dict["delta_inferente_time_branch_%s"%(i+1)] = diff_inf_times[i]
 		result_dict["inf_class_branch_%s"%(i+1)] = classes[i]
