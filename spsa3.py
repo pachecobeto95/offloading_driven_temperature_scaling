@@ -262,7 +262,7 @@ def get_confidences(logit_branch, i):
 		print(logit_branch[n_row, :])
 		#print(softmax(torch.from_numpy(logit_branch[n_row, :])))
 		print(torch.from_numpy(logit_branch[n_row, :]).shape)
-		print(torch.reshape(torch.from_numpy(logit_branch[n_row, :]), (1, 257)))
+		print(torch.reshape(torch.from_numpy(logit_branch[n_row, :]), (1, 257)).shape)
 		sys.exit()
 
 
