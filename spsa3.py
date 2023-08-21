@@ -244,9 +244,8 @@ def getLogitBranches(df, idx_branch):
 	n_classes = 257
 
 	for j in range(n_classes):
-		print(df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)])
-
-	sys.exit()	
+		print(df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values)
+		sys.exit()	
 
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
