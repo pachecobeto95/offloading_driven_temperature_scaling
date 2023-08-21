@@ -347,6 +347,7 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	else:
 		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
 
+	pdf_values = []
 	df_conf_branch = df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]
 	pdf, bin_bounds = np.histogram(df_conf_branch.values, bins=100, density=True)
 	inds = np.digitize(conf_list, bin_bounds)
