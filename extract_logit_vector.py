@@ -5,14 +5,25 @@ import numpy as np
 import pandas as pd
 
 
-def extracting_ee_inference_data(data_loader, model, n_branches, device):
-
+def save_data(logit_branches, target, resultPath):
+	print(target)
 	sys.exit()
-	no_calib_temperature = np.ones(n_branches)
 
-	df = utils.extracting_ee_inference_data(data_loader, model, no_calib_temperature, args.n_branches, device, mode="no_calib")
+def extracting_ee_inference_data(data_loader, model, n_branches, device, resultPath):
 
-	return df
+	n_exits = n_branches + 1	
+	conf_list, correct_list, inference_time_list, diff_inf_time_list = [], [], [], []
+
+	model.eval()
+	with torch.no_grad():
+		#for i, (data, target) in enumerate(test_loader, 1):
+		for (data, target) in tqdm(test_loader):	
+
+			# Convert data and target into the current device.
+			data, target = data.to(device), target.to(device)
+			logit_branches = model.test(data)
+
+			save_data(logit_branches, target, resultPath)
 
 
 def main(args):
@@ -42,7 +53,7 @@ def main(args):
 	#Load Dataset 
 	test_loader = utils.load_caltech256_test_inference(args, dataset_path, test_idx)
 
-	df_no_calib = extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
+	extracting_ee_inference_data(test_loader, ee_model, args.n_branches, device)
 
 
 if (__name__ == "__main__"):
