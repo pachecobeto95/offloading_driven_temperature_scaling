@@ -421,6 +421,10 @@ class Early_Exit_DNN(nn.Module):
   def temperature_scaling(self, logits, temp):
     return torch.div(logits, temp)
 
+  def test(self, x):
+    print("oi")
+    sys.exit()
+
   def forwardCalibration(self, x, temp_list):
 
 
