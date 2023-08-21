@@ -318,7 +318,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 		conf, infered_class = torch.max(softmax_data, 1)
 		conf_list.append(conf), infered_class_list.append(infered_class)
 
-	return np.array(conf_list), np.array(infered_class_list)
+	return np.array(conf_list, dtype=object), np.array(infered_class_list, dtype=object)
 
 
 def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
