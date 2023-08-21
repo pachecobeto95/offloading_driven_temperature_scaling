@@ -255,6 +255,43 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	return acc_edge, early_classification_prob
 
+def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
+	
+	avg_inference_time = 0
+	n_samples = len(df)
+	n_exits_device_list = []
+	n_remaining_samples = n_samples
+	remaining_data = df
+
+	for i in range(n_branches):
+
+		logit_branch = getLogitBranches(remaining_data, i)
+
+		conf_list, infered_class_list = get_confidences(logit_branch, i, temp_list)
+
+		early_exit_samples = conf_list >= threshold
+		
+		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
+		n_exits_device_list.append(n_exit_branch)
+
+		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
+
+		avg_inference_time += n_exit_branch*inf_time_branch_device
+
+		n_remaining_samples -= n_exit_branch
+		inf_time_previous_branch = inf_time_branch_device
+
+		remaining_data = remaining_data[~early_exit_samples]
+
+
+	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df["inferente_time_branch_%s"%(n_branches)].mean()
+
+	avg_inference_time += n_remaining_samples*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
+
+	avg_inference_time = avg_inference_time/float(n_samples)
+	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
+
+	return avg_inference_time, early_classification_prob
 
 
 
