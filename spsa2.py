@@ -353,6 +353,7 @@ def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
 	for conf in conf_list:
 		ind = np.digitize(conf, bin_bounds)
 		print(bin_bounds)
+		print(conf)
 		print(ind)
 		sys.exit()
 
