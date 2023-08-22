@@ -244,13 +244,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
-	d_confs = np.linspace(threshold, 1.0, 100)
+	d_confs = np.linspace(threshold, 1.0, 15)
 
 	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
 	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
 	product = expectations*pdf_values
-	print(product)
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return product
 
@@ -286,7 +285,6 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
-	d_confs = np.linspace(threshold, 1.0, 100)
 	bin_boundaries = np.linspace(0, 1, 15)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
