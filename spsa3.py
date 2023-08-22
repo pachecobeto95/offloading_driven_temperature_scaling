@@ -316,7 +316,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
 		#avg_acc_in_bin += delta
-		acc_list.append(avg_acc_in_bin)
+		acc_list.append(avg_confs_in_bin)
 	
 	print(idx_branch, acc_list)
 
