@@ -391,6 +391,7 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+	print("Acc Exp")
 	print([correct_list[:i]/sum(numexits) for i in range(len(correct_list))])
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits)/n_samples
