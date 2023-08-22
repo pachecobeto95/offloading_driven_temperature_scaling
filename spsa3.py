@@ -297,7 +297,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=100, density=True)
 
-	for conf in conf_branch:
+	for conf in d_confs:
 		n_bin = np.digitize(conf, bin_bounds, right=True)
 		print(conf)
 		pdf_values.append(pdf[n_bin - 1])
