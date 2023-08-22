@@ -320,7 +320,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 	
 	print(idx_branch, acc_list)
 
-	return np.array(acc_list)
+	return np.array(avg_confs_in_bin)
 	#return np.array(expectation_list)
 
 
