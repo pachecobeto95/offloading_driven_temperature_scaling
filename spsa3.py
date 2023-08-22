@@ -326,6 +326,10 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 15)
 	pdf_values = []
+	bin_boundaries = np.linspace(0, 1, 15)
+	bin_lowers = bin_boundaries[:-1]
+	bin_uppers = bin_boundaries[1:]
+
 
 	if(idx_branch == 0):
 		df_branch = df
@@ -342,16 +346,16 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=15, density=True)
 
-	for conf in d_confs:
-		n_bin = np.digitize(conf, bin_bounds, right=True)			
-		if(conf <= bin_bounds[-1]):
-			pdf_values.append(pdf[n_bin - 1])
+	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
+		prop_in_bin = np.mean(in_bin)
+		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
+		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
+		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
+		#avg_acc_in_bin += delta
+		pdf_values.append(prop_in_bin)
 
-	print(idx_branch, ee_prob)
-	pdf_values = ee_prob*np.array(pdf_values)
-
-	return pdf_values
-
+	return np.array(pdf_values)
 def compute_early_exit_prob(temp_list, n_branches, threshold, df):
 
 	n_samples = len(df)
