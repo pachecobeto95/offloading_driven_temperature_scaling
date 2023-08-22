@@ -349,7 +349,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 		prop_in_bin = np.mean(in_bin)
 		print(prop_in_bin)
 		#avg_acc_in_bin += delta
-		pdf_values.append(pdf[in_bin])
+		#pdf_values.append(pdf[in_bin])
 	sys.exit()
 
 	return np.array(pdf_values)
