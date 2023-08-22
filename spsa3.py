@@ -241,7 +241,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	edge_acc = num/den if(den > 0) else 0
 	print(acc_edge, edge_acc)
-	return acc_edge, early_classification_prob
+	return edge_acc, early_classification_prob
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 15)
