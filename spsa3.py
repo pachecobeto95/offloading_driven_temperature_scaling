@@ -305,7 +305,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 	
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
-	bin_size = 1/n_bins
+	bin_size = 1/15
 	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
 
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
