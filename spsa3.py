@@ -297,6 +297,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 
 	for conf in conf_branch:
 		n_bin = np.digitize(conf, bin_bounds)
+		print(conf)
 		pdf_values.append(pdf[n_bin - 1])
 	print(pdf_values)
 
