@@ -256,7 +256,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
 
-def compute_expectation2(temp_list, idx_branch, threshold, df):
+def compute_expectation(temp_list, idx_branch, threshold, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
@@ -279,12 +279,12 @@ def compute_expectation2(temp_list, idx_branch, threshold, df):
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
 		df_condition =  df_branch[condition]
 		expectation = df_condition["correct_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
-		#expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
+		expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
 		expectation_list.append(expectation)
 
 	return np.array(expectation_list)
 
-def compute_expectation(temp_list, idx_branch, threshold, df):
+def compute_expectation1(temp_list, idx_branch, threshold, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
@@ -330,7 +330,6 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 
-
 	if(idx_branch == 0):
 		df_branch = df
 		ee_prob = 1
@@ -353,6 +352,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 		pdf_values.append(prop_in_bin)
 
 	return np.array(pdf_values)
+
 def compute_early_exit_prob(temp_list, n_branches, threshold, df):
 
 	n_samples = len(df)
