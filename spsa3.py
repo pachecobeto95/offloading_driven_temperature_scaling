@@ -240,8 +240,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
 
 	edge_acc = num/den if(den > 0) else 0
-	print(edge_acc)
-	sys.exit()
+	print(acc_edge, edge_acc)
 	return acc_edge, early_classification_prob
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
