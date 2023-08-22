@@ -266,7 +266,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 		df_branch = df[early_exit_samples]
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
-	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list):
+	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
 	for k in range(len(d_confs) - 1):
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
