@@ -253,7 +253,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
 
-def compute_expectation(temp_list, idx_branch, threshold, df):
+def compute_expectation2(temp_list, idx_branch, threshold, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
@@ -271,7 +271,8 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
-	for k in range(len(d_confs) - 1):
+	#for k in range(len(d_confs) - 1):
+	for conf in conf_branch:
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
 		df_condition =  df_branch[condition]
 		expectation = df_condition["correct_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
@@ -279,6 +280,46 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 		expectation_list.append(expectation)
 
 	return np.array(expectation_list)
+
+def compute_expectation2(temp_list, idx_branch, threshold, df):
+
+	n_classes = 257
+	logit_data = np.zeros((len(df), n_classes))
+	d_confs = np.linspace(threshold, 1.0, 100)
+	bin_boundaries = np.linspace(0, 1, 15)
+	bin_lowers = bin_boundaries[:-1]
+	bin_uppers = bin_boundaries[1:]
+	acc_list = []
+
+
+	if(idx_branch == 0):
+		df_branch = df
+	else:
+		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
+		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
+		early_exit_samples = previous_confs >= threshold
+		df_branch = df[early_exit_samples]
+
+	logit_branch = getLogitBranches(df_branch, idx_branch)
+	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
+	
+	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
+
+	bin_size = 1/n_bins
+	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
+
+	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
+		prop_in_bin = np.mean(in_bin)
+		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
+		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
+		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
+		#avg_acc_in_bin += delta
+		acc_list.append(avg_acc_in_bin)
+
+	return np.array(acc_list)
+	#return np.array(expectation_list)
+
 
 def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 100)
