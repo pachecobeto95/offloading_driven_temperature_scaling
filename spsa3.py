@@ -236,7 +236,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	for i in range(n_branches):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-		print(num)
+		#print(num)
 	#sys.exit()
 
 	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
@@ -252,7 +252,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
 	product = sum(expectations*pdf_values)
-	print(product)
+	#print(product)
 	#result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return expectations
 
