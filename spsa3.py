@@ -276,7 +276,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
 		df_condition =  df_branch[condition]
 		expectation = df_condition["correct_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
-		#expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean()
+		expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean()
 		expectation_list.append(expectation)
 
 	return np.array(expectation_list)
