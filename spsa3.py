@@ -278,6 +278,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 
 def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 100)
+	pdf_values = []
 
 	if(idx_branch == 0):
 		df_branch = df
@@ -292,8 +293,14 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
-	print(conf_branch)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=100, density=True)
+
+	for conf in conf_branch:
+		n_bin = np.digitize(conf, bin_bounds)
+		pdf_values.append(pdf[n_bin - 1])
+	print(pdf_values)
+
+
 	print(bin_bounds)
 	print()
 	sys.exit()
