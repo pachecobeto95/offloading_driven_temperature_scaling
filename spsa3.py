@@ -327,7 +327,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	if(idx_branch == 0):
 		df_branch = df
 		ee_prob = 1
-		#ee_prob = 0
+		ee_prob = 0
 	else:
 		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
 		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
