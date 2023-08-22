@@ -30,14 +30,14 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 			df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
 			args.a0, args.c, args.alpha, args.gamma, overhead, "exp")
 
-		#beta_theta_theo, beta_opt_loss_theo = spsa.run_theoretical_beta_opt(df_val_inf_data, 
-		#	df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-		#	args.a0, args.c, args.alpha, args.gamma, overhead, "theo")
+		beta_theta_theo, beta_opt_loss_theo = spsa.run_theoretical_beta_opt(df_val_inf_data, 
+			df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
+			args.a0, args.c, args.alpha, args.gamma, overhead, "theo")
 
 		beta_acc_exp, beta_ee_prob_exp = spsa.accuracy_edge(beta_theta_exp, n_branches_edge, 
 			threshold, df_inf_data)
-		#beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
-		#	threshold, df_inf_data)
+		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
+			threshold, df_inf_data)
 
 		if(n_branches_edge == 1):
 			beta_inf_time, _ = spsa.compute_inference_time(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)

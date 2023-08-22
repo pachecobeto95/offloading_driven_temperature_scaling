@@ -7,6 +7,7 @@ from sklearn.neighbors import KernelDensity
 from scipy.stats import norm, gaussian_kde
 import matplotlib.pyplot as plt
 import torch.nn as nn
+from scipy.special import softmax
 
 class Bernoulli(object):
 	'''
@@ -229,6 +230,88 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	return f, ee_prob
 
 
+def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
+	num = 0
+	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+
+	for i in range(n_branches):
+		num += compute_prob_success_branch(temp_list, i, threshold, df)
+
+	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
+
+	edge_acc = num/den if(den > 0) else 0
+
+	return acc_edge, early_classification_prob
+
+def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
+
+	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
+	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+
+	product =  expectations*pdf_values
+
+def compute_expectation(temp_list, idx_branch, threshold, df):
+
+	n_classes = 257
+	logit_data = np.zeros((len(df), n_classes))
+	d_confs = np.linspace(threshold, 1.0, 100)
+	expectation_list = []
+
+	if(idx_branch == 0):
+		df_branch = df
+	else:
+		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
+		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
+		early_exit_samples = previous_confs >= threshold
+		df_branch = df[early_exit_samples]
+
+	logit_branch = getLogitBranches(df_branch, idx_branch)
+	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list):
+
+	for k in range(len(d_confs) - 1):
+		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
+		expectation = df_branch[condition]["correct_branch_%s"%(idx_branch+1)].mean()
+		#expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean()
+		expectation_list.append(expectation)
+
+	return np.array(expectation_list)
+
+def compute_pdf_values(temp_list, idx_branch, threshold, df):
+	d_confs = np.linspace(threshold, 1.0, 100)
+
+	if(idx_branch == 0):
+		df_branch = df
+		ee_prob = 1
+		#ee_prob = 0
+	else:
+		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
+		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
+		early_exit_samples = previous_confs >= threshold
+		df_branch = df[early_exit_samples]
+		ee_prob = len(df_branch)/len(df)
+
+	logit_branch = getLogitBranches(df_branch, idx_branch)
+	conf_branch = get_confidences(logit_branch, idx_branch, temp_list)
+	pdf, bin_bounds = np.histogram(conf_branch, bins=100, density=True)
+	print(bin_bounds)
+	sys.exit()
+
+def compute_early_exit_prob(temp_list, n_branches, threshold, df):
+
+	n_samples = len(df)
+
+	logit_branch = getLogitBranches(df, 2)
+
+	conf_list, infered_class_list = get_confidences(logit_branch, 2, temp_list)
+
+	early_exit_samples = calib_confs >= threshold
+
+	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
+
+	prob = numexits/n_samples
+
+	return prob
+
 def accuracy_edge(temp_list, n_branches, threshold, df):
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
@@ -302,6 +385,15 @@ def getLogitBranches(df, idx_branch):
 		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values
 	return logit_data
 
+def getLogitPreviousBranches(df, idx_branch):
+	n_classes = 257
+	logit_data = np.zeros((len(df), n_classes))
+
+	for j in range(n_classes):
+		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch, j+1)].values
+	return logit_data
+
+
 def get_confidences(logit_branch, idx_branch, temp_list):
 	n_rows, n_classes = logit_branch.shape
 	softmax = nn.Softmax(dim=1)
@@ -309,6 +401,23 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 
 	for n_row in range(n_rows):
 		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+
+		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
+		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
+		
+		softmax_data = softmax(tensor_logit_branch)
+		conf, infered_class = torch.max(softmax_data, 1)
+		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
+
+	return np.array(conf_list), np.array(infered_class_list)
+
+def get_previous_confidences(logit_branch, idx_branch, temp_list):
+	n_rows, n_classes = logit_branch.shape
+	softmax = nn.Softmax(dim=1)
+	conf_list, infered_class_list = [], []
+
+	for n_row in range(n_rows):
+		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch-1]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
