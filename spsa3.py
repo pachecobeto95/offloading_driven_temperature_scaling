@@ -348,7 +348,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
-		print(prop_in_bin)
+		#print(prop_in_bin)
 		#avg_acc_in_bin += delta
 		#pdf_values.append(pdf[in_bin])
 		pdf_values.append(prop_in_bin)
