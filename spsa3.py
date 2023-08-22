@@ -344,7 +344,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 		if(conf <= bin_bounds[-1]):
 			pdf_values.append(pdf[n_bin - 1])
 
-	pdf_values = np.array(pdf_values)
+	pdf_values = ee_prob*np.array(pdf_values)
 
 	return pdf_values
 
