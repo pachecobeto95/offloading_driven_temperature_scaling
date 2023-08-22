@@ -249,7 +249,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 15)
 
 	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
-	#pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
 	#product = expectations*pdf_values
 	#result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
@@ -318,9 +318,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 		#avg_acc_in_bin += delta
 		acc_list.append(avg_confs_in_bin)
 	
-	print(idx_branch, acc_list)
-
-	return np.array(avg_confs_in_bin)
+	return np.array(acc_list)
 	#return np.array(expectation_list)
 
 
@@ -348,10 +346,11 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
-
-		#prop_in_bin = np.mean(in_bin)
+		prop_in_bin = np.mean(in_bin)
+		print(prop_in_bin)
 		#avg_acc_in_bin += delta
 		pdf_values.append(pdf[in_bin])
+	sys.exit()
 
 	return np.array(pdf_values)
 
