@@ -292,8 +292,10 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch = get_confidences(logit_branch, idx_branch, temp_list)
+	print(conf_branch)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=100, density=True)
 	print(bin_bounds)
+	print()
 	sys.exit()
 
 def compute_early_exit_prob(temp_list, n_branches, threshold, df):
