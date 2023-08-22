@@ -251,7 +251,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
 	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
-	product = sum(expectations*pdf_values)
+	product = expectations*pdf_values
 	#print(product)
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
