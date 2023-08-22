@@ -281,7 +281,7 @@ def compute_expectation2(temp_list, idx_branch, threshold, df):
 
 	return np.array(expectation_list)
 
-def compute_expectation2(temp_list, idx_branch, threshold, df):
+def compute_expectation(temp_list, idx_branch, threshold, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
