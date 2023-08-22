@@ -322,7 +322,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 
 
 def compute_pdf_values(temp_list, idx_branch, threshold, df):
-	d_confs = np.linspace(threshold, 1.0, 100)
+	d_confs = np.linspace(threshold, 1.0, 15)
 	pdf_values = []
 
 	if(idx_branch == 0):
