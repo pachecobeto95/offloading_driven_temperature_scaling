@@ -315,7 +315,7 @@ def compute_early_exit_prob(temp_list, n_branches, threshold, df):
 
 	conf_list, infered_class_list = get_confidences(logit_branch, 2, temp_list)
 
-	early_exit_samples = calib_confs >= threshold
+	early_exit_samples = conf_list >= threshold
 
 	numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
 
