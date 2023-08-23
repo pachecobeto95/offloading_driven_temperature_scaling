@@ -175,11 +175,9 @@ class SPSA (object):
 		best_loss, best_ee_prob = self.compute_loss(theta)
 		patience = 0
 		max_patience = 50
-		print("aqui")
 
 		#while (k <= self.nr_iter):
 		while (patience < max_patience):
-			print("OI")
 
 			old_theta = copy.copy(theta)
 
