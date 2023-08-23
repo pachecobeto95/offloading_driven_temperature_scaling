@@ -345,6 +345,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	pdf, bin_bounds = np.histogram(conf_branch, bins=n_bins, density=True)
 
 	for conf in d_confs:
+		print(conf, bin_bounds)
 		ind_bin = np.digitize(conf, bin_bounds, right=True)
 		pdf_values.append(pdf[ind_bin-1])
 
