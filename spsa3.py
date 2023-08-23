@@ -237,7 +237,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
 		#print(num)
-	#sys.exit()
+	sys.exit()
 
 	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
 
@@ -249,12 +249,14 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	d_confs = np.linspace(threshold, 1.0, 15)
 
 	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
-	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+	print(idx_branch, expectations)
+	#pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
-	product = expectations*pdf_values
+	#product = expectations*pdf_values
 	#print(product)
-	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
-	return result
+	#result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
+	#return result
+	return 0
 
 def compute_expectation1(temp_list, idx_branch, threshold, df):
 
@@ -284,11 +286,11 @@ def compute_expectation1(temp_list, idx_branch, threshold, df):
 
 	return np.array(expectation_list)
 
-def compute_expectation(temp_list, idx_branch, threshold, df):
+def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
-	bin_boundaries = np.linspace(0, 1, 15)
+	bin_boundaries = np.linspace(0, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 	acc_list = []
@@ -307,7 +309,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 	
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
-	bin_size = 1/15
+	bin_size = 1/n_bins
 	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
 
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
