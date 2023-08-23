@@ -69,6 +69,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 
 		#print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_exp, beta_inf_time_exp, beta_ee_prob_exp))
 		#print(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo)
+		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
 
 		#save_beta_results(savePath, beta_theta_exp, beta_acc_exp, beta_inf_time_exp, beta_ee_prob_exp, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="exp")
 		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
