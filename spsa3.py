@@ -176,7 +176,7 @@ class SPSA (object):
 		k = 1
 		max_patience = 50
 		best_loss, best_ee_prob = self.compute_loss(theta)
-
+		patience = 0
 		#while (k <= self.nr_iter):
 		while (patience < max_patience):
 			print(patience)
