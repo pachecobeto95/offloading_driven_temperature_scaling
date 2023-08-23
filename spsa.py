@@ -173,8 +173,11 @@ class SPSA (object):
 
 		k = 1
 		best_loss, best_ee_prob = self.compute_loss(theta)
+		patience = 0
+		max_patience = 50
 
-		while (k <= self.nr_iter):
+		#while (k <= self.nr_iter):
+		while (patience < max_patience):
 
 			old_theta = copy.copy(theta)
 
@@ -202,6 +205,8 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
+			else:
+				patience += 1
 
 			k += 1
 			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
@@ -412,9 +417,7 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 	for i in range(n_exits):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-		#print(num)
 	
-
 	den = compute_theoretical_edge_prob(temp_list, n_exits, threshold, df)
 
 	acc = num/den if (den>0) else 0
@@ -444,7 +447,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc = num/den if (den>0) else 0
 
-	#return - acc, den
 	return	acc, den
 
 
@@ -452,8 +454,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	n_samples = len(df)
-
-	pdf_values = plt.hist(df["conf_branch_%s"%(idx_branch+1)].values, bins=500, density=True)[0]
 
 	if(idx_branch == 0):
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
@@ -474,31 +474,19 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	data_conf = data_conf[:, np.newaxis]
 	#print(data_conf)
 
-	conf_d = np.linspace(threshold, 1, 500)
+	conf_d = np.linspace(threshold, 1, 100)
 	conf_col = conf_d[:, np.newaxis]
 
 	if (len(data_conf) > 0):
 
-		#model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-		#print(len(data_conf))
-		#model.fit(data_conf)
+		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		model.fit(data_conf)
 
-		#log_dens = model.score_samples(conf_col)
+		log_dens = model.score_samples(conf_col)
 
-		#pdf_values = previous_exit_prob*np.exp(log_dens)
-		#pdf_values = np.exp(log_dens)
-		#print(pdf_values.shape)
-
-		#pdf_values = previous_exit_prob*plt.hist(data_conf, bins=500, density=True)[0]
+		pdf_values = np.exp(log_dens)
 		pdf_values = previous_exit_prob*pdf_values
-
-		#kde = gaussian_kde(data_conf)
-
-		#conf_d = np.linspace(threshold, 1, 100)
-
-		#pdf_values = kde.evaluate(conf_d)
-
-		#print(pdf_values.shape)
+		
 
 		expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
@@ -555,10 +543,11 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 		expected_correct = correct/n_samples if (n_samples>0) else 0
 		#expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
 
-		if (expected_correct is not np.nan):
-			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
-		else:
-			expected_correct_list.append(0), pdf_list.append(pdf[i])
+		#if (expected_correct is not np.nan):
+		#	expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
+		#else:
+		#	expected_correct_list.append(0), pdf_list.append(pdf[i])
+		expected_correct_list.append(0), pdf_list.append(pdf[i])	
 	
 	return np.array(expected_correct_list), np.array(pdf_list)
 
