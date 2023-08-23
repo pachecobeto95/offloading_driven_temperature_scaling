@@ -323,7 +323,6 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 
 
 def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
-	d_confs = np.linspace(threshold, 1.0, n_bins)
 	pdf_values = []
 	bin_boundaries = np.linspace(0, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
@@ -343,6 +342,9 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=n_bins, density=True)
+
+	d_confs = np.linspace(threshold, max(conf_branch), n_bins)
+
 
 	for conf in d_confs:
 		print(conf, bin_bounds)
