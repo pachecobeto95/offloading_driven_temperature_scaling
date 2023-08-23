@@ -205,6 +205,7 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
+				patience = 0
 			else:
 				patience += 1
 

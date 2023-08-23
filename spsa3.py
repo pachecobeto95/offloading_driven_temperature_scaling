@@ -174,10 +174,11 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-
+		max_patience = 50
 		best_loss, best_ee_prob = self.compute_loss(theta)
 
-		while (k <= self.nr_iter):
+		#while (k <= self.nr_iter):
+		while (patience < max_patience):
 
 			old_theta = copy.copy(theta)
 
@@ -205,6 +206,9 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
+				patience = 0
+			else:
+				patience += 1
 
 			k += 1
 			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
@@ -236,27 +240,21 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	for i in range(n_branches):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-		#print(num)
-	sys.exit()
 
 	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
 
 	edge_acc = num/den if(den > 0) else 0
-	print(acc_edge, edge_acc)
 	return edge_acc, early_classification_prob
 
-def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
-	d_confs = np.linspace(threshold, 1.0, 15)
+def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=10):
+	d_confs = np.linspace(threshold, 1.0, n_bins)
 
 	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
-	print(idx_branch, expectations)
-	#pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
 
-	#product = expectations*pdf_values
-	#print(product)
-	#result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
-	#return result
-	return 0
+	product = expectations*pdf_values
+	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
+	return result
 
 def compute_expectation1(temp_list, idx_branch, threshold, df):
 
@@ -295,7 +293,6 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 	bin_uppers = bin_boundaries[1:]
 	acc_list = []
 
-
 	if(idx_branch == 0):
 		df_branch = df
 	else:
@@ -310,7 +307,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
 	bin_size = 1/n_bins
-	positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
+	#positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
 
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
@@ -325,17 +322,17 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 	#return np.array(expectation_list)
 
 
-def compute_pdf_values(temp_list, idx_branch, threshold, df):
-	d_confs = np.linspace(threshold, 1.0, 15)
+def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
+	d_confs = np.linspace(threshold, 1.0, n_bins)
 	pdf_values = []
-	bin_boundaries = np.linspace(0, 1, 15)
+	bin_boundaries = np.linspace(0, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 
 	if(idx_branch == 0):
 		df_branch = df
 		ee_prob = 1
-		ee_prob = 0
+		#ee_prob = 0
 	else:
 		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
 		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
@@ -345,15 +342,19 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df):
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
-	pdf, bin_bounds = np.histogram(conf_branch, bins=15, density=True)
+	pdf, bin_bounds = np.histogram(conf_branch, bins=n_bins, density=True)
 
-	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
-		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
-		prop_in_bin = np.mean(in_bin)
+	for conf in d_confs:
+		ind_bin = np.digitize(conf, bin_bounds, right=True)
+		pdf_values.append(pdf[ind_bin-1])
+
+	#for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+	#	in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
+	#	prop_in_bin = np.mean(in_bin)
 		#print(prop_in_bin)
 		#avg_acc_in_bin += delta
 		#pdf_values.append(pdf[in_bin])
-		pdf_values.append(prop_in_bin)
+	#	pdf_values.append(prop_in_bin)
 
 	return np.array(pdf_values)
 
