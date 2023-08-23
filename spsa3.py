@@ -308,7 +308,6 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 
 	bin_size = 1/n_bins
 	#positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
-
 	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
@@ -347,9 +346,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 
 
 	for conf in d_confs:
-		print(conf, bin_bounds)
 		ind_bin = np.digitize(conf, bin_bounds, right=True)
-		print(ind_bin)
 		pdf_values.append(pdf[ind_bin-1])
 
 	#for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
@@ -360,7 +357,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 		#pdf_values.append(pdf[in_bin])
 	#	pdf_values.append(prop_in_bin)
 
-	return np.array(pdf_values)
+	return np.array(pdf_values)[:-1]
 
 def compute_early_exit_prob(temp_list, n_branches, threshold, df):
 
