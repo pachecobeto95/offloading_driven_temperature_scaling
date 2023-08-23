@@ -402,6 +402,11 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits)/n_samples
 
+	print(correct_list/numexits, sum(correct_list/numexits))
+
+	print(acc_edge)
+	sys.exit()
+
 	return acc_edge, early_classification_prob
 
 def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
