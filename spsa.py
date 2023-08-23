@@ -449,6 +449,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc = num/den if (den>0) else 0
 
+	print("Acc")
+
 	return	acc, den
 
 
