@@ -358,7 +358,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 		#pdf_values.append(pdf[in_bin])
 	#	pdf_values.append(prop_in_bin)
 
-	return np.array(pdf_values)[:-1]
+	return np.array(pdf_values)
 
 def compute_early_exit_prob(temp_list, n_branches, threshold, df):
 
