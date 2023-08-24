@@ -5,7 +5,6 @@ import config
 import pandas as pd
 from sklearn.neighbors import KernelDensity
 from scipy.stats import norm, gaussian_kde
-import matplotlib.pyplot as plt
 
 class Bernoulli(object):
 	'''
@@ -110,6 +109,8 @@ class SPSA (object):
 
 			delta_y_pred = y_plus - y_minus
 
+			print(delta_y_pred, ck_deltak)
+
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
 		avg_grad_hat = grad_hat/float(self.ens_size)
@@ -173,12 +174,8 @@ class SPSA (object):
 
 		k = 1
 		best_loss, best_ee_prob = self.compute_loss(theta)
-		patience = 0
-		max_patience = 50
 
-		#while (k <= self.nr_iter):
-		while (patience < max_patience):
-			print(patience)
+		while (k <= self.nr_iter):
 
 			old_theta = copy.copy(theta)
 
@@ -206,12 +203,9 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
-				patience = 0
-			else:
-				patience += 1
 
 			k += 1
-			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
+			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		#sys.exit()
 		return best_theta, best_loss 
 
@@ -246,6 +240,8 @@ def joint_function(temp_list, n_branches, max_exits, threshold, df, loss_acc, lo
 	f2 = (inf_time_current - loss_time)/loss_time	
 
 	return f1+f2, _
+
+
 
 
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
@@ -298,35 +294,6 @@ def theoretical_overall_accuracy_function(temp_list, n_branches, max_exits, thre
 
 	return f, ee_prob
 
-def compute_inference_time_multi_branches2(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
-
-	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
-
-	avg_inference_time = 0
-	n_samples = len(df)
-	n_exits_device_list = []
-	remaining_data = df
-
-	for i in range(1, n_branches+1):
-		confs = remaining_data["conf_branch_%s"%(i)]
-		calib_confs = confs/temp_list[i-1]
-		early_exit_samples = calib_confs >= threshold
-
-		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i)].mean()
-		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i)].count()
-
-		n_exits_device_list.append(n_exit_branch)
-
-		avg_inference_time += n_exit_branch*inf_time_branch_device
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	n_samples_cloud = n_samples - sum(n_exits_device_list)
-
-	inf_time_branch_cloud = df['delta_inferente_time_branch_%s'%(n_branches+1)].mean()
-	avg_inference_time += n_samples_cloud*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
-	avg_inference_time = avg_inference_time/float(n_samples)
-	return avg_inference_time, 0
 
 
 def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
@@ -419,7 +386,9 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 	for i in range(n_exits):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
+		#print(num)
 	
+
 	den = compute_theoretical_edge_prob(temp_list, n_exits, threshold, df)
 
 	acc = num/den if (den>0) else 0
@@ -444,13 +413,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	for i in range(n_branches):
 		
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-
+	
 	den = compute_theoretical_edge_prob(temp_list, n_branches, threshold, df)
 
 	acc = num/den if (den>0) else 0
 
-	#print("Acc: %s"%(acc))
-
+	#return - acc, den
 	return	acc, den
 
 
@@ -461,20 +429,15 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 
 	if(idx_branch == 0):
 		confs = df["conf_branch_%s"%(idx_branch+1)].values
-		previous_exit_prob = 1
 
 	else:
 		confs = df[df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1] < threshold]["conf_branch_%s"%(idx_branch+1)].values
-		num_exit_branch = len(confs)
-		previous_exit_prob = num_exit_branch/len(df)
 	
-	#print(previous_exit_prob, idx_branch)
 	#temp_list[idx_branch] = temp_list[idx_branch]+0.0001 if (temp_list[idx_branch] == 0) else temp_list[idx_branch]
 	data_conf = confs/temp_list[idx_branch] 
 	#data_conf = np.float64(data_conf)
 	#print(data_conf)
 	#data_conf = data_conf[data_conf < 1E308]
-
 	data_conf = data_conf[:, np.newaxis]
 	#print(data_conf)
 
@@ -484,13 +447,20 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 	if (len(data_conf) > 0):
 
 		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		#print(len(data_conf))
 		model.fit(data_conf)
-
 		log_dens = model.score_samples(conf_col)
 
 		pdf_values = np.exp(log_dens)
-		pdf_values = previous_exit_prob*pdf_values
-		
+		#print(pdf_values.shape)
+
+		#kde = gaussian_kde(data_conf)
+
+		#conf_d = np.linspace(threshold, 1, 100)
+
+		#pdf_values = kde.evaluate(conf_d)
+
+		#print(pdf_values.shape)
 
 		expected_correct, pdf_values = compute_P_l(df, pdf_values, conf_d, idx_branch, temp_list)
 		#expected_correct, pdf_values = compute_reliability_diagram(df, pdf_values, conf_d, idx_branch, temp_list)
@@ -504,6 +474,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df):
 		prob_success_branch = 0
 
 	return prob_success_branch
+
 
 def compute_reliability_diagram(df, pdf, confs, idx_branch, temp_list, delta_step=0.01, n_bins=15):
 
@@ -535,32 +506,26 @@ def compute_P_l(df, pdf, confs, idx_branch, temp_list, delta_step=0.01):
 
 	expected_correct_list, pdf_list = [], []
 
-	for i in range(len(confs) - 1):
-	#for i, conf in enumerate(confs):
+	for i, conf in enumerate(confs):
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]  > conf) & (df["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch] < conf+delta_step)]
-		data = df[(df["conf_branch_%s"%(idx_branch+1)] >= confs[i]) & (df["conf_branch_%s"%(idx_branch+1)] <= confs[i+1])]
+		data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 
 		correct = data["correct_branch_%s"%(idx_branch+1)].sum()
 
 		n_samples = len(data["correct_branch_%s"%(idx_branch+1)].values)
 
 		expected_correct = correct/n_samples if (n_samples>0) else 0
-		#expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
+		expected_correct = data["conf_branch_%s"%(idx_branch+1)].mean()
 
-		#if (expected_correct is not np.nan):
-		#	expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
-		#else:
-		#	expected_correct_list.append(0), pdf_list.append(pdf[i])
-		expected_correct_list.append(0), pdf_list.append(pdf[i])	
-	
+		if (expected_correct is not np.nan):
+			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
+
 	return np.array(expected_correct_list), np.array(pdf_list)
 
 
 def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
 
 	n_samples = len(df)
-
-	#numexits = df[(df["conf_branch_3"]/temp_list[2] >= threshold) | (df["conf_branch_2"]/temp_list[1] >= threshold) ]["conf_branch_3"].count()
 
 	confs = df["conf_branch_%s"%(n_branches)]
 	calib_confs = confs/temp_list[n_branches-1]
@@ -784,6 +749,3 @@ def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_b
 	df_temp = pd.DataFrame([result_temp_dict])
 
 	df_temp.to_csv(savePath, mode='a', header=not os.path.exists(savePath))
-
-
-
