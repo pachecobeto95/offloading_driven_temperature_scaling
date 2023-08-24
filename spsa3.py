@@ -343,12 +343,17 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 	conf_d = np.linspace(threshold, 1, n_bins)
 	conf_col = conf_d[:, np.newaxis]
 
-	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-	model.fit(conf_branch)
-	log_dens = model.score_samples(conf_col)
+	if(len(conf_branch) > 0):
 
-	pdf_values = np.exp(log_dens)
-	pdf_values = ee_prob*pdf_values
+		model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+		model.fit(conf_branch)
+		log_dens = model.score_samples(conf_col)
+
+		pdf_values = np.exp(log_dens)
+		pdf_values = ee_prob*pdf_values
+	else:
+		pdf_values = np.zeros(n_bins)
+
 	return pdf_values
 
 
