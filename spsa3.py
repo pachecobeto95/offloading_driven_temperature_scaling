@@ -350,7 +350,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 
 	for conf in d_confs:
 		conf_trunc = np.array([conf]).round(decimals=2)[0]
-		ind_bin = np.digitize(conf_trunc, bin_bounds, right=True)
+		ind_bin = np.digitize(conf, bin_bounds, right=True)
 		print(conf, conf_trunc, ind_bin)
 		pdf_values.append(pdf[ind_bin-1])
 
