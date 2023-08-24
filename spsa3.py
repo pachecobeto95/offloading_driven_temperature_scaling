@@ -247,11 +247,11 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	edge_acc = num/den if(den > 0) else 0
 	return edge_acc, early_classification_prob
 
-def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=10):
+def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
 	d_confs = np.linspace(threshold, 1.0, n_bins)
 
-	expectations = compute_expectation(temp_list, idx_branch, threshold, df)
 	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+	expectations, pdf_values = compute_expectation(temp_list, idx_branch, threshold, df, pdf_values)
 
 	product = expectations*pdf_values
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
@@ -285,14 +285,14 @@ def compute_expectation1(temp_list, idx_branch, threshold, df):
 
 	return np.array(expectation_list)
 
-def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
+def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
 	bin_boundaries = np.linspace(0, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
-	acc_list = []
+	acc_list, pdf_values = [], []
 
 	if(idx_branch == 0):
 		df_branch = df
@@ -316,13 +316,13 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
 		#avg_acc_in_bin += delta
-		acc_list.append(avg_confs_in_bin)
+		acc_list.append(avg_confs_in_bin), pdf_values.append(pdf[i])
 	
-	return np.array(acc_list)
+	return np.array(acc_list), np.array(pdf_values)
 	#return np.array(expectation_list)
 
 
-def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
+def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 
 	#pdf_values = []
 
@@ -340,7 +340,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
 	conf_branch = conf_branch[:, np.newaxis]
-	conf_d = np.linspace(threshold, 1, 100)
+	conf_d = np.linspace(threshold, 1, n_bins)
 	conf_col = conf_d[:, np.newaxis]
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
