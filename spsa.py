@@ -109,7 +109,7 @@ class SPSA (object):
 
 			delta_y_pred = y_plus - y_minus
 
-			print(delta_y_pred, ck_deltak)
+			#print(delta_y_pred, ck_deltak)
 
 			grad_hat += (delta_y_pred)/(2*ck_deltak)
 
@@ -393,7 +393,7 @@ def theoretical_overall_accuracy(temp_list, n_branches, threshold, df):
 
 	acc = num/den if (den>0) else 0
 
-	print(acc)
+	#print(acc)
 
 	#return - acc, den
 	return	acc, den
