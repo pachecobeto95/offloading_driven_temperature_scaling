@@ -346,7 +346,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	print(max(conf_branch))
 
 	d_confs = np.linspace(threshold, max(conf_branch), n_bins-1)
-
+	print(d_confs)
 
 	for conf in d_confs:
 		conf_trunc = np.array([conf]).round(decimals=2)[0]
