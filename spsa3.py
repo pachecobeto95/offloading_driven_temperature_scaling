@@ -232,7 +232,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
 
-	print(accuracy_edge(temp_list, n_branches, threshold, df), f, temp_list)
+	print(accuracy_edge(temp_list, n_branches, threshold, df), inf_time_current, acc_current, f, temp_list)
 
 	return f, ee_prob
 
