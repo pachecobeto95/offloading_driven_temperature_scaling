@@ -309,7 +309,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 
 	bin_size = 1/n_bins
 	#positions = np.arange(0+bin_size/2, 1+bin_size/2, bin_size)
-	for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
+	for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
