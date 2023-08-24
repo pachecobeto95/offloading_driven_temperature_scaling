@@ -344,7 +344,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	conf_col = conf_d[:, np.newaxis]
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-	model.fit(data_conf)
+	model.fit(conf_branch)
 	log_dens = model.score_samples(conf_col)
 
 	pdf_values = np.exp(log_dens)
