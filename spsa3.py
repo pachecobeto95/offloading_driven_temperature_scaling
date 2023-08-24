@@ -353,7 +353,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 		log_dens = model.score_samples(conf_col)
 
 		pdf_values = np.exp(log_dens)
-		pdf_values = ee_prob*pdf_values
+		#pdf_values = ee_prob*pdf_values
 	else:
 		pdf_values = np.zeros(n_bins)
 
