@@ -349,10 +349,10 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	#print(d_confs)
 
 	for conf in d_confs:
-		conf_trunc = np.array([conf]).round(decimals=2)[0]
-		ind_bin = np.digitize(math.floor(conf*1000)/1000, bin_bounds, right=True)
+		ind_bin = np.digitize(conf, bin_bounds, right=True)
+		if(conf <= bin_bounds[-1]):
 		#print(conf, conf_trunc, ind_bin)
-		pdf_values.append(pdf[ind_bin-1])
+			pdf_values.append(pdf[ind_bin-1])
 
 	#for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
 	#	in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
