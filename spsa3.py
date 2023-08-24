@@ -342,7 +342,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=n_bins, density=True)
-	print(pdf)
+	print(pdf, bin_bounds)
 
 	d_confs = np.linspace(threshold, max(conf_branch), n_bins-1)
 
