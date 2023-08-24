@@ -323,6 +323,36 @@ def compute_expectation(temp_list, idx_branch, threshold, df, n_bins=10):
 
 
 def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
+
+	#pdf_values = []
+
+	if(idx_branch == 0):
+		df_branch = df
+		ee_prob = 1
+	else:
+		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
+		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
+		early_exit_samples = previous_confs >= threshold
+		df_branch = df[early_exit_samples]
+		ee_prob = len(df_branch)/len(df)
+
+	logit_branch = getLogitBranches(df_branch, idx_branch)
+	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
+
+	conf_branch = conf_branch[:, np.newaxis]
+	conf_d = np.linspace(threshold, 1, 100)
+	conf_col = conf_d[:, np.newaxis]
+
+	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+	model.fit(data_conf)
+	log_dens = model.score_samples(conf_col)
+
+	pdf_values = np.exp(log_dens)
+	pdf_values = ee_prob*pdf_values
+	return pdf_values
+
+
+def compute_pdf_values1(temp_list, idx_branch, threshold, df, n_bins=10):
 	pdf_values = []
 	bin_boundaries = np.linspace(0, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
