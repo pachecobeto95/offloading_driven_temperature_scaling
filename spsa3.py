@@ -342,16 +342,16 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=10):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	pdf, bin_bounds = np.histogram(conf_branch, bins=n_bins, density=True)
-	print(pdf, bin_bounds)
-	print(max(conf_branch))
+	#print(pdf, bin_bounds)
+	#print(max(conf_branch))
 
 	d_confs = np.linspace(threshold, max(conf_branch), n_bins-1)
-	print(d_confs)
+	#print(d_confs)
 
 	for conf in d_confs:
 		conf_trunc = np.array([conf]).round(decimals=2)[0]
 		ind_bin = np.digitize(conf, bin_bounds, right=True)
-		print(conf, conf_trunc, ind_bin)
+		#print(conf, conf_trunc, ind_bin)
 		pdf_values.append(pdf[ind_bin-1])
 
 	#for bin_lower, bin_upper in zip(bin_lowers, bin_uppers):
