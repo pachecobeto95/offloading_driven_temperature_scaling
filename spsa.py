@@ -174,8 +174,10 @@ class SPSA (object):
 
 		k = 1
 		best_loss, best_ee_prob = self.compute_loss(theta)
+		patience, max_patience = 0, 50
 
-		while (k <= self.nr_iter):
+		#while (k <= self.nr_iter):
+		while (patience <= max_patience):
 
 			old_theta = copy.copy(theta)
 
@@ -203,6 +205,9 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
+				patience = 0
+			else:
+				patience += 1
 
 			k += 1
 			print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
