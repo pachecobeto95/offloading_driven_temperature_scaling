@@ -68,6 +68,7 @@ def main(args):
 
 	threshold_list = [0.8]
 	beta_list = [50, 90, 100]
+	beta_list = np.arange(0, 105, 5)	
 	#beta_list = beta_list[args.slot_beta]
 
 
