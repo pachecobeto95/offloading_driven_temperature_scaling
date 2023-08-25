@@ -278,7 +278,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 	acc_list = []
-	
+
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
@@ -286,7 +286,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 
 	for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
-		#prop_in_bin = np.mean(in_bin)
+		prop_in_bin = np.mean(in_bin)
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
