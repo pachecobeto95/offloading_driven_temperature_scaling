@@ -252,24 +252,24 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		early_exit_samples = conf_branch >= threshold
 
-		numexits[i] = sum(early_exit_samples)		
+		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
 
-		acc_device[i] = correct_list[i]/numexits[i]
-
 		remaining_data = remaining_data[~early_exit_samples]
-		
 
-	prob = numexits[i]/sum(numexits)
-	edge_acc = sum(prob*acc_device)
 
-	print(acc_edge, edge_acc)
+	prob = numexits/sum(numexits)
+	acc_dev = correct_list/numexits
+	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
+	early_classification_prob = sum(numexits)/n_samples
 
+	print(acc_dev*prob, acc_edge)
 	sys.exit()
-
-
-
+		
 	return acc_edge, early_classification_prob
+
+
+
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
 	d_confs = np.linspace(threshold, 1.0, n_bins)
