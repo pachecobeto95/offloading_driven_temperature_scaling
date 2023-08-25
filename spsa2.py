@@ -262,8 +262,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	prob = numexits/sum(numexits)
 	acc_dev = correct_list/numexits
-	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
-	early_classification_prob = sum(numexits)/n_samples
 
 	print(sum(acc_device*prob), acc_edge)
 	sys.exit()
