@@ -320,7 +320,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
 		#avg_acc_in_bin += delta
-		acc_list.append(avg_confs_in_bin), pdf_values.append(pdf[i])
+		acc_list.append(avg_confs_in_bin), pdf_values.append(prop_in_bin)
 	
 	print(acc_list)
 	print(pdf_values)
