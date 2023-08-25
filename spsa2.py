@@ -258,7 +258,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df_branch, i, threshold) 
+		theo_acc_device[i] = estimate_expectation(df_branch, i, threshold, temp_list) 
 		
 		print(acc_device[i], theo_acc_device[i])
 
@@ -273,13 +273,25 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 
-def estimate_expectation(df_branch, i, threshold, n_bins=100):
+def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100):
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 
-	print(len(df_branch), len(conf_branch))
-	#for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
+	logit_branch = getLogitBranches(df_branch, idx_branch)
+	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
+
+	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
+
+	for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
+		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
+		#prop_in_bin = np.mean(in_bin)
+		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
+		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
+		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
+		acc_list.append(avg_confs_in_bin)
+	print(acc_list)
+	sys.exit()
 
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
