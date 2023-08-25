@@ -277,10 +277,14 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
-	acc_list, prop_in_bin_list = [], []
-
+	#acc_list, prop_in_bin_list = [], []
+	acc_list = []
+	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
+	
+	pdf, _ = np.histogram(conf_branch, bins=n_bins, density=True)
+	print(pdf)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
@@ -290,7 +294,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
-		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(prop_in_bin)
+		acc_list.append(avg_confs_in_bin)#, prop_in_bin_list.append(prop_in_bin)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
 	print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
