@@ -240,6 +240,11 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	num = 0
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
+	n_rows, _ = df.shape
+
+	sys.exit()
+
+
 
 	return acc_edge, early_classification_prob
 
