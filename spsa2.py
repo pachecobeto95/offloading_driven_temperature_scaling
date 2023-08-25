@@ -246,10 +246,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	logit_branch_3 = getLogitBranches(df, 2)
 
-	for i in range(n_rows):
 
-		conf = get_confidences(logit_branch_3, 2, temp_list)
-		print(conf, conf_3[0])
+	conf, _ = get_confidences(logit_branch_3, 2, temp_list)
+	print(conf[0], conf_3[0])
 
 	sys.exit()
 
