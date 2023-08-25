@@ -282,9 +282,19 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
-	
+	conf_branch_pdf = conf_branch[:, np.newaxis]
+
 	pdf, _ = np.histogram(conf_branch, bins=n_bins, density=True)
-	print(pdf, len(pdf))
+
+	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
+	model.fit(conf_branch_pdf)
+	log_dens = model.score_samples(conf_branch)
+
+	pdf_kde = np.exp(log_dens)
+
+	print(pdf, pdf_kde)
+	sys.exit()
+
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
