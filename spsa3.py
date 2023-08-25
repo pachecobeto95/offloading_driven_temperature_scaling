@@ -346,7 +346,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
-	conf_branch = conf_branch[conf_branch > threshold]
+	#conf_branch = conf_branch[conf_branch > threshold]
 
 
 	conf_branch = conf_branch[:, np.newaxis]
