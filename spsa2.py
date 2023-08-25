@@ -278,3 +278,20 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	early_classification_prob = sum(numexits)/n_samples
 
 	return acc_edge, early_classification_prob
+
+
+def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
+	gamma, overhead, mode, epsilon=0.00001):
+
+	max_exits = max_branches + 1
+
+	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
+
+	# Instantiate SPSA class to initializes the parameters
+	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
+
+	# Run SPSA to minimize the objective function
+	theta_opt, loss_opt = optim.min()
+
+	return theta_opt, loss_opt
