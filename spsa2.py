@@ -277,7 +277,8 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
-
+	acc_list = []
+	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
