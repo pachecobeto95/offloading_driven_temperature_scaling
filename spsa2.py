@@ -242,6 +242,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	n_rows, _ = df.shape
 
+	print(n_rows)
+
 	sys.exit()
 
 
