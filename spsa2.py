@@ -293,7 +293,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(prop_in_bin)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
-	print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin)))
+	print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 	print(acc_list)
 	sys.exit()
 
