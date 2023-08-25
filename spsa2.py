@@ -264,6 +264,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
+	sys.exit()
 	prob = numexits/sum(numexits)
 	acc_dev = sum(acc_device*prob)
 
@@ -300,9 +301,9 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bin_boundaries)
 	integral = sum(product*conf_diff)
+	integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
-	print(integral)
-	print(np.trapz(product, bin_boundaries[:-1], axis=0))
+
 	sys.exit()
 
 
