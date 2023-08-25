@@ -248,7 +248,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	for i in range(n_branches):
 		logit_branch = getLogitBranches(remaining_data, i)
-		conf_branch = get_confidences(logit_branch, i, temp_list)
+		conf_branch, _ = get_confidences(logit_branch, i, temp_list)
 
 		early_exit_samples = conf_branch >= threshold
 
@@ -259,6 +259,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	prob = numexits[i]/sum(numexits)
 	edge_acc = sum(prob*acc_device)
+
+	print(acc_edge, edge_acc)
 
 	sys.exit()
 
