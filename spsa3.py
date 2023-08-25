@@ -322,8 +322,8 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		#avg_acc_in_bin += delta
 		acc_list.append(avg_confs_in_bin), pdf_values.append(pdf[i])
 	
-	#print(acc_list)
-	#print(pdf_values)
+	print(acc_list)
+	print(pdf_values)
 	return np.array(acc_list), np.array(pdf_values)
 	#return np.array(expectation_list)
 
