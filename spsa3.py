@@ -229,7 +229,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	else:
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
-	print(acc_current)
+	#print(acc_current)
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
 
@@ -353,7 +353,7 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 		log_dens = model.score_samples(conf_col)
 
 		pdf_values = np.exp(log_dens)
-		#pdf_values = ee_prob*pdf_values
+		pdf_values = ee_prob*pdf_values
 	else:
 		pdf_values = np.zeros(n_bins)
 
