@@ -257,6 +257,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		acc_device[i] = correct_list[i]/numexits[i]
 
+		remaining_data = remaining_data[~early_exit_samples]
+		
+
 	prob = numexits[i]/sum(numexits)
 	edge_acc = sum(prob*acc_device)
 
