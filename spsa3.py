@@ -261,7 +261,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
 
-def compute_expectation1(temp_list, idx_branch, threshold, pdf, df):
+def compute_expectation(temp_list, idx_branch, threshold, pdf, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
@@ -289,7 +289,7 @@ def compute_expectation1(temp_list, idx_branch, threshold, pdf, df):
 
 	return np.array(expectation_list), np.array(pdf_values)
 
-def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
+def compute_expectation1(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
