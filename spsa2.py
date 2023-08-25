@@ -288,7 +288,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 
 	model = KernelDensity(kernel='gaussian', bandwidth=0.1)
 	model.fit(conf_branch_pdf)
-	log_dens = model.score_samples(conf_branch)
+	log_dens = model.score_samples(conf_branch_pdf)
 
 	pdf_kde = np.exp(log_dens)
 
