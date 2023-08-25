@@ -240,15 +240,25 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	num = 0
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-	n_rows, _ = df.shape
+	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	acc_device = np.zeros(n_branches)
+	n_samples = len(df)
 
-	conf_3 = df.conf_branch_3.values
+	remaining_data = df
 
-	logit_branch_3 = getLogitBranches(df, 2)
+	for i in range(n_branches):
+		logit_branch = getLogitBranches(remaining_data, i)
+		conf_branch = get_confidences(logit_branch, i, temp_list)
 
+		early_exit_samples = conf_branch >= threshold
 
-	conf, _ = get_confidences(logit_branch_3, 2, np.array([1, 1, 1]))
-	print(conf[0], conf_3[0])
+		numexits[i] = sum(early_exit_samples)		
+		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+
+		acc_device[i] = correct_list[i]/numexits[i]
+
+	prob = numexits[i]/sum(numexits)
+	edge_acc = sum(prob*acc_device)
 
 	sys.exit()
 
