@@ -302,7 +302,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	integral = sum(product*conf_diff)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 	print(integral)
-	print(np.trapz(product, bin_boundaries, axis=0))
+	print(len(product), len(bin_boundaries))
 	sys.exit()
 
 
