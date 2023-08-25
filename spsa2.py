@@ -277,37 +277,28 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
-	#acc_list, prop_in_bin_list = [], []
-	acc_list = []
+	acc_list, prop_in_bin_list = [], []
+	#acc_list = []
 	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
-	pdf, _ = np.histogram(conf_branch, bins=1000, density=True)
-
-	#model = KernelDensity(kernel='gaussian', bandwidth=0.1)
-	#model.fit(conf_branch_pdf)
-	#log_dens = model.score_samples(conf_branch_pdf)
-
-	#pdf_kde = np.exp(log_dens)
-
-	print(pdf)
-	#sys.exit()
+	pdf_values, _ = np.histogram(conf_branch, bins=n_bins, density=True)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
-	for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
+	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
-		acc_list.append(avg_confs_in_bin)#, prop_in_bin_list.append(prop_in_bin)
+		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(pdf)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
-	print(acc_list)
+	print(acc_list, prop_in_bin_list)
 	sys.exit()
 
 
