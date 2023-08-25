@@ -280,6 +280,21 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
+
+
+	for i, conf in enumerate(d_confs):
+		#
+		condition = np.logical_and(conf_branch > conf, conf_branch < conf+0.01)
+		#data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
+		data = conf_branch[condition]
+		expected_correct.append(np.mean(data))
+
+		if (expected_correct is not np.nan):
+			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
+
+	return np.array(expected_correct_list), np.array(pdf_list)
+
+
 	for k in range(len(d_confs) - 1):
 	#for i, conf in enumerateconf_branch:
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
