@@ -268,6 +268,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 	logit_data = np.zeros((len(df), n_classes))
 	d_confs = np.linspace(threshold, 1.0, 100)
 	expectation_list, pdf_values = [], []
+	expected_correct_list = []
 
 	if(idx_branch == 0):
 		df_branch = df
