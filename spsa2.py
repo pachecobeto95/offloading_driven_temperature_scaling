@@ -251,9 +251,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		conf_branch, _ = get_confidences(logit_branch, i, temp_list)
 
 		early_exit_samples = conf_branch >= threshold
-
-		numexits[i] = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		correct_list[i] = remaining_data[early_exit_samples]["correct_branch_%s"%(i+1)].sum()
+		df_branch = remaining_data[early_exit_samples]
+		
+		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
+		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		acc_device[i] = correct_list[i]/numexits[i] 
 
@@ -261,9 +262,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 
 	prob = numexits/sum(numexits)
-	acc_dev = correct_list/numexits
+	acc_dev = sum(acc_device*prob)
 
-	print(sum(acc_device*prob), acc_edge)
+	print(acc_dev, acc_edge)
 	sys.exit()
 		
 	return acc_edge, early_classification_prob
