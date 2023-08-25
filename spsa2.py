@@ -284,7 +284,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 	
 	pdf, _ = np.histogram(conf_branch, bins=n_bins, density=True)
-	print(pdf)
+	print(pdf, len(pdf))
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
