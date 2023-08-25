@@ -273,7 +273,7 @@ def compute_expectation(temp_list, idx_branch, threshold, pdf, df):
 	else:
 		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
 		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
-		early_exit_samples = previous_confs >= threshold
+		early_exit_samples = previous_confs < threshold
 		df_branch = df[early_exit_samples]
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
