@@ -291,6 +291,7 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
 		acc_list.append(avg_confs_in_bin)
+		print(avg_confs_in_bin, prop_in_bin)
 	print(acc_list)
 	sys.exit()
 
