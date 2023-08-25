@@ -358,8 +358,8 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 		model.fit(conf_branch)
 		log_dens = model.score_samples(conf_col)
 
-		#pdf_values = np.exp(log_dens)
-		#pdf_values = ee_prob*pdf_values
+		pdf_values = np.exp(log_dens)
+		pdf_values = ee_prob*pdf_values
 		#pdf_values, _ = np.histogram(conf_branch, bins=n_bins, density=True)
 		#pdf_values = ee_prob*pdf_values
 
