@@ -288,7 +288,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		condition = np.logical_and(conf_branch > conf, conf_branch < conf+0.01)
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 		data = conf_branch[condition]
-		expected_correct_list.append(np.mean(data))
+		expected_correct_list.append(np.mean(data)), pdf_list.append(pdf[i])
 
 		#if (expected_correct is not np.nan):
 		#	expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
