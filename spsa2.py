@@ -1,10 +1,13 @@
 from itertools import tee, islice
 import random, sys, torch, os, logging, copy
 import numpy as np
-import config
+import config, math
 import pandas as pd
 from sklearn.neighbors import KernelDensity
 from scipy.stats import norm, gaussian_kde
+import matplotlib.pyplot as plt
+import torch.nn as nn
+from scipy.special import softmax
 
 class Bernoulli(object):
 	'''
@@ -171,9 +174,12 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
+		max_patience = 50
 		best_loss, best_ee_prob = self.compute_loss(theta)
-
-		while (k <= self.nr_iter):
+		patience = 0
+		#while (k <= self.nr_iter):
+		while (patience < max_patience):
+			print(patience)
 
 			old_theta = copy.copy(theta)
 
@@ -201,6 +207,9 @@ class SPSA (object):
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
+				patience = 0
+			else:
+				patience += 1
 
 			k += 1
 			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
@@ -220,215 +229,33 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	else:
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
-	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
+
+	print(accuracy_edge(temp_list, n_branches, threshold, df), acc_current, temp_list)
+	sys.exit()
 
 	return f, ee_prob
 
-def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
-
-	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
-	avg_inference_time, inf_time_previous_branch = 0, 0
-	n_samples = len(df)
-	n_exits_device_list = []
-	n_remaining_samples = n_samples
-	remaining_data = df
-
-
-	for i in range(n_branches):
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
-		
-		n_exit_branch = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].count()
-		n_exits_device_list.append(n_exit_branch)
-
-		inf_time_branch_device = df_device["inferente_time_branch_%s"%(i+1)].mean()
-
-
-		#delta_inference_time = inf_time_branch_device - inf_time_previous_branch
-
-		#print(n_exit_branch, delta_inference_time)
-
-		avg_inference_time += n_exit_branch*inf_time_branch_device
-
-		n_remaining_samples -= n_exit_branch
-		inf_time_previous_branch = inf_time_branch_device
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	#print(avg_inference_time/sum(n_exits_device_list), sum(n_exits_device_list), n_remaining_samples)
-
-	inf_time_branch_cloud = df["inferente_time_branch_%s"%(n_branches+1)].mean()-df["inferente_time_branch_%s"%(n_branches)].mean()
-
-	avg_inference_time += n_remaining_samples*(df_device["inferente_time_branch_%s"%(n_branches)].mean()+overhead+inf_time_branch_cloud)
-
-	avg_inference_time = avg_inference_time/float(n_samples)
-	early_classification_prob = sum(n_exits_device_list)/float(n_samples)
-	#print(early_classification_prob)
-	#print(avg_inference_time)
-
-	return avg_inference_time, early_classification_prob
-
-
-
-
-def compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
-
-	avg_inference_time = 0
-	n_samples = len(df)
-	#remaining_data = df
-
-	# somatorio P[fl-1 < threshold, fl > threshold]* time_l
-	numexits = np.zeros(n_branches)
-
-	confs = df["conf_branch_1"]
-
-	calib_confs = confs/temp_list[0]
-	early_exit_samples = calib_confs >= threshold
-
-	n_exit_edge = df[early_exit_samples]["conf_branch_1"].count()
-	n_exit_cloud = n_samples - n_exit_edge
-	
-	inf_time_branch_device = df_device["inferente_time_branch_1"].mean()
-
-	inf_time_branch_cloud = df["inferente_time_branch_2"].mean() - df["inferente_time_branch_1"].mean()
-
-	avg_inference_time += n_samples*inf_time_branch_device
-
-	avg_inference_time += n_exit_cloud*(overhead+inf_time_branch_cloud)
-
-	avg_inference_time = avg_inference_time/float(n_samples)
-	early_classification_prob = n_exit_edge/float(n_samples)
-
-	return avg_inference_time, early_classification_prob
-
-
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
-
-	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 	num = 0
-	
-	for i in range(n_branches):
-		num += compute_prob_success_branch(df, temp_list, threshold, i)
-	
+	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+
 
 	return acc_edge, early_classification_prob
 
-def compute_prob_success_branch(df, temp_list, threshold, idx_branch):
-	conf_list = np.linspace(threshold, 1, 100)
+def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
+	d_confs = np.linspace(threshold, 1.0, n_bins)
 
-	expectation_list, confs_branch = compute_expectation(df, temp_list, conf_list, threshold, idx_branch)
-	pdf_values = compute_pdf(df, temp_list, confs_branch, threshold, idx_branch)
+	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
+	expectations, pdf_values = compute_expectation(temp_list, idx_branch, threshold, df, pdf_values)
 
-	product = expectation_list*pdf_values
+	product = expectations*pdf_values
+	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
+	return result
 
-	prob_success_branch = np.sum([(confs_branch[i+1] - confs_branch[i])*product[i] for i in range(len(product) - 1) ])
-	return prob_success_branch
-
-
-def compute_expectation(df, temp_list, conf_list, threshold, idx_branch):
-	expectation_list = []
-
-	if(idx_branch == 0):
-		df_branch = df
-	else:
-		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
-
-	confs_branch = df_branch["conf_branch_%s"%(idx_branch+1)].values/temp_list[idx_branch]
-
-	for conf in confs_branch:
-		#print(conf)
-		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf])
-		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["conf_branch_%s"%(idx_branch+1)].mean())
-		#print(df_branch[df_branch["conf_branch_%s"%(idx_branch+1)] == conf]["correct_branch_%s"%(idx_branch+1)].mean())
-		expectation = df_branch[(df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]) == conf]["correct_branch_%s"%(idx_branch+1)].mean()
-		expectation_list.append(expectation)
-
-	return np.array(expectation_list), np.array(confs_branch)
-
-def compute_pdf(df, temp_list, conf_list, threshold, idx_branch):
-	if(idx_branch == 0):
-		df_branch = df
-	else:
-		df_branch = df[(df["conf_branch_%s"%(idx_branch)]/temp_list[idx_branch-1]) < threshold]
-
-	pdf_values = []
-	df_conf_branch = df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]
-	pdf, bin_bounds = np.histogram(df_conf_branch.values, bins=100, density=True)
-	inds = np.digitize(conf_list, bin_bounds)
-	for ind in inds:
-		if(ind >= len(pdf)):
-			pdf_values.append(pdf[-1])
-		else:
-			pdf_values.append(pdf[ind-1])
-
-	return np.array(pdf_values)
-
-
-def theoretical_accuracy_edge2(temp_list, n_branches, threshold, df):
-
-	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
-
-	n_samples = len(df)
-	remaining_data = df
-	expectation_list = []
-	numexits = np.zeros(n_branches)
-
-	for i in range(n_branches):
-		current_n_samples = len(remaining_data)
-
-		confs = remaining_data["conf_branch_%s"%(i+1)]
-		calib_confs = confs/temp_list[i]
-		early_exit_samples = calib_confs >= threshold
-
-		numexits[i] = len(remaining_data[early_exit_samples])
-
-		expectation = remaining_data[early_exit_samples]["conf_branch_%s"%(i+1)].mean()
-		expectation_list.append(expectation)
-
-		remaining_data = remaining_data[~early_exit_samples]
-
-	prob = numexits/n_samples
-	product = sum(np.array(expectation_list)*prob)
-
-	#print(acc_edge, product)
-
-	return product, early_classification_prob
-
-
-def compute_theoretical_edge_prob(temp_list, n_branches, threshold, df):
-
-	n_samples = len(df)
-
-	confs = df[(df["conf_branch_3"]/temp_list[2] >= threshold) | (df["conf_branch_2"]/temp_list[1] >= threshold)]
-	#calib_confs = confs/temp_list[n_branches-1]
-	#early_exit_samples = calib_confs >= threshold
-
-	#numexits = df[early_exit_samples]["conf_branch_%s"%(n_branches)].count()
-	numexits = len(confs)
-
-	prob = numexits/n_samples
-
-	return prob, numexits
 
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
-
-	"""
-	This function computes the accuracy on the edge
-	return avg_inf_time
-
-	Inputs:
-		temp_list:  temperature vector
-		df:         this DataFrame contains the confidences, predictions and a boolean that indicates if the predictions is correct or not.
-		threshold:  this threshold that decides whether the prediction is confidence to classify earlier on the 
-					side branches at the edge device.
-		n_branches: number of side branches that is placed at the edge device.
-
-	Outputs:
-		acc_edge: is the accuracy obtained by the side branches at the edge device.
-	"""
 	
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	n_samples = len(df)
@@ -450,36 +277,4 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_edge = sum(correct_list)/sum(numexits) if(sum(numexits) > 0) else 0
 	early_classification_prob = sum(numexits)/n_samples
 
-	#return - acc_edge, early_classification_prob
 	return acc_edge, early_classification_prob
-
-def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
-	gamma, overhead, mode, epsilon=0.00001):
-
-	max_exits = max_branches + 1
-
-	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
-
-	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
-		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
-
-	# Run SPSA to minimize the objective function
-	theta_opt, loss_opt = optim.min()
-
-	return theta_opt, loss_opt
-
-
-def save_temperature(savePath, theta_opt, loss_opt, threshold, n_branches, max_branches, metric):
-
-	result_temp_dict = {"threshold": threshold, "opt_loss": loss_opt, "n_branches": n_branches, "metric": metric, "max_branches": max_branches}
-
-	for i in range(max_branches):
-
-		temp_branch = theta_opt[i] if (i < max_branches) else np.nan
-
-		result_temp_dict["temp_branch_%s"%(i+1)] = temp_branch
-
-	df_temp = pd.DataFrame([result_temp_dict])
-
-	df_temp.to_csv(savePath, mode='a', header=not os.path.exists(savePath))

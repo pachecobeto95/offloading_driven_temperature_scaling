@@ -2,7 +2,7 @@ import os, time, sys, json, os, argparse, torch
 import config, utils, temperature_scaling, ee_nn
 import numpy as np
 import pandas as pd
-import spsa3 as spsa
+import spsa2 as spsa
 import torch.nn as nn
 
 def save_beta_results(savePath, beta_theta, beta_acc, beta_inf_time, ee_prob, threshold, n_branches_edge, max_branches, beta, overhead, calib_mode, mode):
