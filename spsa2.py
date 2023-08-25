@@ -242,6 +242,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
 	acc_device = np.zeros(n_branches)
+	theo_acc_device = np.zeros(n_branches)
 	n_samples = len(df)
 
 	remaining_data = df
@@ -256,10 +257,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
-		acc_device[i] = correct_list[i]/numexits[i] 
+		acc_device[i] = correct_list[i]/numexits[i]
+		theo_acc_device[i] = estimate_expectation(df_branch, conf_branch, i, threshold) 
+		
+		print(acc_device[i], theo_acc_device[i])
 
 		remaining_data = remaining_data[~early_exit_samples]
-
 
 	prob = numexits/sum(numexits)
 	acc_dev = sum(acc_device*prob)
@@ -270,6 +273,13 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 
+def estimate_expectation(df_branch, conf_branch, i, threshold, n_bins=100):
+	bin_boundaries = np.linspace(threshold, 1, n_bins)
+	bin_lowers = bin_boundaries[:-1]
+	bin_uppers = bin_boundaries[1:]
+
+	print(len(df_branch), len(conf_branch))
+	#for i, (bin_lower, bin_upper) in enumerate(zip(bin_lowers, bin_uppers)):
 
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
