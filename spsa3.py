@@ -260,12 +260,12 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
 
-def compute_expectation(temp_list, idx_branch, threshold, df):
+def compute_expectation(temp_list, idx_branch, threshold, pdf, df):
 
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
 	d_confs = np.linspace(threshold, 1.0, 100)
-	expectation_list = []
+	expectation_list, pdf_values = [], []
 
 	if(idx_branch == 0):
 		df_branch = df
@@ -278,15 +278,15 @@ def compute_expectation(temp_list, idx_branch, threshold, df):
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
-	#for k in range(len(d_confs) - 1):
-	for conf in conf_branch:
+	for k in range(len(d_confs) - 1):
+	#for i, conf in enumerateconf_branch:
 		condition = np.logical_and(conf_branch >= d_confs[k], conf_branch <= d_confs[k+1])
 		df_condition =  df_branch[condition]
 		expectation = df_condition["correct_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
 		expectation = df_branch[condition]["conf_branch_%s"%(idx_branch+1)].mean() if(len(df_condition)>0) else 0
-		expectation_list.append(expectation)
+		expectation_list.append(expectation), pdf_values.append(pdf[k])
 
-	return np.array(expectation_list)
+	return np.array(expectation_list), np.array(pdf_values)
 
 def compute_expectation1(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 
