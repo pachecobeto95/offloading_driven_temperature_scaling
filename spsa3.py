@@ -290,8 +290,8 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		data = conf_branch[condition]
 		expected_correct_list.append(np.mean(data))
 
-		if (expected_correct is not np.nan):
-			expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
+		#if (expected_correct is not np.nan):
+		#	expected_correct_list.append(expected_correct), pdf_list.append(pdf[i])
 
 	return np.array(expected_correct_list), np.array(pdf_list)
 
