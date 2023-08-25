@@ -258,7 +258,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df_branch, conf_branch, i, threshold) 
+		theo_acc_device[i] = estimate_expectation(df_branch, i, threshold) 
 		
 		print(acc_device[i], theo_acc_device[i])
 
@@ -273,7 +273,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 
-def estimate_expectation(df_branch, conf_branch, i, threshold, n_bins=100):
+def estimate_expectation(df_branch, i, threshold, n_bins=100):
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
