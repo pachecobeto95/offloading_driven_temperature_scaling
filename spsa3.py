@@ -259,7 +259,7 @@ def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100
 	expectations, pdf_values = compute_expectation(temp_list, idx_branch, threshold, df, pdf_values)
 
 	product = expectations*pdf_values
-	print(expectations, pdf_values)
+	#print(expectations, pdf_values)
 	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
 	return result
 
@@ -288,7 +288,7 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		#data = df[(df["conf_branch_%s"%(idx_branch+1)] > conf) & (df["conf_branch_%s"%(idx_branch+1)] < conf+delta_step)]
 		data = conf_branch[condition]
 		expected_correct = sum(data)/len(data) if (len(data) > 0) else 0
-		print(expected_correct)
+		#print(expected_correct)
 
 		if (expected_correct is not np.nan):
 			expected_correct_list.append(expected_correct), pdf_values.append(pdf[i])
