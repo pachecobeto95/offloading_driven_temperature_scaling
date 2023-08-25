@@ -244,7 +244,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	for i in range(n_branches):
 		num += compute_prob_success_branch(temp_list, i, threshold, df)
-		print(i, num)
+		#print(i, num)
 
 	den = compute_early_exit_prob(temp_list, n_branches, threshold, df)
 
@@ -320,10 +320,10 @@ def compute_expectation(temp_list, idx_branch, threshold, df, pdf, n_bins=100):
 		avg_confs_in_bin = sum(confs_in_bin)/len(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = sum(correct_in_bin)/len(correct_in_bin) if (len(confs_in_bin)>0) else 0
 		#avg_acc_in_bin += delta
-		acc_list.append(avg_confs_in_bin), pdf_values.append(prop_in_bin)
+		acc_list.append(avg_confs_in_bin), pdf_values.append(pdf[i])
 	
-	print(acc_list)
-	print(pdf_values)
+	#print(acc_list)
+	#print(pdf_values)
 	return np.array(acc_list), np.array(pdf_values)
 	#return np.array(expectation_list)
 
@@ -338,8 +338,8 @@ def compute_pdf_values(temp_list, idx_branch, threshold, df, n_bins=100):
 	else:
 		logit_previous_branch = getLogitPreviousBranches(df, idx_branch)
 		previous_confs, _ = get_previous_confidences(logit_previous_branch, idx_branch, temp_list)
-		early_exit_samples = previous_confs >= threshold
-		df_branch = df[early_exit_samples]
+		no_exit_samples = previous_confs < threshold
+		df_branch = df[no_exit_samples]
 		ee_prob = len(df_branch)/len(df)
 
 	logit_branch = getLogitBranches(df_branch, idx_branch)
