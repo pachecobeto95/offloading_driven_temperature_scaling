@@ -256,13 +256,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
-		p = 1 - (numexits[i]/len(remaining_data))
-		print(p)
+		#p = 1 - (numexits[i]/len(remaining_data))
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df_branch, i, threshold, temp_list) 
+		theo_acc_device[i] = estimate_expectation(df, df_branch, i, threshold, temp_list) 
 		
-		print(acc_device[i], theo_acc_device[i], p*theo_acc_device[i])
+		print(acc_device[i], theo_acc_device[i], theo_acc_device[i])
 
 		remaining_data = remaining_data[~early_exit_samples]
 
@@ -276,7 +275,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 
-def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100):
+def estimate_expectation(df, df_branch, idx_branch, threshold, temp_list, n_bins=100):
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
@@ -285,9 +284,17 @@ def estimate_expectation(df_branch, idx_branch, threshold, temp_list, n_bins=100
 	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
+
+	logit_branch_full = getLogitBranches(df, idx_branch)
+	conf_branch_full, _ = get_confidences(logit_branch_full, idx_branch, temp_list)
+
+
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
 	pdf_values, _ = np.histogram(conf_branch, bins=n_bins, density=True)
+
+	pdf_values_full, _ = np.histogram(conf_branch_full, bins=n_bins, density=True)
+
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
