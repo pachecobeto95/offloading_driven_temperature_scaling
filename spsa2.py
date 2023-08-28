@@ -256,10 +256,11 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
-		#p = 1 - (numexits[i]/len(remaining_data))
+
+		p = 1 - (numexits[i]/len(remaining_data))
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df, df_branch, i, threshold, temp_list) 
+		theo_acc_device[i] = estimate_expectation(df, df_branch, p, i, threshold, temp_list) 
 		
 		print(acc_device[i], theo_acc_device[i], theo_acc_device[i])
 
@@ -276,7 +277,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	return acc_edge, early_classification_prob
 
 
-def estimate_expectation(df, df_branch, idx_branch, threshold, temp_list, n_bins=100):
+def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_bins=100):
 	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
@@ -310,7 +311,7 @@ def estimate_expectation(df, df_branch, idx_branch, threshold, temp_list, n_bins
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
-		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(pdf)
+		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(p*pdf)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
