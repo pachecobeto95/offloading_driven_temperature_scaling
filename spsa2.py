@@ -320,7 +320,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	for conf in conf_d:
 		for k in range(len(bounds) - 1):
 			if(conf >= bounds[k] and conf <= bounds[k+1]):
-				prop_in_bin_list.append(pdf_values_full[k])
+				prop_in_bin_list.append(p*pdf_values_full[k])
 
 
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
