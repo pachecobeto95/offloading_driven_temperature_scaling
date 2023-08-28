@@ -293,7 +293,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
-	pdf_values, _ = np.histogram(conf_branch, bins=n_bins, density=True)
+	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
 	pdf_values_full, bounds = np.histogram(conf_branch_full, bins=n_bins, density=True)
 
@@ -318,9 +318,9 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	conf_d = np.linspace(threshold, 1, n_bins)
 
 	for conf in conf_d:
-		for k in range(len(bounds) - 1):
-			if(conf >= bounds[k] and conf <= bounds[k+1]):
-				prop_in_bin_list.append(p*pdf_values_full[k])
+		for k in range(len(b) - 1):
+			if(conf >= b[k] and conf <= b[k+1]):
+				prop_in_bin_list.append(p*pdf_values[k])
 
 
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
