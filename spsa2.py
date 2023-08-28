@@ -295,6 +295,11 @@ def estimate_expectation(df, df_branch, idx_branch, threshold, temp_list, n_bins
 
 	pdf_values_full, _ = np.histogram(conf_branch_full, bins=n_bins, density=True)
 
+	print(pdf_values)
+
+	print("oi")
+
+	print(pdf_values_full)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
