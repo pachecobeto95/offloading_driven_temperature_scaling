@@ -304,7 +304,7 @@ def estimate_expectation(df, df_branch, idx_branch, threshold, temp_list, n_bins
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
 
-	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
+	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values_full)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
