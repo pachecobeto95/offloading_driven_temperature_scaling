@@ -295,7 +295,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	pdf_values, _ = np.histogram(conf_branch, bins=n_bins, density=True)
 
-	pdf_values_full, _ = np.histogram(conf_branch_full, bins=n_bins, density=True)
+	pdf_values_full, bounds = np.histogram(conf_branch_full, bins=n_bins, density=True)
 
 	#print(pdf_values)
 
@@ -314,6 +314,18 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(p*pdf)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
+	prop_in_bin_list = []
+	conf_d = np.linspace(threshold, 1, n_bins)
+
+	for conf in conf_d:
+		for k in range(len(bounds) - 1):
+			if(conf >= bounds[k] and conf <= bounds[k+1]):
+				prop_in_bin_list.append(pdf_values_full[i])
+
+
+	print(len(acc_list), len(prop_in_bin_list))
+	sys.exit()
+
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bin_boundaries)
 	integral = sum(product*conf_diff)
