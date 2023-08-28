@@ -258,6 +258,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		p = 1 - (numexits[i]/n_samples)
+		p = 1 - (sum(numexits[:i])/n_samples)
 
 		acc_device[i] = correct_list[i]/numexits[i]
 		theo_acc_device[i] = estimate_expectation(df, df_branch, p, i, threshold, temp_list) 
@@ -311,7 +312,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
-		acc_list.append(avg_acc_in_bin), prop_in_bin_list.append(p*pdf)
+		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(p*pdf)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
 	prop_in_bin_list = []
