@@ -318,15 +318,15 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	conf_d = np.linspace(threshold, 1, n_bins)
 
 	for conf in conf_d:
-		for k in range(len(b) - 1):
-			if(conf >= b[k] and conf <= b[k+1]):
-				prop_in_bin_list.append(p*pdf_values[k])
+		for k in range(len(bounds) - 1):
+			if(conf >= bounds[k] and conf <= bounds[k+1]):
+				prop_in_bin_list.append(p*pdf_values_full[k])
 
 
-	product = np.array(acc_list[:-1])*np.array(prop_in_bin_list)
+	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bin_boundaries)
-	integral = sum(product*conf_diff[:-1])
-	#integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
+	integral = sum(product*conf_diff)
+	integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 
 	return integral
