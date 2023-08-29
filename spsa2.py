@@ -319,8 +319,8 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	conf_d = np.linspace(threshold, 1, n_bins)
 
 	for conf in conf_d:
-		for k in range(len(bounds) - 1):
-			if(conf >= bounds[k] and conf <= bounds[k+1]):
+		for k in range(len(bin_boundaries) - 1):
+			if(conf >= bin_boundaries[k] and conf <= bin_boundaries[k+1]):
 				prop_in_bin_list.append(p*pdf_values_full[k])
 
 
@@ -330,7 +330,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 
-	return integral2
+	return integral
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
 	d_confs = np.linspace(threshold, 1.0, n_bins)
