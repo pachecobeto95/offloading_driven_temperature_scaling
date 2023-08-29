@@ -297,6 +297,9 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
+	print(b)
+	print(bin_boundaries)
+	sys.exit()
 	#pdf_values_full, bounds = np.histogram(conf_branch_full, bins=n_bins, density=True)
 
 	#print(pdf_values)
