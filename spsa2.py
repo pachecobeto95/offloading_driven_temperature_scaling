@@ -319,8 +319,8 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	conf_d = np.linspace(threshold, 1, n_bins)
 
 	for conf in conf_d:
-		for k in range(len(bin_boundaries) - 1):
-			if(conf >= bin_boundaries[k] and conf <= bin_boundaries[k+1]):
+		for k in range(len(bounds) - 1):
+			if(conf >= bounds[k] and conf <= bounds[k+1]):
 				prop_in_bin_list.append(p*pdf_values_full[k])
 
 
