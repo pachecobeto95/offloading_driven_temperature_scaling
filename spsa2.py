@@ -297,10 +297,13 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
-	print(b)
-	print(bin_boundaries)
-	print(len(b), len(bin_boundaries))
-	#sys.exit()
+	bin_lowers = b[:-1]
+	bin_uppers = b[1:]
+
+
+	print(bin_lowers)
+	print(bin_uppers)
+	sys.exit()
 	#pdf_values_full, bounds = np.histogram(conf_branch_full, bins=n_bins, density=True)
 
 	#print(pdf_values)
@@ -309,7 +312,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	#print(pdf_values_full)
 
-	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
+	correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
 	#correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
