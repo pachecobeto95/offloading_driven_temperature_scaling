@@ -307,7 +307,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values_full)):
-		in_bin = np.where((conf_branch_full > bin_lower) & (conf_branch_full <= bin_upper), True, False)
+		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
 		prop_in_bin = np.mean(in_bin)
 		confs_in_bin, correct_in_bin = conf_branch_full[in_bin], correct[in_bin] 
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
@@ -315,19 +315,19 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(p*pdf)
 		#print(avg_confs_in_bin, prop_in_bin)
 	
-	prop_in_bin_list = []
-	conf_d = np.linspace(threshold, 1, n_bins)
+	#prop_in_bin_list = []
+	#conf_d = np.linspace(threshold, 1, n_bins)
 
-	for conf in conf_d:
-		for k in range(len(bounds) - 1):
-			if(conf >= bounds[k] and conf <= bounds[k+1]):
-				prop_in_bin_list.append(p*pdf_values_full[k])
+	#for conf in conf_d:
+	#	for k in range(len(bounds) - 1):
+	#		if(conf >= bounds[k] and conf <= bounds[k+1]):
+	#			prop_in_bin_list.append(p*pdf_values_full[k])
 
 
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bounds)
 	integral = sum(product*conf_diff)
-	integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
+	#integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 
 	return integral
