@@ -330,7 +330,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
 	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 
-	return integral
+	return integral2
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
 	d_confs = np.linspace(threshold, 1.0, n_bins)
