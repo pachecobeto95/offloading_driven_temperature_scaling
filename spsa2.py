@@ -245,7 +245,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	theo_acc_device = np.zeros(n_branches)
 	n_samples = len(df)
 
-	df = df[df["conf_branch_3"] > threshold]
+	#df = df[df["conf_branch_3"] > threshold]
 
 	remaining_data = df
 
