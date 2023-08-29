@@ -304,7 +304,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#print(pdf_values_full)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch+1)].values
-	correct = df["correct_branch_%s"%(idx_branch+1)].values
+	#correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values_full)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
