@@ -330,8 +330,8 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#			prop_in_bin_list.append(p*pdf_values[k])
 	#print(prop_in_bin_list)
 	print(len(acc_list), len(prop_in_bin_list))
-	sys.exit()
-	product = np.array(acc_list)*np.array(prop_in_bin_list)[:-1]
+	#sys.exit()
+	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bin_boundaries)
 	integral = sum(product*conf_diff)
 	#integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
