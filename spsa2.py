@@ -245,6 +245,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	theo_acc_device = np.zeros(n_branches)
 	n_samples = len(df)
 
+	df = df[df["conf_branch_3"] > threshold]
+
 	remaining_data = df
 
 	for i in range(n_branches):
@@ -322,8 +324,6 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#	for k in range(len(bounds) - 1):
 	#		if(conf >= bounds[k] and conf <= bounds[k+1]):
 	#			prop_in_bin_list.append(p*pdf_values_full[k])
-
-	print(acc_list, prop_in_bin_list)
 
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(bin_boundaries)
