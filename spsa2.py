@@ -296,6 +296,8 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
+	pdf_values, b = np.histogram(conf_branch_full, bins=n_bins, density=True)
+
 
 	bin_lowers = b[:-1]
 	bin_uppers = b[1:]
@@ -309,7 +311,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#print(pdf_values_full)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
-	#correct = df["correct_branch_%s"%(idx_branch+1)].values
+	correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
