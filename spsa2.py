@@ -280,7 +280,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 
 def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_bins=100):
-	bin_boundaries = np.linspace(threshold, 1-0.0001, n_bins)
+	bin_boundaries = np.linspace(threshold, 1-0, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 	acc_list, prop_in_bin_list = [], []
