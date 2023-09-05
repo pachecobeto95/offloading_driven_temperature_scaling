@@ -242,6 +242,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
 	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
+	full_numexits = np.zeros(n_branches)
 	acc_device = np.zeros(n_branches)
 	theo_acc_device = np.zeros(n_branches)
 	n_samples = len(df)
@@ -261,6 +262,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		df_branch = remaining_data[early_exit_samples]
 		
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
+		full_numexits[i] = df["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		p, p_full = compute_prob_previous_layer(numexits[i-1], numexits[i-1], i, n_samples)
