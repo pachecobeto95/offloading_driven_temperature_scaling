@@ -159,8 +159,6 @@ class SPSA (object):
 		if (self.param_tol is not None):
 			is_theta_step_ok = self.check_theta_tolerance(theta, old_theta, k)
 
-
-		#print(is_function_step_ok, is_theta_step_ok)
 		if(is_function_step_ok and is_theta_step_ok):
 			return theta, k + 1
 		else:
@@ -177,9 +175,8 @@ class SPSA (object):
 		max_patience = 50
 		best_loss, best_ee_prob = self.compute_loss(theta)
 		patience = 0
-		#while (k <= self.nr_iter):
+
 		while (patience < max_patience):
-			print(patience)
 
 			old_theta = copy.copy(theta)
 
@@ -219,10 +216,7 @@ class SPSA (object):
 
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
-	if(mode == "exp"):
-		acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
-	else:
-		acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
 	if(n_branches == 1):
 		inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
@@ -231,10 +225,17 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	f = inf_time_current - beta*acc_current
 
-	print(accuracy_edge(temp_list, n_branches, threshold, df), acc_current, temp_list)
-	sys.exit()
-
 	return f, ee_prob
+
+def compute_prob_previous_layer(numexits, full_numexits, idx_branch, n_samples):
+
+	if(idx_branch == 0):
+		p, p_full = 1, 1
+	else:
+		p = 1 - (numexits[idx_branch-1]/n_samples)
+		p _full = 1 - (full_numexits[idx_branch-1]/n_samples)
+
+	return p, p_full
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	num = 0
@@ -246,6 +247,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	n_samples = len(df)
 
 	#df = df[df["conf_branch_3"] > threshold]
+
+	#prob_previous_layer_list = extract_previous_layer_prob(temp_list, n_branches, threshold, df)
+
 
 	remaining_data = df
 
@@ -259,7 +263,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
-		p = 1 - (numexits[i]/n_samples)
+		p, p_full = compute_prob_previous_layer(numexits[i-1], full_numexits[i-1], i, n_samples)
 
 		acc_device[i] = correct_list[i]/numexits[i]
 		theo_acc_device[i] = estimate_expectation(df, df_branch, p, i, threshold, temp_list) 
@@ -268,29 +272,29 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	prob = numexits/sum(numexits)
+	#early_exit_prob = numexits/sum(numexits)
 	prob_dev = sum(numexits)/n_samples
-	acc_dev = sum(acc_device*prob)
+	#acc_dev = sum(acc_device*early_exit_prob)
 
-	print(acc_dev, sum(theo_acc_device)/prob_dev)
-	print(sum(theo_acc_device), prob_dev)
+	acc_dev_theo = sum(theo_acc_device)/prob_dev
+
+	print(acc_edge, acc_dev_theo)
 	sys.exit()
 		
 	return acc_edge, early_classification_prob
 
 
 def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_bins=100):
-	bin_boundaries = np.linspace(threshold, 1-0, n_bins)
+	bin_boundaries = np.linspace(threshold, 1, n_bins)
 	bin_lowers = bin_boundaries[:-1]
 	bin_uppers = bin_boundaries[1:]
 	acc_list, prop_in_bin_list = [], []
-	#acc_list = []
 	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
-	logit_branch_full = getLogitBranches(df, idx_branch)
-	conf_branch, _ = get_confidences(logit_branch_full, idx_branch, temp_list)
+	#logit_branch_full = getLogitBranches(df, idx_branch)
+	#conf_branch, _ = get_confidences(logit_branch_full, idx_branch, temp_list)
 
 
 	conf_branch_pdf = conf_branch[:, np.newaxis]
@@ -300,16 +304,9 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	bin_lowers = b[:-1]
 	bin_uppers = b[1:]
 
-	#pdf_values_full, bounds = np.histogram(conf_branch_full, bins=n_bins, density=True)
-
-	#print(pdf_values)
-
-	#print("oi")
-
-	#print(pdf_values_full)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
-	correct = df["correct_branch_%s"%(idx_branch+1)].values
+	#correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
 		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
@@ -318,7 +315,6 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
 		acc_list.append(avg_confs_in_bin), prop_in_bin_list.append(pdf)
-		#print(avg_confs_in_bin, prop_in_bin)
 	
 	#print(prop_in_bin_list)
 	#prop_in_bin_list = []
@@ -329,13 +325,11 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#		if(conf >= b[k] and conf <= b[k+1]):
 	#			prop_in_bin_list.append(p*pdf_values[k])
 	#print(prop_in_bin_list)
-	print(len(acc_list), len(prop_in_bin_list))
+	#print(len(acc_list), len(prop_in_bin_list))
 	#sys.exit()
 	product = np.array(acc_list)*np.array(prop_in_bin_list)
 	conf_diff = np.diff(b)
 	integral = sum(product*conf_diff)
-	#integral2 = np.trapz(product, bin_boundaries[:-1], axis=0)
-	#print(sum(np.array(avg_confs_in_bin)*np.array(prop_in_bin_list)))
 
 	return integral
 
