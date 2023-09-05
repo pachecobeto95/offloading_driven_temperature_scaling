@@ -232,8 +232,8 @@ def compute_prob_previous_layer(numexits, full_numexits, idx_branch, n_samples):
 	if(idx_branch == 0):
 		p, p_full = 1, 1
 	else:
-		p = 1 - (numexits[idx_branch-1]/n_samples)
-		p_full = 1 - (full_numexits[idx_branch-1]/n_samples)
+		p = 1 - (numexits/n_samples)
+		p_full = 1 - (full_numexits/n_samples)
 
 	return p, p_full
 
