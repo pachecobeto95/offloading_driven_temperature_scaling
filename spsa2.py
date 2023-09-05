@@ -265,10 +265,10 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		full_numexits[i] = df["conf_branch_%s"%(i+1)].count()
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
-		p, p_full = compute_prob_previous_layer(numexits[i-1], numexits[i-1], i, n_samples)
+		p, p_full = compute_prob_previous_layer(numexits[i-1], full_numexits[i-1], i, n_samples)
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df, df_branch, p, i, threshold, temp_list) 
+		theo_acc_device[i] = estimate_expectation(df, df_branch, p_full, i, threshold, temp_list) 
 		
 		print(acc_device[i], theo_acc_device[i])
 
