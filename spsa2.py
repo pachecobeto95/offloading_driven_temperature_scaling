@@ -315,7 +315,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	update_bin = b[1:] >= threshold
 
-	b = b[update_bin]
+	b = b[1:][update_bin]
 	pdf_values = pdf_values[update_bin]
 	#update_bin = np.where(b >= threshold, True, False)
 
