@@ -252,10 +252,18 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#prob_previous_layer_list = extract_previous_layer_prob(temp_list, n_branches, threshold, df)
 
-	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
-	print(prob_dev)
-
 	remaining_data = df
+
+
+	logit_branch = getLogitBranches(remaining_data, 2)
+	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
+
+	prob_dev = sum(conf_branch[conf_branch >= threshold])
+
+
+	prob_dev2 = len(df[df["conf_branch_3"] >= threshold])/n_samples
+	print(prob_dev, prob_dev2)
+	sys.exit()
 
 	for i in range(n_branches):
 		logit_branch = getLogitBranches(remaining_data, i)
@@ -273,11 +281,11 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
 		p = compute_prob_previous_layer(numexits[i-1], full_numexits[i-1], i, n_samples)
-		print(i+1, p)
+		#print(i+1, p)
 		acc_device[i] = (numexits[i]/n_samples)*(correct_list[i]/numexits[i])
 		theo_acc_device[i] = estimate_expectation(df, remaining_data, p, i, threshold, temp_list) 
 		
-		print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
+		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
 		remaining_data = remaining_data[~early_exit_samples]
 
@@ -286,14 +294,13 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	#acc_dev = sum(acc_device*early_exit_prob)
 
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
-	print(sum(acc_device)/prob_dev2)
+	#print(sum(acc_device)/prob_dev2)
 
-
-	print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
-	print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
-	sys.exit()
+	#print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
+	#print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
+	#sys.exit()
 		
-	return acc_edge, early_classification_prob
+	return acc_dev_theo, prob_dev
 
 
 def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_bins=1000):
