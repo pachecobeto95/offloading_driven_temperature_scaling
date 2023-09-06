@@ -277,7 +277,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		acc_device[i] = correct_list[i]/numexits[i]
 		theo_acc_device[i] = estimate_expectation(df, remaining_data, p, i, threshold, temp_list) 
 		
-		print(acc_device[i], theo_acc_device[i])
+		print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
 		remaining_data = remaining_data[~early_exit_samples]
 
@@ -287,7 +287,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
 
-	print(acc_edge, acc_dev_theo)
+	print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
 	print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
 	sys.exit()
 		
