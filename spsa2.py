@@ -316,6 +316,8 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
+	print(len(conf_branch))
+
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
 	update_bin = b[1:] >= threshold
