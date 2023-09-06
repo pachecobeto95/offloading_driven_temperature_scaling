@@ -308,7 +308,6 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	#logit_branch_full = getLogitBranches(df, idx_branch)
 	#conf_branch, _ = get_confidences(logit_branch_full, idx_branch, temp_list)
 
-
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
@@ -317,7 +316,6 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	b = b[1:][update_bin]
 	pdf_values = pdf_values[update_bin]
-	#update_bin = np.where(b >= threshold, True, False)
 
 	bin_lowers, bin_uppers = b[:-1], b[1:]
 
