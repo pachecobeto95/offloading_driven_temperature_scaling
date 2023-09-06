@@ -288,6 +288,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
 
 	print(acc_edge, acc_dev_theo)
+	print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
 	sys.exit()
 		
 	return acc_edge, early_classification_prob
