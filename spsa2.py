@@ -258,7 +258,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	logit_branch = getLogitBranches(remaining_data, 2)
 	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
 
-	prob_dev = sum(conf_branch[conf_branch >= threshold])
+	prob_dev = sum(conf_branch >= threshold)/n_samples
 
 
 	prob_dev2 = len(df[df["conf_branch_3"] >= threshold])/n_samples
