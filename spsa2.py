@@ -310,7 +310,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
-	bin_lowers, bin_uppers = b[:-1], b[1:]
+	bin_lowers, bin_uppers = b[b >= threshold][:-1], b[b >= threshold][1:]
 	#bin_lowers, bin_uppers = bin_lowers[bin_lowers >= threshold], bin_uppers[bin_uppers >= threshold]
 
 	print(bin_lowers, bin_uppers)
