@@ -313,10 +313,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	bin_lowers = b[:-1]
 	bin_uppers = b[1:]
 
-	print(threshold)
-	print(bin_lowers)
-	sys.exit()
-
+	print(type(bin_lowers), bin_lowers>= threshold)
 
 	correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
 	#correct = df["correct_branch_%s"%(idx_branch+1)].values
