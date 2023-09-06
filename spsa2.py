@@ -313,6 +313,7 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 	bin_lowers = b[:-1]
 	bin_uppers = b[1:]
 
+	print(threshold)
 	print(bin_lowers)
 
 
