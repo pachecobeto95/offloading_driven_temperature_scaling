@@ -261,8 +261,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	prob_dev = sum(conf_branch >= threshold)/n_samples
 
 
-	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
-	#print(prob_dev, prob_dev2)
+	prob_dev = len(df[df["conf_branch_3"]/temp_list[2] >= threshold])/n_samples
+	print(prob_dev, prob_dev2)
 	#sys.exit()
 
 	for i in range(n_branches):
