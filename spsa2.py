@@ -286,7 +286,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	#acc_dev = sum(acc_device*early_exit_prob)
 
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
-	print(prob_dev, prob_dev2)
+	print(sum(acc_device)/prob_dev2)
 
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
