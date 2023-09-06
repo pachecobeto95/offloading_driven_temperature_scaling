@@ -247,7 +247,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_device = np.zeros(n_branches)
 	theo_acc_device = np.zeros(n_branches)
 
-	#df = df[df["conf_branch_3"] >= threshold]
+	df = df[df["conf_branch_3"] >= threshold]
 	n_samples = len(df)
 
 	#prob_previous_layer_list = extract_previous_layer_prob(temp_list, n_branches, threshold, df)
@@ -281,7 +281,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#early_exit_prob = numexits/sum(numexits)
 	prob_dev = sum(numexits)/n_samples
-	print(prob_dev)
 	#acc_dev = sum(acc_device*early_exit_prob)
 
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
