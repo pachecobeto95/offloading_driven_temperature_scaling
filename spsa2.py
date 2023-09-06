@@ -275,7 +275,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 
 		acc_device[i] = correct_list[i]/numexits[i]
-		theo_acc_device[i] = estimate_expectation(df, df_branch, p, i, threshold, temp_list) 
+		theo_acc_device[i] = estimate_expectation(df, remaining_data, p, i, threshold, temp_list) 
 		
 		print(acc_device[i], theo_acc_device[i])
 
