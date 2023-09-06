@@ -316,44 +316,46 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 
 	conf_branch_pdf = conf_branch[:, np.newaxis]
 
-	print(len(conf_branch))
+	if (len(conf_branch) > 0 ):
 
-	pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
+		pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
-	update_bin = b[1:] >= threshold
+		update_bin = b[1:] >= threshold
 
-	b = b[1:][update_bin]
-	pdf_values = pdf_values[update_bin]
+		b = b[1:][update_bin]
+		pdf_values = pdf_values[update_bin]
 
-	bin_lowers, bin_uppers = b[:-1], b[1:]
+		bin_lowers, bin_uppers = b[:-1], b[1:]
 
-	correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
-	#correct = df["correct_branch_%s"%(idx_branch+1)].values
+		correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
+		#correct = df["correct_branch_%s"%(idx_branch+1)].values
 
-	for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
-		in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
-		#prop_in_bin = np.mean(in_bin)
-		confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
-		avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
-		avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
-		acc_list.append(avg_acc_in_bin), prop_in_bin_list.append(p*pdf)
-	
-	#print(prop_in_bin_list)
-	#prop_in_bin_list = []
-	#conf_d = np.linspace(threshold, 1-0.0001, n_bins)
+		for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
+			in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
+			#prop_in_bin = np.mean(in_bin)
+			confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
+			avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
+			avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
+			acc_list.append(avg_acc_in_bin), prop_in_bin_list.append(p*pdf)
+		
+		#print(prop_in_bin_list)
+		#prop_in_bin_list = []
+		#conf_d = np.linspace(threshold, 1-0.0001, n_bins)
 
-	#for conf in conf_d:
-	#	for k in range(len(b) - 1):
-	#		if(conf >= b[k] and conf <= b[k+1]):
-	#			prop_in_bin_list.append(p*pdf_values[k])
-	#print(prop_in_bin_list)
-	#print(len(acc_list), len(prop_in_bin_list))
-	#sys.exit()
-	product = np.array(acc_list)*np.array(prop_in_bin_list)
-	conf_diff = np.diff(b)
-	integral = sum(product*conf_diff)
+		#for conf in conf_d:
+		#	for k in range(len(b) - 1):
+		#		if(conf >= b[k] and conf <= b[k+1]):
+		#			prop_in_bin_list.append(p*pdf_values[k])
+		#print(prop_in_bin_list)
+		#print(len(acc_list), len(prop_in_bin_list))
+		#sys.exit()
+		product = np.array(acc_list)*np.array(prop_in_bin_list)
+		conf_diff = np.diff(b)
+		integral = sum(product*conf_diff)
 
-	return integral
+		return integral
+	else:
+		return 0
 
 def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
 	d_confs = np.linspace(threshold, 1.0, n_bins)
