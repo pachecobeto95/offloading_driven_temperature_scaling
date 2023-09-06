@@ -255,14 +255,13 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	remaining_data = df
 
 
-	logit_branch = getLogitBranches(remaining_data, 2)
-	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
+	#logit_branch = getLogitBranches(remaining_data, 2)
+	#conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
 
-	prob_dev2 = sum(conf_branch >= threshold)/n_samples
+	#prob_dev2 = sum(conf_branch >= threshold)/n_samples
 
 
-	prob_dev = len(df[df["conf_branch_3"]/temp_list[2] >= threshold])/n_samples
-	print(prob_dev, prob_dev2)
+	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
 	#sys.exit()
 
 	for i in range(n_branches):
@@ -296,9 +295,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
 	#print(sum(acc_device)/prob_dev2)
 
-	print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
+	#print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
 	#print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
-	sys.exit()
+	#sys.exit()
 		
 	return acc_dev_theo, prob_dev
 
