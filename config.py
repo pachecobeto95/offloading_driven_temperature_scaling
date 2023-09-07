@@ -31,11 +31,11 @@ max_exits = 6
 timeout = 3
 temp_init = 1.5
 step = 0.1
-max_beta = 100
-step_beta = 5
 max_overhead = 30
 step_overhead = 5
-
+beta_start = 0
+beta_end = 100
+beta_step = 1
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.
