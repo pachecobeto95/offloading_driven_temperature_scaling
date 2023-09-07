@@ -227,94 +227,66 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	return f, ee_prob
 
-def compute_prob_previous_layer(numexits, full_numexits, idx_branch, n_samples):
+def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 
 	if(idx_branch == 0):
-		p, p_full = 1, 1
+		p = 1
 	else:
 		p = 1 - (numexits/n_samples)
-		p_full = 1 - (full_numexits/n_samples)
 
-	#return p, p_full
 	return p
 
+def compute_prob_on_device(df, n_samples, temp_list, threshold):
+	logit_branch = getLogitBranches(df, 2)
+	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
+
+	prob_dev = sum(conf_branch >= threshold)/n_samples
+	return prob_dev
+
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
-	num = 0
-	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-	numexits, correct_list = np.zeros(n_branches), np.zeros(n_branches)
-	full_numexits = np.zeros(n_branches)
-	acc_device = np.zeros(n_branches)
-	theo_acc_device = np.zeros(n_branches)
+	numexits, theo_prob_success = np.zeros(n_branches), np.zeros(n_branches)
 
-	#df = df[df["conf_branch_3"] >= threshold || df["conf_branch_2"] >= threshold]
 	n_samples = len(df)
-
-	#prob_previous_layer_list = extract_previous_layer_prob(temp_list, n_branches, threshold, df)
 
 	remaining_data = df
 
-
-	#logit_branch = getLogitBranches(remaining_data, 2)
-	#conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
-
-	#prob_dev2 = sum(conf_branch >= threshold)/n_samples
-
-
 	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
-	#sys.exit()
+
+	#prob_dev = compute_prob_on_device(remaining_data, n_samples, temp_list, threshold)
 
 	for i in range(n_branches):
 		logit_branch = getLogitBranches(remaining_data, i)
 		conf_branch, _ = get_confidences(logit_branch, i, temp_list)
 
-		#full_logit_branch = getLogitBranches(df, i)
-		#full_conf_branch, _ = get_confidences(full_logit_branch, i, temp_list)
-
 		early_exit_samples = conf_branch >= threshold
 		df_branch = remaining_data[early_exit_samples]
-		#df_full_branch = df[full_conf_branch>=threshold]
 		
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
-		#full_numexits[i] = df_full_branch["conf_branch_%s"%(i+1)].count()
-		correct_list[i] = df_branch["correct_branch_%s"%(i+1)].sum()
 
-		p = compute_prob_previous_layer(numexits[i-1], full_numexits[i-1], i, n_samples)
-		#print(i+1, p)
-		acc_device[i] = (numexits[i]/n_samples)*(correct_list[i]/numexits[i])
-		theo_acc_device[i] = estimate_expectation(df, remaining_data, p, i, threshold, temp_list) 
+		p = compute_prob_previous_layer(numexits[i-1], i, n_samples)
+
+		theo_prob_success[i] = estimate_prob_success(remaining_data, p, i, threshold, temp_list) 
 		
 		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
 		remaining_data = remaining_data[~early_exit_samples]
 
-	#early_exit_prob = numexits/sum(numexits)
 	prob_dev2 = sum(numexits)/n_samples
-	#acc_dev = sum(acc_device*early_exit_prob)
 
 	acc_dev_theo = sum(theo_acc_device)/prob_dev
-	#print(sum(acc_device)/prob_dev2)
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
-	#print("Resultado do Numerador: %s"%(sum(theo_acc_device)))
-	#sys.exit()
 		
 	return acc_dev_theo, prob_dev
 
 
-def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_bins=1000):
-	bin_boundaries = np.linspace(threshold, 1, n_bins)
-	bin_lowers = bin_boundaries[:-1]
-	bin_uppers = bin_boundaries[1:]
+def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins=1000):
+
 	acc_list, prop_in_bin_list = [], []
 	
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
-
-	#logit_branch_full = getLogitBranches(df, idx_branch)
-	#conf_branch, _ = get_confidences(logit_branch_full, idx_branch, temp_list)
-
-	conf_branch_pdf = conf_branch[:, np.newaxis]
 
 	if (len(conf_branch) > 0):
 
@@ -328,27 +300,14 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		bin_lowers, bin_uppers = b[:-1], b[1:]
 
 		correct = df_branch["correct_branch_%s"%(idx_branch + 1)].values
-		#correct = df["correct_branch_%s"%(idx_branch+1)].values
 
 		for i, (bin_lower, bin_upper, pdf) in enumerate(zip(bin_lowers, bin_uppers, pdf_values)):
 			in_bin = np.where((conf_branch > bin_lower) & (conf_branch <= bin_upper), True, False)
-			#prop_in_bin = np.mean(in_bin)
 			confs_in_bin, correct_in_bin = conf_branch[in_bin], correct[in_bin] 
 			avg_confs_in_bin = np.mean(confs_in_bin) if (len(confs_in_bin)>0) else 0
 			avg_acc_in_bin = np.mean(correct_in_bin) if (len(correct_in_bin)>0) else 0
 			acc_list.append(avg_acc_in_bin), prop_in_bin_list.append(p*pdf)
 		
-		#print(prop_in_bin_list)
-		#prop_in_bin_list = []
-		#conf_d = np.linspace(threshold, 1-0.0001, n_bins)
-
-		#for conf in conf_d:
-		#	for k in range(len(b) - 1):
-		#		if(conf >= b[k] and conf <= b[k+1]):
-		#			prop_in_bin_list.append(p*pdf_values[k])
-		#print(prop_in_bin_list)
-		#print(len(acc_list), len(prop_in_bin_list))
-		#sys.exit()
 		product = np.array(acc_list)*np.array(prop_in_bin_list)
 		conf_diff = np.diff(b)
 		integral = sum(product*conf_diff)
@@ -356,18 +315,6 @@ def estimate_expectation(df, df_branch, p, idx_branch, threshold, temp_list, n_b
 		return integral
 	else:
 		return 0
-
-def compute_prob_success_branch(temp_list, idx_branch, threshold, df, n_bins=100):
-	d_confs = np.linspace(threshold, 1.0, n_bins)
-
-	pdf_values = compute_pdf_values(temp_list, idx_branch, threshold, df)
-	expectations, pdf_values = compute_expectation(temp_list, idx_branch, threshold, df, pdf_values)
-
-	product = expectations*pdf_values
-	result = np.sum([(d_confs[i+1] - d_confs[i])*product[i] for i in range(len(product) - 1) ])
-	return result
-
-
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
 	
