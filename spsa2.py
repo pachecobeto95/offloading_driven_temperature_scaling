@@ -177,6 +177,7 @@ class SPSA (object):
 		patience = 0
 
 		while (patience < self.max_patience):
+			print(patience, self.max_patience)
 
 			old_theta = copy.copy(theta)
 
