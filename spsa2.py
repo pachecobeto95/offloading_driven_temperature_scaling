@@ -31,7 +31,7 @@ class Bernoulli(object):
 
 class SPSA (object):
 
-	def __init__(self, function, theta_initial, nr_iter, n_branches, a0, c, alpha, gamma,  min_bounds, args=(), 
+	def __init__(self, function, theta_initial, max_patience, n_branches, a0, c, alpha, gamma,  min_bounds, args=(), 
 		function_tol=None, param_tol=None, ens_size=5, seed=42):
 
 		""" Simultaneous Perturbation Stochastic Approximation. (SPSA)"""
@@ -49,7 +49,7 @@ class SPSA (object):
 
 		self.function = function
 		self.theta_initial = theta_initial
-		self.nr_iter = nr_iter
+		self.max_patience = max_patience
 		self.n_branches = n_branches
 		self.a0 = a0
 		self.alpha = alpha
@@ -68,7 +68,7 @@ class SPSA (object):
 	def init_hyperparameters(self):
 
 		# A is <= 10% of the number of iterations
-		A = self.nr_iter*0.1
+		A = self.max_patience*0.1
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
@@ -172,11 +172,11 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		max_patience = 50
+		#max_patience = 50
 		best_loss, best_ee_prob = self.compute_loss(theta)
 		patience = 0
 
-		while (patience < max_patience):
+		while (patience < self.max_patience):
 
 			old_theta = copy.copy(theta)
 
@@ -216,8 +216,27 @@ class SPSA (object):
 
 def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, df_device, beta, overhead, mode):
 
+	"""
+	This function computes the optimization function defined in Equation (12) in our letter
+
+	In:
+	temp_list: parameters list
+	n_branches: number of side branches at the edge
+	max_exits: max number of side branches at the edge 
+	threshold: the confidence threshold used in early-exit DNN model 
+	df: dataframe containing inference data with inference measured in the cloud server.
+	df_device: dataframe containing inference data with inference measured in the edge device. 
+
+	Out:
+	f: value for our optimization function
+	ee_prob: early-exit probability
+	"""
+
+	#The following line computes the on-device accuracy using our theoretical model
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
+
+	#The following line computes the inference time using our theoretical model
 	if(n_branches == 1):
 		inf_time_current, _ = compute_inference_time(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 	else:
@@ -229,6 +248,8 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 
+	#This function compute the term P[f_{l-1} < threhsold]
+
 	if(idx_branch == 0):
 		p = 1
 	else:
@@ -237,6 +258,8 @@ def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 	return p
 
 def compute_prob_on_device(df, n_samples, temp_list, threshold):
+	#This function computes the probability of classifying at the edge device
+
 	logit_branch = getLogitBranches(df, 2)
 	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
 
@@ -245,6 +268,7 @@ def compute_prob_on_device(df, n_samples, temp_list, threshold):
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
+	# This function computes the theoretical on-device accuracy
 	numexits, theo_prob_success = np.zeros(n_branches), np.zeros(n_branches)
 
 	n_samples = len(df)
@@ -253,27 +277,35 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
 
-	prob_dev = compute_prob_on_device(remaining_data, n_samples, temp_list, threshold)
+	#prob_dev = compute_prob_on_device(remaining_data, n_samples, temp_list, threshold)
 
+	#This loop iterates among side branches of early-exit DNN
 	for i in range(n_branches):
+		#Extracts the confidence provided by l-th side branch
 		logit_branch = getLogitBranches(remaining_data, i)
 		conf_branch, _ = get_confidences(logit_branch, i, temp_list)
 
+		#Checks if these confidencce is greater than a threshold
 		early_exit_samples = conf_branch >= threshold
+		#If so, the examples are selected from the inference data (dataframe)
 		df_branch = remaining_data[early_exit_samples]
 		
+		#Computes the number of examples classified at l-th side branch
 		numexits[i] = df_branch["conf_branch_%s"%(i+1)].count()
 
+		#Computes the term P[f_{l-1} < threshold]
 		p = compute_prob_previous_layer(numexits[i-1], i, n_samples)
 
+		#Computes the probability of success for each side branch
+		#This function computes the numerator of Equation (9)
 		theo_prob_success[i] = estimate_prob_success(remaining_data, p, i, threshold, temp_list) 
 		
 		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
+		#The next row removes the classified examples at the l-th side branch
 		remaining_data = remaining_data[~early_exit_samples]
 
-	prob_dev2 = sum(numexits)/n_samples
-
+	#Computes the theoretical on-device accuracy according to Equation (9).
 	acc_dev_theo = sum(theo_prob_success)/prob_dev
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
@@ -431,7 +463,7 @@ def get_previous_confidences(logit_branch, idx_branch, temp_list):
 	return np.array(conf_list), np.array(infered_class_list)
 
 
-def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_iter, n_branches_edge, max_branches, a0, c, alpha, 
+def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, max_patience, n_branches_edge, max_branches, a0, c, alpha, 
 	gamma, overhead, mode, epsilon=0.00001):
 
 	max_exits = max_branches + 1
@@ -439,7 +471,7 @@ def run_theoretical_beta_opt(df_inf_data, df_inf_data_device, beta, threshold, m
 	theta_initial, min_bounds = np.ones(n_branches_edge), np.zeros(n_branches_edge)+epsilon
 
 	# Instantiate SPSA class to initializes the parameters
-	optim = SPSA(theoretical_beta_function, theta_initial, max_iter, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
+	optim = SPSA(theoretical_beta_function, theta_initial, max_patience, n_branches_edge, a0, c, alpha, gamma, min_bounds, 
 		args=(max_exits, threshold, df_inf_data, df_inf_data_device, beta, overhead, mode))
 
 	# Run SPSA to minimize the objective function

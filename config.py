@@ -36,6 +36,7 @@ step_overhead = 5
 beta_start = 0
 beta_end = 100
 beta_step = 1
+max_patience = 50
 
 # Parameters of Data Augmentation
 #To normalize the input images data, according to ImageNet dataset.
