@@ -81,7 +81,7 @@ def main(args):
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 	
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_final_rodrigo_version_2.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_final_rodrigo_version_final.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.8]
 
