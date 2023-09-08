@@ -99,7 +99,7 @@ def main(args):
 
 		#This row runs our proposed theoretical model for a given threhsold and a beta list
 		run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_device, 
-			threshold, args.n_branches, beta_list, resultsPath, overhead, 
+			threshold, args.n_branches, beta_list, resultsPath, args.overhead, 
 			calib_mode="beta_calib")
 
 
