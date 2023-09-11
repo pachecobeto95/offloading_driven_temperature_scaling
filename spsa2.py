@@ -313,7 +313,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_prob_success)/prob_dev
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s"%(acc_edge, acc_dev_theo))
-	sys.exit()
+	#sys.exit()
 
 	return acc_dev_theo, prob_dev
 
