@@ -53,7 +53,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 		#This function computes the on-device accuracy using the parameters found previously
 		#beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
 		#	threshold, df_inf_data)
-		beta_acc_theo, beta_ee_prob_theo = spsa.theoretical_accuracy_edge(beta_theta_theo, n_branches_edge, 
+		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
 			threshold, df_inf_data)
 
 
