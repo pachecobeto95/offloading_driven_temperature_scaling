@@ -90,7 +90,7 @@ def main(args):
 
 	#Defines a list of beta to evaluate the optimization problem. 
 	beta_list = np.arange(config.beta_start, config.beta_end, config.beta_step)	
-	beta_list = [1000]
+	#beta_list = [1000]
 	#beta_list = beta_list[args.slot_beta]
 
 	#The next rows reads the inference data 

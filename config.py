@@ -34,8 +34,8 @@ step = 0.1
 max_overhead = 30
 step_overhead = 5
 beta_start = 0
-beta_end = 100
-beta_step = 1
+beta_end = 200
+beta_step = 2
 max_patience = 50
 
 # Parameters of Data Augmentation
