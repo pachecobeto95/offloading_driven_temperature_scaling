@@ -334,7 +334,7 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 	if (len(conf_branch) > 0):
 
-		print(np.isnan(np.sum(x)))
+		print(np.isnan(np.sum(conf_branch)))
 		pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
 		update_bin = b[1:] >= threshold
