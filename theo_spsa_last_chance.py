@@ -84,12 +84,12 @@ def main(args):
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 	
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_final_rodrigo_version3.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_final_rodrigo_version.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.8]
 
 	#Defines a list of beta to evaluate the optimization problem. 
-	beta_list = np.arange(config.beta_start, config.beta_end, config.beta_step)	
+	beta_list = np.arange(0, 202, 2)	
 	#beta_list = [1000]
 	#beta_list = beta_list[args.slot_beta]
 
