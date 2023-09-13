@@ -94,8 +94,10 @@ def main(args):
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
 
-	print(df_inf_data_cloud.columns)
-	print(df_inf_data_device.columns)
+	
+	for i in range(1, 5):
+		print(df_inf_data_cloud['inferente_time_branch_%s'%(i)].mean(), df_inf_data_device['inferente_time_branch_%s'%(i)].mean())
+
 	sys.exit()
 
 	for threshold in threshold_list:
