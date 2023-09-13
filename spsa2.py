@@ -331,11 +331,11 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 	logit_branch = getLogitBranches(df_branch, idx_branch)
 	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
 
-	print(len(conf_branch), np.isnan(np.sum(conf_branch)))
+	#print(len(conf_branch), np.isnan(np.sum(conf_branch)))
 
 	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) == False )):
 
-		print("oi")
+		#print("oi")
 
 		#print(np.isnan(np.sum(conf_branch)))
 		pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
@@ -362,7 +362,7 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 		return integral
 	else:
-		print("ok")
+		#print("ok")
 		return 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
