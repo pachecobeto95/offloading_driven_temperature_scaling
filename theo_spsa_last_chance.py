@@ -80,7 +80,8 @@ def main(args):
 
 	#The next row specifies the file name that contains the inference data measured in edge device. 	
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
-	
+
+
 	#The next row specifies the file name that saves the results. 	
 	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_3.csv"%(args.model_name, args.n_branches, args.overhead))
 
@@ -89,12 +90,13 @@ def main(args):
 	#Defines a list of beta to evaluate the optimization problem. 
 	beta_list = np.arange(0, 202, 2)	
 	
-	#beta_list = [1000]
-	#beta_list = beta_list[args.slot_beta]
-
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
+
+	print(df_inf_data_cloud.columns)
+	print(df_inf_data_device.columns)
+	sys.exit()
 
 	for threshold in threshold_list:
 		print("Overhead: %s, Threshold: %s"%(args.overhead, threshold))
@@ -181,8 +183,8 @@ if (__name__ == "__main__"):
 	parser.add_argument('--input_dim', type=int, default=330)
 
 	parser.add_argument('--dim', type=int, default=300, help='Dim. Default: %s')
-	parser.add_argument('--theo_data', type=int, default=1, help='Default: True')
-	parser.add_argument('--slot_beta', type=int)
+	#parser.add_argument('--theo_data', type=int, default=1, help='Default: True')
+	#parser.add_argument('--slot_beta', type=int)
 	parser.add_argument('--overhead', type=int)
 
 
