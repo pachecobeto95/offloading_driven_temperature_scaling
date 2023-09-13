@@ -176,7 +176,7 @@ class SPSA (object):
 		best_loss, best_ee_prob = self.compute_loss(theta)
 		patience = 0
 
-		while (patience < 10):
+		while (patience < 2):
 			#print(patience)
 
 			old_theta = copy.copy(theta)
@@ -431,8 +431,6 @@ def getLogitBranches(df, idx_branch):
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
 
-	print(df.columns)
-	sys.exit()
 	for j in range(n_classes):
 		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch+1, j+1)].values
 	return logit_data
