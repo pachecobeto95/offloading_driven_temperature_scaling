@@ -334,6 +334,8 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) is False )):
 
+		print("oi")
+
 		#print(np.isnan(np.sum(conf_branch)))
 		pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
