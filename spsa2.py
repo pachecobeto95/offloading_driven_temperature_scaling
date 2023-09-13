@@ -69,7 +69,7 @@ class SPSA (object):
 
 		# A is <= 10% of the number of iterations
 		A = self.max_patience*0.1
-		A = 50*0.1
+		#A = 50*0.1
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
@@ -177,8 +177,8 @@ class SPSA (object):
 		best_loss, best_ee_prob = self.compute_loss(theta)
 		patience = 0
 
-		while (patience < 2):
-			print(patience)
+		while (patience < self.max_patience):
+			#print(patience)
 
 			old_theta = copy.copy(theta)
 
