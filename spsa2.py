@@ -361,6 +361,7 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 		return integral
 	else:
+		print("ok")
 		return 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
