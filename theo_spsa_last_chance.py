@@ -51,8 +51,6 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
 		#This function computes the on-device accuracy using the parameters found previously
-		#beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
-		#	threshold, df_inf_data)
 		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
 			threshold, df_inf_data)
 
@@ -84,7 +82,7 @@ def main(args):
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 	
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_1.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_2.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.7, 0.8, 0.9]
 
