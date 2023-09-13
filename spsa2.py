@@ -332,7 +332,7 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 	print(len(conf_branch), np.isnan(np.sum(conf_branch)))
 
-	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) is False )):
+	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) == False )):
 
 		print("oi")
 
