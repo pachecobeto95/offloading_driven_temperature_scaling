@@ -453,7 +453,8 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 	conf_list, infered_class_list = [], []
 
 	for n_row in range(n_rows):
-		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+		#calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+		calib_logit_branch = logit_branch[n_row, :]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
@@ -462,7 +463,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 		conf, infered_class = torch.max(softmax_data, 1)
 		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
 
-	return np.array(conf_list), np.array(infered_class_list)
+	return np.array(conf_list)/temp_list[idx_branch], np.array(infered_class_list)
 
 def get_previous_confidences(logit_branch, idx_branch, temp_list):
 	n_rows, n_classes = logit_branch.shape
