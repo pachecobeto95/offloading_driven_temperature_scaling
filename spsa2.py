@@ -69,7 +69,7 @@ class SPSA (object):
 
 		# A is <= 10% of the number of iterations
 		A = self.max_patience*0.1
-		A = 20*0.1
+		A = 50*0.1
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
