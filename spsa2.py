@@ -439,6 +439,9 @@ def getLogitPreviousBranches(df, idx_branch):
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
 
+	print(df.columns)
+	sys.exit()
+
 	for j in range(n_classes):
 		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch, j+1)].values
 	return logit_data
