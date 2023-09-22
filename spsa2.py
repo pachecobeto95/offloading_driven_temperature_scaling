@@ -199,10 +199,10 @@ class SPSA (object):
 
 			y_k, acc_k, inf_time_k, ee_prob = self.compute_loss(theta)
 
-			y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
+			#y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
 
-			idx_k = np.argmin(y_alt_list)
-			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
+			#idx_k = np.argmin(y_alt_list)
+			#y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
 
 			print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s"%(k, y_k, acc_k, inf_time_k))
 
