@@ -272,7 +272,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
-
 	# This function computes the theoretical on-device accuracy
 	numexits, theo_prob_success = np.zeros(n_branches), np.zeros(n_branches)
 
@@ -305,7 +304,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		#This function computes the numerator of Equation (9)
 		theo_prob_success[i] = estimate_prob_success(remaining_data, p, i, threshold, temp_list) 
 		
-		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
+		print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
 		#The next row removes the classified examples at the l-th side branch
 		remaining_data = remaining_data[~early_exit_samples]
@@ -314,7 +313,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_prob_success)/prob_dev
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2
 
-	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
+	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 
 	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
