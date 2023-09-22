@@ -179,8 +179,8 @@ class SPSA (object):
 		#print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
 		patience = 0
 
-		#while (patience < self.max_patience):
-		while (k<20):
+		while (patience < self.max_patience):
+		#while (k<20):
 			#print(patience)
 
 			old_theta = copy.copy(theta)
