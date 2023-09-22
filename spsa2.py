@@ -180,7 +180,7 @@ class SPSA (object):
 		patience = 0
 
 		#while (patience < self.max_patience):
-		while (k<10):
+		while (k<20):
 			#print(patience)
 
 			old_theta = copy.copy(theta)
@@ -260,7 +260,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	
 	f = inf_time_current - beta*acc_current
-	print(inf_time_current, acc_current, beta, f)
+	#print(inf_time_current, acc_current, beta, f)
 
 	return f, acc_current, inf_time_current, ee_prob, acc_exp
 
