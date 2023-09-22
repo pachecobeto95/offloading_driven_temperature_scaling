@@ -213,11 +213,11 @@ class SPSA (object):
 			if (y_k < best_loss):
 				print("UPDATEE")
 				print("Iter: %s, Function: %s, ACC: %s, InfTime: %s, ACCEXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
-
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
 				patience = 0
+
 			else:
 				patience += 1
 
@@ -327,6 +327,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#Computes the theoretical on-device accuracy according to Equation (9).
 	acc_dev_theo = sum(theo_prob_success)/prob_dev
+	if(prob_dev2==0):
+		print("AAAAAAAAAAAAAAAA")
+	
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
