@@ -88,7 +88,8 @@ def main(args):
 	threshold_list = [0.7, 0.8, 0.9]
 
 	#Defines a list of beta to evaluate the optimization problem. 
-	beta_list = np.arange(0, 202, 2)	
+	beta_list = np.arange(0, 202, 2)
+	beta_list = [100]	
 	
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
