@@ -57,7 +57,7 @@ class SPSA (object):
 		self.c = 0.1 # a small number
 		self.min_bounds = min_bounds
 		self.args = args
-		self.ens_size = ens_size
+		self.ens_size = 1
 		self.function_tol = 0.1
 		self.param_tol = 0.01
 
