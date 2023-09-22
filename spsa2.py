@@ -106,8 +106,8 @@ class SPSA (object):
 
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
 
-			y_plus, _, _, _ = self.compute_loss(theta_plus) 
-			y_minus, _, _, _ = self.compute_loss(theta_minus)
+			y_plus, _, _, _, _ = self.compute_loss(theta_plus) 
+			y_minus, _, _, _, _ = self.compute_loss(theta_minus)
 
 			theta_list.append(theta_plus), theta_list.append(theta_minus)
 			y_list.append(y_plus), y_list.append(y_minus) 
@@ -175,7 +175,7 @@ class SPSA (object):
 
 		k = 1
 		#max_patience = 50
-		best_loss, best_acc, best_inf_time, best_ee_prob = self.compute_loss(theta)
+		best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
 		print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
 		patience = 0
 
@@ -198,8 +198,10 @@ class SPSA (object):
 			#theta, k = self.check_violation_step(theta, old_theta, k)	
 			theta = np.maximum(theta, self.min_bounds)
 
-			y_k, acc_k, inf_time_k, ee_prob = self.compute_loss(theta)
+			y_k, acc_k, inf_time_k, ee_prob, acc_exp_k = self.compute_loss(theta)
 
+
+			
 			#y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
 
 			#idx_k = np.argmin(y_alt_list)
@@ -246,7 +248,9 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	#The following line computes the on-device accuracy using our theoretical model
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-	#print(acc_current)
+
+	acc_exp, _ = accuracy_edge(temp_list, n_branches, threshold, df)
+
 
 	#The following line computes the inference time using our theoretical model
 	if(n_branches == 1):
@@ -258,7 +262,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	f = inf_time_current - beta*acc_current
 	print(inf_time_current, acc_current, beta, f)
 
-	return f, acc_current, inf_time_current, ee_prob
+	return f, acc_current, inf_time_current, ee_prob, acc_exp
 
 def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 
