@@ -326,10 +326,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		remaining_data = remaining_data[~early_exit_samples]
 
 	#Computes the theoretical on-device accuracy according to Equation (9).
-	acc_dev_theo = sum(theo_prob_success)/prob_dev
-	if(prob_dev2==0):
-		print("AAAAAAAAAAAAAAAA")
-	
+	acc_dev_theo = sum(theo_prob_success)/prob_dev	
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
@@ -339,7 +336,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	#print(acc_dev_theo)
 	#sys.exit()
 
-	return acc_dev_theo2, prob_dev
+	return acc_dev_theo, prob_dev
 
 
 def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins=1000):
