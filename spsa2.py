@@ -174,8 +174,8 @@ class SPSA (object):
 
 		k = 1
 		#max_patience = 50
-		best_loss, best_acc, best_ifn_time, best_ee_prob = self.compute_loss(theta)
-		print("Best Loss: %s, Best Acc: %s"%(best_loss, best_acc))
+		best_loss, best_acc, best_inf_time, best_ee_prob = self.compute_loss(theta)
+		print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
 		patience = 0
 
 		#while (patience < self.max_patience):
@@ -204,12 +204,12 @@ class SPSA (object):
 			idx_k = np.argmin(y_alt_list)
 			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
 
-			print("Iter: %s, Function: %s, ACC: %s"%(k, best_loss, acc_k))
+			print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s"%(k, best_loss, acc_k, inf_time_k))
 
 
 			if (y_k < best_loss):
 				print("UPDATEE")
-				print("Iter: %s, Function: %s, ACC: %s"%(k, best_loss, acc_k))
+				print("Iter: %s, Function: %s, ACC: %s, InfTime: %s"%(k, best_loss, acc_k, inf_time_k))
 
 				best_loss = y_k
 				best_theta = copy.copy(theta)
