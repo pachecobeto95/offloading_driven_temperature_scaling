@@ -314,7 +314,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
-
+	print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
 	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
@@ -334,9 +334,6 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) == False )):
 
-		#print("oi")
-
-		#print(np.isnan(np.sum(conf_branch)))
 		pdf_values, b = np.histogram(conf_branch, bins=n_bins, density=True)
 
 		update_bin = b[1:] >= threshold
@@ -452,15 +449,15 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 	conf_list, infered_class_list = [], []
 
 	for n_row in range(n_rows):
-		#calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
-		calib_logit_branch = logit_branch[n_row, :]
+		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+		#calib_logit_branch = logit_branch[n_row, :]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
 		
 		softmax_data = softmax(tensor_logit_branch)
 		conf, infered_class = torch.max(softmax_data, 1)
-		conf_list.append(conf.item()/temp_list[idx_branch]), infered_class_list.append(infered_class.item())
+		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
 
 	return np.array(conf_list), np.array(infered_class_list)
 
@@ -470,15 +467,15 @@ def get_previous_confidences(logit_branch, idx_branch, temp_list):
 	conf_list, infered_class_list = [], []
 
 	for n_row in range(n_rows):
-		#calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch-1]
-		calib_logit_branch = logit_branch[n_row, :]
+		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch-1]
+		#calib_logit_branch = logit_branch[n_row, :]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
 		
 		softmax_data = softmax(tensor_logit_branch)
 		conf, infered_class = torch.max(softmax_data, 1)
-		conf_list.append(conf.item()/temp_list[idx_branch-1]), infered_class_list.append(infered_class.item())
+		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
 
 	return np.array(conf_list), np.array(infered_class_list)
 
