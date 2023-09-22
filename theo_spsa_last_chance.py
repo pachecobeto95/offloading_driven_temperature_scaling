@@ -64,10 +64,10 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 			beta_inf_time_theo, a = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		#print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
-		print("Acc: %s, Exit Prob: %s"%(beta_acc_theo2, beta_ee_prob_theo2))
+		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo2, beta_inf_time_theo, beta_ee_prob_theo2))
 
 		#Saves the results
-		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
+		#save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
 
 def main(args):
@@ -92,7 +92,7 @@ def main(args):
 
 	#Defines a list of beta to evaluate the optimization problem. 
 	beta_list = np.arange(0, 102, 2)
-	#beta_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]	
+	beta_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]	
 	
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
