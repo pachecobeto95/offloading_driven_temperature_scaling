@@ -204,12 +204,12 @@ class SPSA (object):
 			idx_k = np.argmin(y_alt_list)
 			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
 
-			print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s"%(k, best_loss, acc_k, inf_time_k))
+			print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s"%(k, y_k, acc_k, inf_time_k))
 
 
 			if (y_k < best_loss):
 				print("UPDATEE")
-				print("Iter: %s, Function: %s, ACC: %s, InfTime: %s"%(k, best_loss, acc_k, inf_time_k))
+				print("Iter: %s, Function: %s, ACC: %s, InfTime: %s"%(k, y_k, acc_k, inf_time_k))
 
 				best_loss = y_k
 				best_theta = copy.copy(theta)
