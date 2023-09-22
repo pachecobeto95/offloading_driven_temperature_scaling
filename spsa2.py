@@ -178,7 +178,7 @@ class SPSA (object):
 		patience = 0
 
 		#while (patience < self.max_patience):
-		while (k<50):
+		while (k<10):
 			#print(patience)
 
 			old_theta = copy.copy(theta)
@@ -213,7 +213,7 @@ class SPSA (object):
 
 			k += 1
 			print("Iter: %s"%(k))
-			
+
 			#print("Iter: %s, Parameter: %s, Function: %s, EE Prob: %s"%(k, best_theta, best_loss, best_ee_prob))
 		#sys.exit()
 		return best_theta, best_loss 
