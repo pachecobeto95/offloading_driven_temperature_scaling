@@ -80,7 +80,8 @@ class SPSA (object):
 		# the number 2 in the front is an estimative of
 		# the initial changes of the parameters,
 		# different changes might need other choices
-		a =  0.1*((A+1)**self.alpha)/magnitude_g0
+		#a =  0.1*((A+1)**self.alpha)/magnitude_g0
+		a =  2*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
