@@ -68,7 +68,7 @@ class SPSA (object):
 	def init_hyperparameters(self):
 
 		# A is <= 10% of the number of iterations
-		A = self.max_patience
+		A = self.max_patience*0.01
 		#A = 50*0.1
 
 		# order of magnitude of first gradients
