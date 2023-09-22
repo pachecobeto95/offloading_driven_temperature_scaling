@@ -83,7 +83,7 @@ def main(args):
 
 
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_3.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_1.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.7, 0.8, 0.9]
 
@@ -93,12 +93,6 @@ def main(args):
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
-
-	
-	for i in range(1, 5):
-		print(df_inf_data_cloud['inferente_time_branch_%s'%(i)].mean(), df_inf_data_device['inferente_time_branch_%s'%(i)].mean())
-
-	sys.exit()
 
 	for threshold in threshold_list:
 		print("Overhead: %s, Threshold: %s"%(args.overhead, threshold))
