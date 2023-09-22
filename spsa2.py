@@ -315,12 +315,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 
-	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
 	#sys.exit()
 
-	return acc_edge, prob_dev
+	return acc_dev_theo, prob_dev
 
 
 def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins=1000):
