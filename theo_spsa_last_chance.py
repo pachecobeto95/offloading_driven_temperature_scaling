@@ -54,6 +54,8 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
 			threshold, df_inf_data)
 
+		beta_acc_theo2, beta_ee_prob_theo2 = spsa.theoretical_accuracy_edge(beta_theta_theo, n_branches_edge, 
+			threshold, df_inf_data)
 
 		#This function computes the inference time using the parameters found previously
 		if(n_branches_edge == 1):
@@ -62,6 +64,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 			beta_inf_time_theo, a = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
+		print("Acc: %s, Exit Prob: %s"%(beta_acc_theo2, beta_ee_prob_theo2))
 
 		#Saves the results
 		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
