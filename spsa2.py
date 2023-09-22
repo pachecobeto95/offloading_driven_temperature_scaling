@@ -304,7 +304,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		#This function computes the numerator of Equation (9)
 		theo_prob_success[i] = estimate_prob_success(remaining_data, p, i, threshold, temp_list) 
 		
-		print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
+		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
 
 		#The next row removes the classified examples at the l-th side branch
 		remaining_data = remaining_data[~early_exit_samples]
