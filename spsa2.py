@@ -175,7 +175,7 @@ class SPSA (object):
 		k = 1
 		#max_patience = 50
 		best_loss, best_acc, best_ee_prob = self.compute_loss(theta)
-		print("Best Acc: %s"%(best_acc))
+		print("Best Loss, Best Acc: %s"%(best_loss, best_acc))
 		patience = 0
 
 		#while (patience < self.max_patience):
