@@ -211,8 +211,8 @@ class SPSA (object):
 
 
 			if (y_k < best_loss):
-				print("UPDATEE")
-				print("Iter: %s, Function: %s, ACC: %s, InfTime: %s, ACCEXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
+				#print("UPDATEE")
+				#print("Iter: %s, Function: %s, ACC: %s, InfTime: %s, ACCEXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
 				best_loss = y_k
 				best_theta = copy.copy(theta)
 				best_ee_prob = ee_prob
