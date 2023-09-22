@@ -63,7 +63,7 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 		else:
 			beta_inf_time_theo, a = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
-		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
+		#print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
 		print("Acc: %s, Exit Prob: %s"%(beta_acc_theo2, beta_ee_prob_theo2))
 
 		#Saves the results

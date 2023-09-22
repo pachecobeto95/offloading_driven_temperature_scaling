@@ -176,7 +176,7 @@ class SPSA (object):
 		k = 1
 		#max_patience = 50
 		best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
-		print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
+		#print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
 		patience = 0
 
 		#while (patience < self.max_patience):
@@ -207,7 +207,7 @@ class SPSA (object):
 			idx_k = np.argmin(y_alt_list)
 			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
 
-			print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s, ACC EXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
+			#print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s, ACC EXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
 
 
 			if (y_k < best_loss):
@@ -222,7 +222,7 @@ class SPSA (object):
 				patience += 1
 
 			k += 1
-			print("Iter: %s"%(k))
+			#print("Iter: %s"%(k))
 
 		#sys.exit()
 		return best_theta, best_loss 
@@ -329,8 +329,8 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_prob_success)/prob_dev	
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
-	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
-	print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
+	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
+	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
 	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
