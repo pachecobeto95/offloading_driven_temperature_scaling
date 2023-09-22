@@ -68,7 +68,7 @@ class SPSA (object):
 	def init_hyperparameters(self):
 
 		# A is <= 10% of the number of iterations
-		A = self.max_patience*0.001
+		A = self.max_patience*0.1
 		#A = 50*0.1
 
 		# order of magnitude of first gradients
@@ -323,7 +323,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#Computes the theoretical on-device accuracy according to Equation (9).
 	acc_dev_theo = sum(theo_prob_success)/prob_dev
-	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2
+	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
 	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
