@@ -199,7 +199,7 @@ class SPSA (object):
 			theta = np.maximum(theta, self.min_bounds)
 
 			#y_k, acc_k, inf_time_k, ee_prob, acc_exp_k = self.compute_loss(theta)
-			y_k, _ = self.compute_loss(theta)
+			y_k, ee_prob = self.compute_loss(theta)
 
 			y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
 
