@@ -87,7 +87,7 @@ def main(args):
 	threshold_list = [0.8]
 
 	#Defines a list of beta to evaluate the optimization problem. 
-	beta_list = np.arange(0, 102, 2)
+	beta_list = np.arange(0, 105, 5)
 	#beta_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]	
 	
 	#The next rows reads the inference data 
