@@ -54,17 +54,13 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_inf_data_device, thresho
 		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, 
 			threshold, df_inf_data)
 
-		beta_acc_theo2, beta_ee_prob_theo2 = spsa.theoretical_accuracy_edge(beta_theta_theo, n_branches_edge, 
-			threshold, df_inf_data)
-
 		#This function computes the inference time using the parameters found previously
 		if(n_branches_edge == 1):
 			beta_inf_time, _ = spsa.compute_inference_time(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 		else:
 			beta_inf_time_theo, a = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
-		#print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
-		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo2, beta_inf_time_theo, beta_ee_prob_theo2))
+		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
 
 		#Saves the results
 		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
@@ -86,7 +82,7 @@ def main(args):
 
 
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_final_2.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	threshold_list = [0.8]
 

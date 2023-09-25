@@ -57,7 +57,7 @@ class SPSA (object):
 		self.c = 0.1 # a small number
 		self.min_bounds = min_bounds
 		self.args = args
-		self.ens_size = 1
+		self.ens_size = ens_size
 		self.function_tol = 0.1
 		self.param_tol = 0.01
 
@@ -81,7 +81,7 @@ class SPSA (object):
 		# the initial changes of the parameters,
 		# different changes might need other choices
 		#a =  0.1*((A+1)**self.alpha)/magnitude_g0
-		a =  0.1*((A+1)**self.alpha)/magnitude_g0
+		a =  2*((A+1)**self.alpha)/magnitude_g0
 
 		return a, A, self.c
 
@@ -106,8 +106,11 @@ class SPSA (object):
 
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
 
-			y_plus, _, _, _, _ = self.compute_loss(theta_plus) 
-			y_minus, _, _, _, _ = self.compute_loss(theta_minus)
+			#y_plus, _, _, _, _ = self.compute_loss(theta_plus) 
+			#y_minus, _, _, _, _ = self.compute_loss(theta_minus)
+
+			y_plus, _ = self.compute_loss(theta_plus) 
+			y_minus, _ = self.compute_loss(theta_minus)
 
 			theta_list.append(theta_plus), theta_list.append(theta_minus)
 			y_list.append(y_plus), y_list.append(y_minus) 
@@ -174,14 +177,11 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		#max_patience = 50
-		best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
-		#print("Best Loss: %s, Best Acc: %s, Best InfTime: %s"%(best_loss, best_acc, best_inf_time))
+		#best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
+		best_loss, _ = self.compute_loss(theta)		
 		patience = 0
 
 		while (patience < self.max_patience):
-		#while (k<20):
-			#print(patience)
 
 			old_theta = copy.copy(theta)
 
@@ -198,16 +198,13 @@ class SPSA (object):
 			#theta, k = self.check_violation_step(theta, old_theta, k)	
 			theta = np.maximum(theta, self.min_bounds)
 
-			y_k, acc_k, inf_time_k, ee_prob, acc_exp_k = self.compute_loss(theta)
+			#y_k, acc_k, inf_time_k, ee_prob, acc_exp_k = self.compute_loss(theta)
+			y_k, _ = self.compute_loss(theta)
 
-
-			
 			y_alt_list, theta_alt_list = [y_t, y_k], [theta_t, theta]
 
 			idx_k = np.argmin(y_alt_list)
 			y_k, theta = y_alt_list[idx_k], theta_alt_list[idx_k]
-
-			#print("Iter: %s, Function: %s, ACC: %s, Inf Time: %s, ACC EXP: %s"%(k, y_k, acc_k, inf_time_k, acc_exp_k))
 
 
 			if (y_k < best_loss):
@@ -224,7 +221,6 @@ class SPSA (object):
 			k += 1
 			#print("Iter: %s"%(k))
 
-		#sys.exit()
 		return best_theta, best_loss 
 
 
@@ -249,7 +245,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	#The following line computes the on-device accuracy using our theoretical model
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
-	acc_exp, _ = accuracy_edge(temp_list, n_branches, threshold, df)
+	#acc_exp, _ = accuracy_edge(temp_list, n_branches, threshold, df)
 
 
 	#The following line computes the inference time using our theoretical model
@@ -262,7 +258,9 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	f = inf_time_current - beta*acc_current
 	#print(inf_time_current, acc_current, beta, f)
 
-	return f, acc_current, inf_time_current, ee_prob, acc_exp
+	#return f, acc_current, inf_time_current, ee_prob, acc_exp
+	return f, ee_prob
+
 
 def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 
