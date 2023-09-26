@@ -113,7 +113,7 @@ def runGlobalTemperatureScalingInference(args, df_inf_data, df_val_inf_data, df_
 
 
 		print("TS")
-		print("On-device: %s, Inference Time: %s"%(no_calib_acc, no_calib_inf_time))
+		print("On-device: %s, Inference Time: %s"%(global_ts_acc, global_ts_inf_time))
 
 		save_beta_results(savePath, temperature_overall, global_ts_acc, global_ts_inf_time, global_ts_ee_prob, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
