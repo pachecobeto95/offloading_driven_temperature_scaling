@@ -53,8 +53,8 @@ def main(args):
 
 			print(result)
 
-			df = pd.DataFrame([result])
-			df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
+			#df = pd.DataFrame([result])
+			#df.to_csv(temp_save_path, mode='a', header=not os.path.exists(temp_save_path))
 
 
 
