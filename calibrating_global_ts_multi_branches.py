@@ -34,7 +34,7 @@ def main(args):
 
 	data_loader = val_loader if (args.valid_indices) else test_loader
 
-	threshold_list = [0.8]
+	threshold_list = [0.7, 0.8]
 
 	theta_initial_list = np.arange(1, 1.5, 0.02)
 
