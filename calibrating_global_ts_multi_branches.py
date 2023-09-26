@@ -11,7 +11,7 @@ def main(args):
 	n_classes, input_dim, dim = 257, 330, 300
 
 	#temp_save_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s.csv"%(args.model_name, args.n_branches, args.model_id))
-	temp_save_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s_rodrigo_version.csv"%(args.model_name, args.n_branches, args.model_id))
+	temp_save_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s_rodrigo_version_2.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	model_path = os.path.join(config.DIR_NAME, "new_models", "models", "ee_%s_%s_branches_id_%s.pth"%(config.model_name, args.n_branches, args.model_id))
 
