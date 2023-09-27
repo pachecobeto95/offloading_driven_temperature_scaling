@@ -82,7 +82,7 @@ def main(args):
 
 
 	#The next row specifies the file name that saves the results. 	
-	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_test_2.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "theo_beta_analysis_%s_%s_branches_overhead_%s_rodrigo_version_test_test_3.csv"%(args.model_name, args.n_branches, args.overhead))
 
 
 	threshold_list = [0.7, 0.8]
