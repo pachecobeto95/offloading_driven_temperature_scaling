@@ -177,11 +177,12 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
+		max_patience = 50
 		#best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
 		best_loss, _ = self.compute_loss(theta)		
 		patience = 0
 
-		while (patience < self.max_patience):
+		while (patience < max_patience):
 
 			old_theta = copy.copy(theta)
 
@@ -324,12 +325,12 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		remaining_data = remaining_data[~early_exit_samples]
 
 	#Computes the theoretical on-device accuracy according to Equation (9).
-	acc_dev_theo = sum(theo_prob_success)/prob_dev	
+	acc_dev_theo = sum(theo_prob_success)/prob_dev	if(prob_dev>0) else 0
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
-	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
 	#sys.exit()
