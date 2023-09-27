@@ -90,7 +90,6 @@ def main(args):
 	#Defines a list of beta to evaluate the optimization problem. 
 	beta_list = np.arange(0.5, 100.5, 0.5)
 
-	sys.exit()
 	#beta_list = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]	
 	
 	#The next rows reads the inference data 
