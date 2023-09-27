@@ -174,7 +174,7 @@ class SPSA (object):
 
 		k = 1
 		best_loss, best_ee_prob = self.compute_loss(theta)
-		patience, max_patience = 0, 50
+		patience, max_patience = 0, 10
 
 		#while (k <= self.nr_iter):
 		while (patience <= max_patience):
@@ -263,7 +263,6 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	#f = (1-beta)*inf_time_current - beta*acc_current
 	f = inf_time_current - beta*acc_current
-	print(accuracy_edge(temp_list, n_branches, threshold, df), acc_current, temp_list)
 
 	return f, ee_prob
 

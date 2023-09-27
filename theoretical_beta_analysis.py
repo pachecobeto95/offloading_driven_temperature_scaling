@@ -132,16 +132,16 @@ def main(args):
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	#resultsPath = os.path.join(config.DIR_NAME, "theoretical_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
-	resultsPath = os.path.join(config.DIR_NAME, "theo_concorrents_beta_analysis_%s_%s_branches_overhead_%s_2.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "exp_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
+	#resultsPath = os.path.join(config.DIR_NAME, "theo_concorrents_beta_analysis_%s_%s_branches_overhead_%s_2.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s_rodrigo_version_2.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	threshold_list = [0.7, 0.8, 0.85]
+	threshold_list = [0.8]
 	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
 	#beta_list = [np.arange(10*i, 10*(i+1), 1) for i in range(10)]
-	beta_list = np.arange(0, 105, 5)
-	beta_list = [100]
+	beta_list = np.arange(0, 205, 2)
+	#beta_list = [100]
 	#beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
 	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
 	#beta_list = beta_list[args.slot_beta]
@@ -160,14 +160,14 @@ def main(args):
 			for threshold in threshold_list:
 				print("Overhead: %s, Nr Branches: %s, Threshold: %s"%(overhead, n_branches_edge, threshold))
 
-				#run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-				#	beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
+				run_theoretical_beta_analysis(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+					beta_list, resultsPath, overhead, mode, calib_mode="beta_calib")			
 
-				runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					resultsPath, overhead, calib_mode="no_calib")
+				#runNoCalibInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+				#	resultsPath, overhead, calib_mode="no_calib")
 
-				runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
-					resultsPath, global_ts_path, overhead, calib_mode="global_TS")
+				#runGlobalTemperatureScalingInference(args, df_inf_data_cloud, df_inf_data_cloud, df_inf_data_device, threshold, n_branches_edge, 
+				#	resultsPath, global_ts_path, overhead, calib_mode="global_TS")
 
 
 if (__name__ == "__main__"):
