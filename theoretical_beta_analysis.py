@@ -123,13 +123,14 @@ def main(args):
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	resultsPath = os.path.join(config.DIR_NAME, "exp_beta_analysis_%s_%s_branches_with_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
+	#resultsPath = os.path.join(config.DIR_NAME, "exp_beta_analysis_%s_%s_branches_with_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "test_theo_result_overhead_%s"%(args.overhead))
 	#resultsPath = os.path.join(config.DIR_NAME, "theo_concorrents_beta_analysis_%s_%s_branches_overhead_%s_2.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s_rodrigo_version_2.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.8]
-	beta_list = np.arange(0, 205, 2)
+	beta_list = np.arange(0, 205, 5)
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)

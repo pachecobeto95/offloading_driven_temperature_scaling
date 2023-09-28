@@ -244,8 +244,8 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	"""
 
 	#The following line computes the on-device accuracy using our theoretical model
-	#acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
-	acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	#acc_current, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
 
 	#The following line computes the inference time using our theoretical model
