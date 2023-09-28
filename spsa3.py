@@ -253,7 +253,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	
-	f = inf_time_current - beta*acc_exp
+	f = inf_time_current - beta*acc_current
 	#print(inf_time_current, acc_current, beta, f)
 
 	#return f, acc_current, inf_time_current, ee_prob, acc_exp
