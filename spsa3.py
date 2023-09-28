@@ -274,13 +274,14 @@ def compute_prob_previous_layer(numexits, idx_branch, n_samples):
 def compute_prob_on_device(df, n_samples, temp_list, threshold):
 	#This function computes the probability of classifying at the edge device
 
-	logit_branch = getLogitBranches(df, 2)
-	conf_branch, _ = get_confidences(logit_branch, 2, temp_list)
+	calib_conf_last_layer = df["conf_branch_3"]/temp_list[2]
 
-	prob_dev = sum(conf_branch >= threshold)/n_samples
+	prob_dev = sum(calib_conf_last_layer >= threshold)/n_samples
 	return prob_dev
 
 def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
+
+	acc_edge, early_classification_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
 	# This function computes the theoretical on-device accuracy
 	numexits, theo_prob_success = np.zeros(n_branches), np.zeros(n_branches)
@@ -289,9 +290,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	remaining_data = df
 
-	print(df.columns)
-	sys.exit()
-
 	prob_dev = len(df[df["conf_branch_3"] >= threshold])/n_samples
 
 	prob_dev2 = compute_prob_on_device(remaining_data, n_samples, temp_list, threshold)
@@ -299,8 +297,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	#This loop iterates among side branches of early-exit DNN
 	for i in range(n_branches):
 		#Extracts the confidence provided by l-th side branch
-		logit_branch = getLogitBranches(remaining_data, i)
-		conf_branch, _ = get_confidences(logit_branch, i, temp_list)
+		conf_branch = remaining_data["conf_branch_%s"%(i+1)]/temp_list[i]
 
 		#Checks if these confidencce is greater than a threshold
 		early_exit_samples = conf_branch >= threshold
@@ -317,8 +314,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 		#This function computes the numerator of Equation (9)
 		theo_prob_success[i] = estimate_prob_success(remaining_data, p, i, threshold, temp_list) 
 		
-		#print("Acc Exp Ramo %s: %s, Prob Success Ramo %s: %s"%(i+1, acc_device[i], i+1, theo_acc_device[i]))
-
 		#The next row removes the classified examples at the l-th side branch
 		remaining_data = remaining_data[~early_exit_samples]
 
@@ -328,7 +323,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
-	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
 	#sys.exit()
@@ -340,10 +335,7 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 	acc_list, prop_in_bin_list = [], []
 	
-	logit_branch = getLogitBranches(df_branch, idx_branch)
-	conf_branch, _ = get_confidences(logit_branch, idx_branch, temp_list)
-
-	#print(len(conf_branch), np.isnan(np.sum(conf_branch)))
+	conf_branch = df_branch["conf_branch_%s"%(idx_branch+1)]/temp_list[idx_branch]
 
 	if ((len(conf_branch) > 0) and (np.isnan(np.sum(conf_branch)) == False )):
 
@@ -371,7 +363,6 @@ def estimate_prob_success(df_branch, p, idx_branch, threshold, temp_list, n_bins
 
 		return integral
 	else:
-		#print("ok")
 		return 0
 
 def accuracy_edge(temp_list, n_branches, threshold, df):
@@ -398,7 +389,6 @@ def accuracy_edge(temp_list, n_branches, threshold, df):
 
 	return acc_edge, early_classification_prob
 
-
 def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead):
 	
 	avg_inference_time = 0
@@ -409,9 +399,7 @@ def compute_inference_time_multi_branches(temp_list, n_branches, max_exits, thre
 
 	for i in range(n_branches):
 
-		logit_branch = getLogitBranches(remaining_data, i)
-
-		conf_list, infered_class_list = get_confidences(logit_branch, i, temp_list)
+		conf_list = remaining_data["conf_branch_%s"%(i+1)]/temp_list[i]
 
 		early_exit_samples = conf_list >= threshold
 		
