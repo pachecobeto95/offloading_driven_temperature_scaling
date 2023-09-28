@@ -3,7 +3,7 @@ import config, utils, temperature_scaling, ee_nn
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
-import spsa as spsa3
+import spsa3 as spsa
 
 
 #def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
