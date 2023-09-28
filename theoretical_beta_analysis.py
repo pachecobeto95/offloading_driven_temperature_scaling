@@ -3,7 +3,7 @@ import config, utils, temperature_scaling, ee_nn
 #from early_exit_dnn import Early_Exit_DNN
 import numpy as np
 import pandas as pd
-import spsa as spsa
+import spsa as spsa3
 
 
 #def extractTemperatureParameter(args, temp_data_path, threshold, n_branches_edge):
@@ -51,27 +51,18 @@ def run_theoretical_beta_analysis(args, df_inf_data, df_val_inf_data, df_inf_dat
 	for beta in beta_list:
 		print("Beta: %s"%(beta))
 
-		#beta_theta_exp, beta_opt_loss_exp = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
-		#	args.a0, args.c, args.alpha, args.gamma, overhead, "exp")
-
 		beta_theta_theo, beta_opt_loss_theo = spsa.run_theoretical_beta_opt(df_val_inf_data, df_inf_data_device, beta, threshold, args.max_iter, n_branches_edge, args.n_branches, 
 			args.a0, args.c, args.alpha, args.gamma, overhead, mode)
 
-		#beta_acc_exp, beta_ee_prob_exp = spsa.accuracy_edge(beta_theta_exp, n_branches_edge, threshold, df_inf_data)
 		beta_acc_theo, beta_ee_prob_theo = spsa.accuracy_edge(beta_theta_theo, n_branches_edge, threshold, df_inf_data)
 
 		if(n_branches_edge == 1):
 			beta_inf_time, _ = spsa.compute_inference_time(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 		else:
-			#beta_inf_time_exp, _ = spsa.compute_inference_time_multi_branches(beta_theta_exp, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
-			beta_inf_time_theo, a = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
+			beta_inf_time_theo, _ = spsa.compute_inference_time_multi_branches(beta_theta_theo, n_branches_edge, max_exits, threshold, df_inf_data, df_inf_data_device, overhead)
 
-
-		#print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_exp, beta_inf_time_exp, beta_ee_prob_exp))
-		#print(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo)
 		print("Acc: %s, Inf Time: %s, Exit Prob: %s"%(beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo))
 
-		#save_beta_results(savePath, beta_theta_exp, beta_acc_exp, beta_inf_time_exp, beta_ee_prob_exp, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="exp")
 		save_beta_results(savePath, beta_theta_theo, beta_acc_theo, beta_inf_time_theo, beta_ee_prob_theo, threshold, n_branches_edge, args.n_branches, beta, overhead, calib_mode, mode="theo")
 
 
@@ -132,24 +123,16 @@ def main(args):
 	#val_inf_data_path = os.path.join(config.DIR_NAME, "new_inference_data", "val_inference_data_%s_%s_branches_%s.csv"%(args.model_name, args.n_branches, args.model_id))
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
 
-	resultsPath = os.path.join(config.DIR_NAME, "exp_beta_analysis_%s_%s_branches_%s_with_overhead_with_nano_with_test_set_pos_6_review_%s_overhead_%s.csv"%(args.model_name, args.n_branches, args.model_id, mode, args.overhead))
+	resultsPath = os.path.join(config.DIR_NAME, "exp_beta_analysis_%s_%s_branches_with_overhead_%s.csv"%(args.model_name, args.n_branches, args.overhead))
 	#resultsPath = os.path.join(config.DIR_NAME, "theo_concorrents_beta_analysis_%s_%s_branches_overhead_%s_2.csv"%(args.model_name, args.n_branches, args.overhead))
 
 	global_ts_path = os.path.join(config.DIR_NAME, "alternative_temperature_%s_%s_branches_id_%s_rodrigo_version_2.csv"%(args.model_name, args.n_branches, args.model_id))
 
 	threshold_list = [0.8]
-	#beta_list = np.arange(0, config.max_beta+config.step_beta, 0.1)
-	#beta_list = [np.arange(10*i, 10*(i+1), 1) for i in range(10)]
 	beta_list = np.arange(0, 205, 2)
-	#beta_list = [100]
-	#beta_list = [[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50], [55, 60, 65, 70, 75, 85, 95, 100]]
-	#beta_list = [np.arange(0, 51, 1), np.arange(51, 101, 1)]
-	#beta_list = beta_list[args.slot_beta]
-
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
 	df_inf_data_device = pd.read_csv(inf_data_device_path)
-	#overhead_list = np.arange(0, config.max_overhead+config.step_overhead, config.step_overhead)
 	#overhead_list = [5, 10, 15]
 	overhead_list = [args.overhead]
 
