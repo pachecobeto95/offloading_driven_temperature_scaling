@@ -244,7 +244,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	"""
 
 	#The following line computes the on-device accuracy using our theoretical model
-	#acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
+	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
 	acc_exp, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
@@ -256,7 +256,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	
-	f = inf_time_current - beta*acc_exp
+	f = inf_time_current - beta*acc_current
 	#print(inf_time_current, acc_current, beta, f)
 
 	#return f, acc_current, inf_time_current, ee_prob, acc_exp
@@ -330,7 +330,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
-	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
 	#sys.exit()
