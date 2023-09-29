@@ -463,7 +463,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 
 	for n_row in range(n_rows):
 		#calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
-		#calib_logit_branch = logit_branch[n_row, :]
+		calib_logit_branch = logit_branch[n_row, :]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
 		tensor_logit_branch = torch.reshape(tensor_logit_branch, (1, n_classes))
