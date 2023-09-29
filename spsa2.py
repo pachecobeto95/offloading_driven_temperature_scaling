@@ -451,8 +451,6 @@ def getLogitPreviousBranches(df, idx_branch):
 	n_classes = 257
 	logit_data = np.zeros((len(df), n_classes))
 
-
-
 	for j in range(n_classes):
 		logit_data[:, j] = df["logit_branch_%s_class_%s"%(idx_branch, j+1)].values
 	return logit_data
@@ -464,7 +462,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 	conf_list, infered_class_list = [], []
 
 	for n_row in range(n_rows):
-		calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
+		#calib_logit_branch = logit_branch[n_row, :]/temp_list[idx_branch]
 		#calib_logit_branch = logit_branch[n_row, :]
 
 		tensor_logit_branch = torch.from_numpy(calib_logit_branch)
@@ -472,7 +470,7 @@ def get_confidences(logit_branch, idx_branch, temp_list):
 		
 		softmax_data = softmax(tensor_logit_branch)
 		conf, infered_class = torch.max(softmax_data, 1)
-		conf_list.append(conf.item()), infered_class_list.append(infered_class.item())
+		conf_list.append(conf.item()/temp_list[idx_branch]), infered_class_list.append(infered_class.item())
 
 	return np.array(conf_list), np.array(infered_class_list)
 
