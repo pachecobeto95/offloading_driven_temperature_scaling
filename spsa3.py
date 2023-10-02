@@ -325,7 +325,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
-	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	#acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 
 	#print(acc_dev_theo)
 	#sys.exit()
