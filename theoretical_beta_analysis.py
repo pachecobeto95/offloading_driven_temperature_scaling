@@ -131,7 +131,7 @@ def main(args):
 
 	threshold_list = [0.8]
 	beta_list = np.arange(0, 205, 5)
-	beta_list = [0, 50, 60, 70, 80, 90, 100]
+	beta_list = [200, 300]
 
 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
