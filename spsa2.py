@@ -177,7 +177,7 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		max_patience = 20
+		max_patience = 5
 		#best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
 		best_loss, _ = self.compute_loss(theta)		
 		patience = 0
