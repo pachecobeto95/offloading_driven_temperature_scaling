@@ -87,7 +87,7 @@ def main(args):
 
 	#Defines a list of beta to evaluate the optimization problem. 
 	beta_list = np.arange(0, 200.5, 2)
-	beta_list = [50, 60, 70, 80, 90, 100]
+	beta_list = [0, 10, 70, 100, 200]
 	
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)
