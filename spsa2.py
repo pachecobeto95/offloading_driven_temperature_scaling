@@ -184,6 +184,8 @@ class SPSA (object):
 
 		while (patience < max_patience):
 
+			print(patience)
+
 			old_theta = copy.copy(theta)
 
 			#Computes the parameters for each iteration
