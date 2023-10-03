@@ -257,10 +257,11 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 
 	
 	f = inf_time_current - beta*acc_current
-	#print(inf_time_current, acc_current, beta, f)
+	f2 = inf_time_current - beta*acc_exp
 
-	#return f, acc_current, inf_time_current, ee_prob, acc_exp
-	return f, ee_prob
+	delta_f = abs(f-f2)
+
+	return delta_f, ee_prob
 
 
 def compute_prob_previous_layer(numexits, idx_branch, n_samples):
