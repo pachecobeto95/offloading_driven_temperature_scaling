@@ -184,7 +184,7 @@ class SPSA (object):
 
 		while (patience < max_patience):
 
-			print(patience)
+			#print(patience)
 
 			old_theta = copy.copy(theta)
 
@@ -333,7 +333,7 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
 	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
-	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
+	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 
 	#print(acc_dev_theo)
 	#sys.exit()
