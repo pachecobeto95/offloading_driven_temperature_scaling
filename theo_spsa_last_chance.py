@@ -75,7 +75,7 @@ def main(args):
 	#mode = "theo" if(args.theo_data) else "exp"
 
 	#The next row specifies the file name that contains the inference data measured in cloud server. 
-	inf_data_cloud_path = os.path.join(config.DIR_NAME, "last_chance_inf_data_%s_%s_branches_2.csv"%(args.model_name, args.n_branches))
+	inf_data_cloud_path = os.path.join(config.DIR_NAME, "last_chance_inf_data_%s_%s_branches.csv"%(args.model_name, args.n_branches))
 	
 	#The next row specifies the file name that contains the inference data measured in edge device. 	
 	inf_data_device_path = os.path.join(config.DIR_NAME, "new_inference_data", "inference_data_%s_%s_branches_%s_jetson_nano.csv"%(args.model_name, args.n_branches, args.model_id))
@@ -86,8 +86,8 @@ def main(args):
 	threshold_list = [0.8]
 
 	#Defines a list of beta to evaluate the optimization problem. 
-	beta_list = np.arange(0, 200.5, 2)
-	beta_list = [10000]
+	#beta_list = np.arange(0, 200.5, 2)
+	beta_list = [0, 20, 40, 60, 80, 100]
 	
 	#The next rows reads the inference data 
 	df_inf_data_cloud = pd.read_csv(inf_data_cloud_path)

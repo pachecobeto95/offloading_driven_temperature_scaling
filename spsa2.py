@@ -54,7 +54,7 @@ class SPSA (object):
 		self.a0 = a0
 		self.alpha = alpha
 		self.gamma = gamma
-		self.c = 0.1 # a small number
+		self.c = c # a small number
 		self.min_bounds = min_bounds
 		self.args = args
 		self.ens_size = ens_size
@@ -69,7 +69,6 @@ class SPSA (object):
 
 		# A is <= 10% of the number of iterations
 		A = self.max_patience*0.1
-		#A = 50*0.1
 
 		# order of magnitude of first gradients
 		#magnitude_g0 = np.abs(self.grad(self.function, self.theta_initial, self.c).mean())
@@ -105,9 +104,6 @@ class SPSA (object):
 			theta_minus = theta - ck_deltak
 
 			theta_minus = np.maximum(theta_minus, self.min_bounds)
-
-			#y_plus, _, _, _, _ = self.compute_loss(theta_plus) 
-			#y_minus, _, _, _, _ = self.compute_loss(theta_minus)
 
 			y_plus, _ = self.compute_loss(theta_plus) 
 			y_minus, _ = self.compute_loss(theta_minus)
@@ -177,7 +173,7 @@ class SPSA (object):
 		a, A, c = self.init_hyperparameters()
 
 		k = 1
-		max_patience = 5
+		max_patience = 10
 		#best_loss, best_acc, best_inf_time, best_ee_prob, _ = self.compute_loss(theta)
 		best_loss, _ = self.compute_loss(theta)		
 		patience = 0
@@ -222,7 +218,6 @@ class SPSA (object):
 				patience += 1
 
 			k += 1
-			#print("Iter: %s"%(k))
 
 		return best_theta, best_loss 
 
@@ -248,7 +243,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 	#The following line computes the on-device accuracy using our theoretical model
 	acc_current, ee_prob = theoretical_accuracy_edge(temp_list, n_branches, threshold, df)
 
-	acc_exp, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
+	#acc_exp, ee_prob = accuracy_edge(temp_list, n_branches, threshold, df)
 
 
 	#The following line computes the inference time using our theoretical model
@@ -258,7 +253,7 @@ def theoretical_beta_function(temp_list, n_branches, max_exits, threshold, df, d
 		inf_time_current, _ = compute_inference_time_multi_branches(temp_list, n_branches, max_exits, threshold, df, df_device, overhead)
 
 	
-	f = inf_time_current - beta*acc_current - beta*acc_exp
+	f = inf_time_current - beta*acc_current
 
 	return f, ee_prob
 
@@ -331,9 +326,6 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
 	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
 	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
-
-	#print(acc_dev_theo)
-	#sys.exit()
 
 	return acc_dev_theo, prob_dev
 
