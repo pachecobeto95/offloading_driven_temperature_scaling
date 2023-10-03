@@ -329,9 +329,9 @@ def theoretical_accuracy_edge(temp_list, n_branches, threshold, df):
 	acc_dev_theo = sum(theo_prob_success)/prob_dev	if(prob_dev>0) else 0
 	acc_dev_theo2 = sum(theo_prob_success)/prob_dev2 if(prob_dev2>0) else 0
 
-	#print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 	#print("EEProb Exp: %s, EEProb Theo: %s"%(early_classification_prob, prob_dev2))
 	acc_dev_theo = min([acc_dev_theo, acc_dev_theo2], key=lambda x: abs(acc_edge - x))
+	print("AccEdge Exp: %s, AccEdge Theo: %s, AccEdge Theo2: %s"%(acc_edge, acc_dev_theo, acc_dev_theo2))
 
 	#print(acc_dev_theo)
 	#sys.exit()
